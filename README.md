@@ -4,10 +4,10 @@
 
 ## Team Info
 
-- Олешко Дар'я - Repo Maintainer
-- Омельченко Дар'я - ?
-- Романчук Анна - ?
-- Узун Дмитро - ?
+- Олешко Дар'я (Doodlinka, d.oleshko@ukma.edu.ua) - Repo Maintainer
+- Омельченко Дар'я (, d.omelchenko@ukma.edu.ua) - Documentation Lead
+- Романчук Анна (, a.romanchuk@ukma.edu.ua) - Issue Tracker Lead
+- Узун Дмитро (, d.uzun@ukma.edu.ua) - CI Lead
 
 ## Project Info
 
@@ -15,3 +15,4 @@
 
 - Клієнти замовляють страви, кур'єри доставляють, ресторани керують меню.
 - Вимагає врахування продуктивності (оновлення в реальному часі).
+
