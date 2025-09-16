@@ -1,1 +1,17 @@
-[![Open in Codespaces](https://classroom.github.com/assets/launch-codespace-2972f46106e565e64193e422d61a12cf1da4916b45550586e14ef0a7c637dd04.svg)](https://classroom.github.com/open-in-codespaces?assignment_repo_id=20524228)
+# Team12 - Food Delivery App
+
+![CI Status](https://github.com/ukma-cs-ssdm-2025/team-team12/actions/workflows/ci.yml/badge.svg)
+
+## Team Info
+
+- Олешко Дар'я - Repo Maintainer
+- Омельченко Дар'я - ?
+- Романчук Анна - ?
+- Узун Дмитро - ?
+
+## Project Info
+
+Тема №8 - Застосунок координації доставки їжі
+
+- Клієнти замовляють страви, кур'єри доставляють, ресторани керують меню.
+- Вимагає врахування продуктивності (оновлення в реальному часі).
