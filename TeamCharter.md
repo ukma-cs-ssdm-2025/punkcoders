@@ -3,6 +3,7 @@
 ## 1. Основна інформація
 ### Назва команди: 
 - Punkcoders
+  
 ### Учасники
 
 - Дар’я (GitHub: dar11ya, електронна пошта НаУКМА: [d.omelchenko@ukma.edu.ua](d.omelchenko@ukma.edu.ua))
