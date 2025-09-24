@@ -11,3 +11,8 @@
 |FR-008|Система дозволяє шукати страви за назвою у будь-якій категорії||||||
 |FR-009|Система має окрему категорію під кастомну піцу||||||
 |FR-010|Система дозволяє надавати будь-які інгредієнти з наданого списку до кастомної піци||||||
+| SEC-001 | Хешування паролів argon2id | [OWASP Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html) | Високий | Поки невідомо | Поки немає | Не готово |
+| SEC-002 | Тільки HTTPS та TLS 1.2 | [OWASP Transport Layer Protection Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Transport_Layer_Protection_Cheat_Sheet.html?utm_source=chatgpt.com) | Високий | Поки невідомо | Поки немає | Не готово |
+| SEC-003 | Підтримка TLS 1.3 | [OWASP Transport Layer Protection Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Transport_Layer_Protection_Cheat_Sheet.html?utm_source=chatgpt.com) | Високий | Поки невідомо | Поки немає | Не готово |
+| SEC-004 | Не зберігаємо платіжні реквізити | [PCI DSS 4.0](https://www.pcisecuritystandards.org/) | Високий | Поки невідомо | Поки немає | Не готово |
+| SEC-005 | Підтверждення дистанційної оплвти від банку | PSD2 Strong Customer Authentication (SCA) | Високий | Поки невідомо | Поки немає | Не готово |
