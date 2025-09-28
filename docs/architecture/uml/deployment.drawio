@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0" version="28.2.5">
   <diagram name="Page-1" id="ZAJxCy9UpNBgk7UO9xpd">
-    <mxGraphModel dx="1515" dy="1517" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1587" dy="1553" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -29,7 +29,7 @@
         <mxCell id="fRqiLNEErDv1-o9UYtsq-64" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="fRqiLNEErDv1-o9UYtsq-32" target="fRqiLNEErDv1-o9UYtsq-44">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="fRqiLNEErDv1-o9UYtsq-66" value="HTTPS" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="fRqiLNEErDv1-o9UYtsq-64">
+        <mxCell id="fRqiLNEErDv1-o9UYtsq-66" value="HTTPS API" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="fRqiLNEErDv1-o9UYtsq-64">
           <mxGeometry x="-0.0306" relative="1" as="geometry">
             <mxPoint y="-6" as="offset" />
           </mxGeometry>
@@ -71,7 +71,7 @@
           <mxGeometry x="460" y="-40" width="90" height="50" as="geometry" />
         </mxCell>
         <mxCell id="fRqiLNEErDv1-o9UYtsq-45" value="&lt;div&gt;&amp;lt;&amp;lt;external&amp;gt;&amp;gt;&lt;/div&gt;&lt;div&gt;Payment Provider&lt;/div&gt;" style="verticalAlign=top;align=left;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;whiteSpace=wrap;" vertex="1" parent="1">
-          <mxGeometry x="430" y="210" width="120" height="50" as="geometry" />
+          <mxGeometry x="430" y="240" width="120" height="50" as="geometry" />
         </mxCell>
         <mxCell id="fRqiLNEErDv1-o9UYtsq-52" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0;exitDx=32.5;exitDy=180;exitPerimeter=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1" source="fRqiLNEErDv1-o9UYtsq-50" target="fRqiLNEErDv1-o9UYtsq-32">
           <mxGeometry relative="1" as="geometry" />
@@ -91,7 +91,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="fRqiLNEErDv1-o9UYtsq-62" value="HTTPS" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="fRqiLNEErDv1-o9UYtsq-55">
+        <mxCell id="fRqiLNEErDv1-o9UYtsq-62" value="HTTPS Widget" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="fRqiLNEErDv1-o9UYtsq-55">
           <mxGeometry x="-0.6527" y="-1" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
@@ -99,7 +99,7 @@
         <mxCell id="fRqiLNEErDv1-o9UYtsq-56" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.996;exitY=0.916;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0;entryDx=20;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="fRqiLNEErDv1-o9UYtsq-50" target="fRqiLNEErDv1-o9UYtsq-45">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="fRqiLNEErDv1-o9UYtsq-61" value="HTTPS" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="fRqiLNEErDv1-o9UYtsq-56">
+        <mxCell id="fRqiLNEErDv1-o9UYtsq-61" value="HTTPS Widget" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="fRqiLNEErDv1-o9UYtsq-56">
           <mxGeometry x="-0.3064" y="-1" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
@@ -107,7 +107,7 @@
         <mxCell id="fRqiLNEErDv1-o9UYtsq-63" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0;exitDx=0;exitDy=55;exitPerimeter=0;entryX=0.645;entryY=1.013;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="fRqiLNEErDv1-o9UYtsq-45" target="fRqiLNEErDv1-o9UYtsq-32">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="fRqiLNEErDv1-o9UYtsq-68" value="HTTPS" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="fRqiLNEErDv1-o9UYtsq-63">
+        <mxCell id="fRqiLNEErDv1-o9UYtsq-68" value="&lt;div&gt;Payment Confirmation&lt;/div&gt;&lt;div&gt;API (HTTPS?)&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="fRqiLNEErDv1-o9UYtsq-63">
           <mxGeometry x="-0.5104" y="-1" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
