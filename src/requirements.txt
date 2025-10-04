@@ -2,4 +2,5 @@ Django
 psycopg[binary]
 argon2-cffi
 zxcvbn
+djangorestframework
 drf-spectacular
