@@ -4,7 +4,6 @@ from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema, OpenApiResponse
 from restaurant.serializers.dishes import DishSerializer
 from restaurant.services.dishes import *
-from django.http.response import HttpResponseServerError
 
 
 @extend_schema(tags=["Dishes"])
