@@ -46,6 +46,8 @@ class DishViewSet(viewsets.ViewSet):
 		responses={
 			201: DishSerializer,
 			400: OpenApiResponse(description="Bad request"),
+			401: OpenApiResponse(description="Not authorized"),
+			403: OpenApiResponse(description="Forbidden"),
 			500: OpenApiResponse(description="Internal server error"),
 		},
 	)
@@ -62,6 +64,8 @@ class DishViewSet(viewsets.ViewSet):
 		responses={
 			200: DishSerializer,
 			400: OpenApiResponse(description="Bad request"),
+			401: OpenApiResponse(description="Not authorized"),
+			403: OpenApiResponse(description="Forbidden"),
 			404: OpenApiResponse(description="Dish not found"),
 			500: OpenApiResponse(description="Internal server error"),
 		},
@@ -84,6 +88,8 @@ class DishViewSet(viewsets.ViewSet):
 		summary="Delete a dish (mock)",
 		responses={
 			204: OpenApiResponse(description="Dish deleted"),
+			401: OpenApiResponse(description="Not authorized"),
+			403: OpenApiResponse(description="Forbidden"),
 			404: OpenApiResponse(description="Dish not found"),
 			500: OpenApiResponse(description="Internal server error"),
 		},
