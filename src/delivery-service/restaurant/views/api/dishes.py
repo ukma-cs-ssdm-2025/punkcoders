@@ -73,11 +73,11 @@ class DishViewSet(viewsets.ViewSet):
 	def update(self, request, pk=None):
 		if pk is None:
 			return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
-		if not has_dish:
+		if not has_dish(pk):
 			return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 		serializer = DishSerializer(data=request.data)
 		if serializer.is_valid():
-			data = update_dish(serializer.validated_data.copy())
+			data = update_dish(pk, serializer.validated_data.copy())
 			return Response(data, status=status.HTTP_200_OK)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
