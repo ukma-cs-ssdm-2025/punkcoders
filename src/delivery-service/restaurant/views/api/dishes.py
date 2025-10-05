@@ -3,7 +3,7 @@ from rest_framework import status, viewsets
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema, OpenApiResponse
 from restaurant.serializers.dishes import DishSerializer
-from restaurant.services.dishes import get_all_dishes
+from restaurant.services.dishes import *
 from django.http.response import HttpResponseServerError
 
 
@@ -33,12 +33,13 @@ class DishViewSet(viewsets.ViewSet):
 		},
 	)
 	def retrieve(self, request, pk=None):
-		data = next((d for d in get_all_dishes() if str(d["id"]) == str(pk)), None)
+		if pk is None:
+			return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+		data = get_dish_by_id(pk)
 		if not data:
 			return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 		serializer = DishSerializer(data)
 		return Response(serializer.data, status=status.HTTP_200_OK)
-
 
 	@extend_schema(
 		summary="Create a dish (mock)",
@@ -52,11 +53,9 @@ class DishViewSet(viewsets.ViewSet):
 		serializer = DishSerializer(data=request.data)
 		if serializer.is_valid():
 			# Mock: assign a fake ID and echo back
-			data = serializer.validated_data.copy()
-			data["id"] = 999
+			data = create_dish(serializer.validated_data.copy())
 			return Response(data, status=status.HTTP_201_CREATED)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 	@extend_schema(
 		summary="Update a dish (mock)",
@@ -68,20 +67,18 @@ class DishViewSet(viewsets.ViewSet):
 		},
 	)
 	def update(self, request, pk=None):
-		# Find mock dish
-		dish = next((d for d in get_all_dishes() if str(d["id"]) == str(pk)), None)
-		if not dish:
+		if pk is None:
+			return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+		if not has_dish:
 			return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 		serializer = DishSerializer(data=request.data)
 		if serializer.is_valid():
-			data = serializer.validated_data.copy()
-			data["id"] = dish["id"]
+			data = update_dish(serializer.validated_data.copy())
 			return Response(data, status=status.HTTP_200_OK)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 	# def partial_update(self, request, pk=None):
 	# 	pass
-
 
 	@extend_schema(
 		summary="Delete a dish (mock)",
@@ -92,8 +89,9 @@ class DishViewSet(viewsets.ViewSet):
 		},
 	)
 	def destroy(self, request, pk=None):
-		dish = next((d for d in get_all_dishes() if str(d["id"]) == str(pk)), None)
-		if not dish:
+		if pk is None:
 			return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
-		# Mock: pretend to delete
+		if not has_dish(pk):
+			return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+		delete_dish(pk)
 		return Response(status=status.HTTP_204_NO_CONTENT)
