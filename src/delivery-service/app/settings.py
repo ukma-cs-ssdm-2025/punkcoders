@@ -37,7 +37,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+	'drf_spectacular',
+	'restaurant',
+	'accounts',
 ]
+
+REST_FRAMEWORK = {
+	'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',  # ✅ critical line
+}
+
+SPECTACULAR_SETTINGS = {
+	'TITLE': 'Food Delivery API',
+	'DESCRIPTION': 'Auto-generated OpenAPI schema for our Django REST API.',
+	'VERSION': '0.0.1',
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -74,8 +88,15 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': 'db',
+        'PORT': '5432',
+        'TEST': {
+            'NAME': 'test_db',
+        },
     }
 }
 
