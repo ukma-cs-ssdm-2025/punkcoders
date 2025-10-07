@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, dev ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, dev ]
 
 jobs:
   test:
@@ -43,6 +43,7 @@ jobs:
         pip install flake8 pytest pytest-django
 
     - name: Lint with flake8
+      working-directory: ./src/delivery-service
       run: |
         # Зупинити збірку якщо є синтаксичні помилки або невизначені імена
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
@@ -50,6 +51,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
     - name: Run Django Tests
+      working-directory: ./src/delivery-service
       env:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
         DJANGO_SETTINGS_MODULE: delivery-service.settings
@@ -58,6 +60,7 @@ jobs:
         python manage.py test
 
     - name: Check Django migrations
+      working-directory: ./src/delivery-service
       env:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
         DJANGO_SETTINGS_MODULE: delivery-service.settings
@@ -86,11 +89,12 @@ jobs:
         pip install -r requirements.txt
 
     - name: Generate OpenAPI Schema
+      working-directory: ./src/delivery-service
       env:
         DJANGO_SETTINGS_MODULE: delivery-service.settings
         SECRET_KEY: test-secret-key-for-ci
       run: |
-        python manage.py spectacular --color --file openapi-generated.yaml
+        python manage.py spectacular --color --file ../../openapi-generated.yaml
 
     - name: Copy docs to build directory
       run: |
