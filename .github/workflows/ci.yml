@@ -60,7 +60,7 @@ jobs:
     - name: Check Django migrations
       env:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
-        DJANGO_SETTINGS_MODULE: your_project.settings
+        DJANGO_SETTINGS_MODULE: delivery-service.settings
         SECRET_KEY: test-secret-key-for-ci
       run: |
         python manage.py makemigrations --check --dry-run --no-input
@@ -87,16 +87,22 @@ jobs:
 
     - name: Generate OpenAPI Schema
       env:
-        DJANGO_SETTINGS_MODULE: your_project.settings
+        DJANGO_SETTINGS_MODULE: delivery-service.settings
         SECRET_KEY: test-secret-key-for-ci
       run: |
-        python manage.py spectacular --color --file schema.yml
+        python manage.py spectacular --color --file openapi-generated.yaml
 
-    - name: Upload OpenAPI Schema
+    - name: Copy docs to build directory
+      run: |
+        mkdir -p build
+        cp -r docs/* build/
+        cp openapi-generated.yaml build/api/
+
+    - name: Upload documentation artifact
       uses: actions/upload-artifact@v3
       with:
-        name: openapi-schema
-        path: schema.yml
+        name: documentation
+        path: build/
 
   deploy-docs:
     name: Deploy Documentation to GitHub Pages
