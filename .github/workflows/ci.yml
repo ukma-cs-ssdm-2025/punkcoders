@@ -53,9 +53,13 @@ jobs:
     - name: Run Django Tests
       working-directory: ./src/delivery-service
       env:
-        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
         DJANGO_SETTINGS_MODULE: app.settings
         SECRET_KEY: test-secret-key-for-ci
+        DB_NAME: test_db
+        DB_USER: postgres
+        DB_PASSWORD: postgres
+        DB_HOST: localhost
+        DB_PORT: 5432
       run: |
         python manage.py test
 
@@ -63,7 +67,7 @@ jobs:
       working-directory: ./src/delivery-service
       env:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
-        DJANGO_SETTINGS_MODULE: app.settings
+        DJANGO_SETTINGS_MODULE: delivery-service.settings
         SECRET_KEY: test-secret-key-for-ci
       run: |
         python manage.py makemigrations --check --dry-run --no-input
@@ -91,7 +95,7 @@ jobs:
     - name: Generate OpenAPI Schema
       working-directory: ./src/delivery-service
       env:
-        DJANGO_SETTINGS_MODULE: app.settings
+        DJANGO_SETTINGS_MODULE: delivery-service.settings
         SECRET_KEY: test-secret-key-for-ci
       run: |
         python manage.py spectacular --color --file ../../openapi-generated.yaml
