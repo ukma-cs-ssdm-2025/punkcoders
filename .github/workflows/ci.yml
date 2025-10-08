@@ -39,7 +39,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install -r src/requirements.txt
         pip install flake8 pytest pytest-django
 
     - name: Lint with flake8
@@ -86,7 +86,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install -r src/requirements.txt
 
     - name: Generate OpenAPI Schema
       working-directory: ./src/delivery-service
@@ -134,5 +134,3 @@ jobs:
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v2
-
-      
