@@ -54,7 +54,7 @@ jobs:
       working-directory: ./src/delivery-service
       env:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
-        DJANGO_SETTINGS_MODULE: delivery-service.settings
+        DJANGO_SETTINGS_MODULE: app.settings
         SECRET_KEY: test-secret-key-for-ci
       run: |
         python manage.py test
