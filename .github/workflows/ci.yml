@@ -103,7 +103,7 @@ jobs:
         cp openapi-generated.yaml build/api/
 
     - name: Upload documentation artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: documentation
         path: build/
@@ -121,7 +121,7 @@ jobs:
     
     steps:
     - name: Download documentation
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: documentation
         path: ./docs-build
