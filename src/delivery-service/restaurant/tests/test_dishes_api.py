@@ -17,7 +17,7 @@ class DishesApiTests(APITestCase):
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_create_valid_returns_201_and_body(self):
-        payload = {"name": "Маргарита", "price": 199.0, "is_available": True}
+        payload = {"name": "Pizza Margherita", "price": 9.99, "is_available": True}
         resp = self.client.post(BASE, data=payload, format="json")
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
         body = resp.json()
@@ -40,4 +40,5 @@ class DishesApiTests(APITestCase):
     def test_delete_nonexistent_returns_404(self):
         resp = self.client.delete(f"{BASE}999999/")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
 
