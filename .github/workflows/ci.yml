@@ -15,9 +15,9 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_DB: test_db
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: root
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -53,18 +53,26 @@ jobs:
     - name: Run Django Tests
       working-directory: ./src/delivery-service
       env:
-        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
         DJANGO_SETTINGS_MODULE: app.settings
         SECRET_KEY: test-secret-key-for-ci
+        DB_NAME: postgres
+        DB_USER: root
+        DB_PASSWORD: root
+        DB_HOST: localhost
+        DB_PORT: 5432
       run: |
-        python manage.py test
+        python manage.py test --settings=app.settings
 
     - name: Check Django migrations
       working-directory: ./src/delivery-service
       env:
-        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
         DJANGO_SETTINGS_MODULE: app.settings
         SECRET_KEY: test-secret-key-for-ci
+        DB_NAME: postgres
+        DB_USER: root
+        DB_PASSWORD: root
+        DB_HOST: localhost
+        DB_PORT: 5432
       run: |
         python manage.py makemigrations --check --dry-run --no-input
 
@@ -93,6 +101,11 @@ jobs:
       env:
         DJANGO_SETTINGS_MODULE: app.settings
         SECRET_KEY: test-secret-key-for-ci
+        DB_NAME: postgres
+        DB_USER: root
+        DB_PASSWORD: root
+        DB_HOST: localhost
+        DB_PORT: 5432
       run: |
         python manage.py spectacular --color --file ../../openapi-generated.yaml
 
