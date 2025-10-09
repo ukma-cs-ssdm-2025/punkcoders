@@ -1,0 +1,218 @@
+openapi: 3.0.3
+info:
+  title: Food Delivery API
+  version: 0.0.1
+  description: Auto-generated OpenAPI schema for our Django REST API.
+paths:
+  /api/v0/dishes/:
+    get:
+      operationId: dishes_list
+      description: Return hardcoded example dishes (no database yet).
+      summary: List dishes
+      tags:
+      - Dishes
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Dish'
+          description: OK
+        '500':
+          description: Internal server error
+    post:
+      operationId: dishes_create
+      description: CRUD endpoints for Dish (mock data, no DB yet).
+      summary: Create a dish (mock)
+      tags:
+      - Dishes
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dish'
+          description: Created
+        '400':
+          description: Bad request
+        '401':
+          description: Not authorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal server error
+  /api/v0/dishes/{id}/:
+    get:
+      operationId: dishes_retrieve
+      description: CRUD endpoints for Dish (mock data, no DB yet).
+      summary: Retrieve a dish by ID
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Dishes
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dish'
+          description: OK
+        '404':
+          description: Dish not found
+        '500':
+          description: Internal server error
+    put:
+      operationId: dishes_update
+      description: CRUD endpoints for Dish (mock data, no DB yet).
+      summary: Update a dish (mock)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Dishes
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dish'
+          description: OK
+        '400':
+          description: Bad request
+        '401':
+          description: Not authorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Dish not found
+        '500':
+          description: Internal server error
+    delete:
+      operationId: dishes_destroy
+      description: CRUD endpoints for Dish (mock data, no DB yet).
+      summary: Delete a dish (mock)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Dishes
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Not authorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Dish not found
+        '500':
+          description: Internal server error
+  /api/v0/schema/:
+    get:
+      operationId: schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - en
+      tags:
+      - schema
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: OK
+components:
+  schemas:
+    Dish:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        price:
+          type: number
+          format: double
+        is_available:
+          type: boolean
+      required:
+      - id
+      - is_available
+      - name
+      - price
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid

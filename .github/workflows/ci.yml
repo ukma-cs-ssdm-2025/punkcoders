@@ -1,19 +1,149 @@
-name: CI
+name: CI/CD Pipeline
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
 
 jobs:
-  build:
+  test:
+    name: Run Tests
     runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: root
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+        cache: 'pip'
 
-      - name: Run tests
-        run: echo "Hello World"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r src/requirements.txt
+        pip install flake8 pytest pytest-django
+
+    - name: Lint with flake8
+      working-directory: ./src/delivery-service
+      run: |
+        # Зупинити збірку якщо є синтаксичні помилки або невизначені імена
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Попередження про складність коду (не зупиняє збірку)
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+    - name: Run Django Tests
+      working-directory: ./src/delivery-service
+      env:
+        DJANGO_SETTINGS_MODULE: app.settings
+        SECRET_KEY: test-secret-key-for-ci
+        DB_NAME: postgres
+        DB_USER: root
+        DB_PASSWORD: root
+        DB_HOST: localhost
+        DB_PORT: 5432
+      run: |
+        python manage.py test --settings=app.settings
+
+    - name: Check Django migrations
+      working-directory: ./src/delivery-service
+      env:
+        DJANGO_SETTINGS_MODULE: app.settings
+        SECRET_KEY: test-secret-key-for-ci
+        DB_NAME: postgres
+        DB_USER: root
+        DB_PASSWORD: root
+        DB_HOST: localhost
+        DB_PORT: 5432
+      run: |
+        python manage.py makemigrations --check --dry-run --no-input
+
+  build-docs:
+    name: Build Documentation
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r src/requirements.txt
+
+    - name: Generate OpenAPI Schema
+      working-directory: ./src/delivery-service
+      env:
+        DJANGO_SETTINGS_MODULE: app.settings
+        SECRET_KEY: test-secret-key-for-ci
+        DB_NAME: postgres
+        DB_USER: root
+        DB_PASSWORD: root
+        DB_HOST: localhost
+        DB_PORT: 5432
+      run: |
+        python manage.py spectacular --color --file ../../openapi-generated.yaml
+
+    - name: Copy docs to build directory
+      run: |
+        mkdir -p build
+        cp -r docs/* build/
+        cp openapi-generated.yaml build/api/
+
+    - name: Upload documentation artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: documentation
+        path: build/
+
+  deploy-docs:
+    name: Deploy Documentation to GitHub Pages
+    runs-on: ubuntu-latest
+    needs: build-docs
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    
+    steps:
+    - name: Download documentation
+      uses: actions/download-artifact@v4
+      with:
+        name: documentation
+        path: ./docs-build
+    
+    - name: Upload to GitHub Pages
+      uses: actions/upload-pages-artifact@v2
+      with:
+        path: ./docs-build
+    
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v2
