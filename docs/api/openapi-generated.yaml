@@ -23,7 +23,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Dish'
-          description: ''
+          description: OK
         '500':
           description: Internal server error
     post:
@@ -42,7 +42,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Dish'
-          description: ''
+          description: Created
         '400':
           description: Bad request
         '401':
@@ -60,7 +60,7 @@ paths:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
         required: true
       tags:
       - Dishes
@@ -74,7 +74,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Dish'
-          description: ''
+          description: OK
         '404':
           description: Dish not found
         '500':
@@ -87,7 +87,7 @@ paths:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
         required: true
       tags:
       - Dishes
@@ -101,7 +101,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Dish'
-          description: ''
+          description: OK
         '400':
           description: Bad request
         '401':
@@ -120,7 +120,7 @@ paths:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
         required: true
       tags:
       - Dishes
@@ -130,7 +130,7 @@ paths:
       - {}
       responses:
         '204':
-          description: Dish deleted
+          description: No Content
         '401':
           description: Not authorized
         '403':
@@ -186,7 +186,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: {}
-          description: ''
+          description: OK
 components:
   schemas:
     Dish:
