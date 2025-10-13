@@ -71,7 +71,7 @@ class DishViewSet(viewsets.ViewSet):
 			500: RESPONSES[500](),
 		},
 	)
-	def update(self, request, pk=None):
+	def partial_update(self, request, pk=None):
 		return Response(status=status.HTTP_401_UNAUTHORIZED)
 		# if pk is None:
 		# 	return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
@@ -92,7 +92,6 @@ class DishViewSet(viewsets.ViewSet):
 			204: RESPONSES[204]("Dish"),
 			401: RESPONSES[401](),
 			403: RESPONSES[403](),
-			404: RESPONSES[404]("Dish"),
 			500: RESPONSES[500](),
 		},
 	)
