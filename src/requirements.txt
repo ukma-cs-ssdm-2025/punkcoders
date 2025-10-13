@@ -4,3 +4,4 @@ argon2-cffi
 zxcvbn
 djangorestframework
 drf-spectacular
+pillow
