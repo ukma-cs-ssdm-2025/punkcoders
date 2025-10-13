@@ -2,17 +2,18 @@
 {% load static %}
 
 {% block extra_head %}
-    <title>{{ dish.name }} - Food Delivery</title>
+    <title>{{ name }} - Food Delivery</title>
 {% endblock %}
 
 {% block content %}
 <div class="card">
-    <a href="{% url 'dish_list' %}">← Back to all dishes</a>
+    {% comment %} <a href="{% url 'restaurant:dish_list' %}">← Back to all dishes</a> {% endcomment %}
     <div class="card-header">
         <div class="card-title">
-            <h1>{{ dish.name }}</h1>
+            <h1>{{ name }}</h1>
         </div>
-        <h2>${{ dish.price }}</h2> 
+        </img src="{{ photo_url }}" alt="{{ name }}">
+        <h2>${{ price }}</h2> 
     </div>
-    <p><strong>Description:</strong> {{ dish.description }}</p>
+    <p><strong>Description:</strong> {{ description }}</p>
 {% endblock %}     

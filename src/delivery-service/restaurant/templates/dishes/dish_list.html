@@ -10,7 +10,7 @@
         <ul>
             {% for dish in dishes %}
                 <li>
-                    <a href="{% url 'dish_detail' pk=dish.id %}">{{ dish.name }}</a>
+                    <a href="{% url 'restaurant:dish_detail' pk=dish.id %}">{{ dish.name }}</a>
                     - ${{ dish.price }}
                 </li>
             {% empty %}
