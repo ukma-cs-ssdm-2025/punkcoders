@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+    <title>Menu - Food Delivery</title>
+{% endblock %}
+
+{% block content %}
+        <h1>Menu</h1>
+        <ul>
+            {% for dish in dishes %}
+                <li>
+                    <a href="{% url 'dish_detail' pk=dish.id %}">{{ dish.name }}</a>
+                    - ${{ dish.price }}
+                </li>
+            {% empty %}
+                <li>No dishes found.</li>
+            {% endfor %}
+        </ul>
+{% endblock %}
