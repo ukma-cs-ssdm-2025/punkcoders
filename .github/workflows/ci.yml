@@ -52,7 +52,7 @@ jobs:
 
       # --- НОВИЙ КРОК ЛІНТИНГУ та ПЕРЕВІРКИ ФОРМАТУВАННЯ ---
       - name: Code Linting and Formatting Check
-        working-directory: ./src/delivery-service
+        working-directory: ./src/delivery_service
         run: |
           echo "Перевірка форматування за допомогою Black"
           # Запуск black у режимі перевірки (dry-run), щоб не змінювати файли
@@ -68,7 +68,7 @@ jobs:
       # --- КІНЕЦЬ КРОКУ ЛІНТИНГУ ---
 
       - name: Run Django Tests
-        working-directory: ./src/delivery-service
+        working-directory: ./src/delivery_service
         env:
           DJANGO_SETTINGS_MODULE: app.settings
           SECRET_KEY: test-secret-key-for-ci
@@ -81,7 +81,7 @@ jobs:
           python manage.py test --settings=app.settings
 
       - name: Check Django migrations
-        working-directory: ./src/delivery-service
+        working-directory: ./src/delivery_service
         env:
           DJANGO_SETTINGS_MODULE: app.settings
           SECRET_KEY: test-secret-key-for-ci
@@ -115,7 +115,7 @@ jobs:
           pip install -r src/requirements.txt
 
       - name: Generate OpenAPI Schema
-        working-directory: ./src/delivery-service
+        working-directory: ./src/delivery_service
         env:
           DJANGO_SETTINGS_MODULE: app.settings
           SECRET_KEY: test-secret-key-for-ci
