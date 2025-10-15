@@ -27,5 +27,5 @@ urlpatterns = [
     path("api/v0/docs/", SpectacularSwaggerView.as_view(url_name="schema")),
     path("api/v0/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
     # Web pages
-    path("", include("restaurant.urls.web")),
+    path("", include("restaurant.urls.web", namespace="restaurant")),
 ]

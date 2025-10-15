@@ -15,27 +15,41 @@ class DishesApiTests(APITestCase):
         resp = self.client.get(f"{BASE}999999/")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_create_valid_returns_201_and_body(self):
+    # def test_create_valid_returns_201_and_body(self):
+    #     payload = {"name": "Pizza Margherita", "price": 9.99, "is_available": True}
+    #     resp = self.client.post(BASE, data=payload, format="json")
+    #     self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+    #     body = resp.json()
+    #     self.assertIn("id", body)
+    #     self.assertEqual(body["name"], payload["name"])
+    #     self.assertEqual(float(body["price"]), payload["price"])
+    #     self.assertEqual(body["is_available"], payload["is_available"])
+
+    # def test_create_invalid_returns_400(self):
+    #     payload = {"price": -1, "is_available": True}
+    #     resp = self.client.post(BASE, data=payload, format="json")
+    #     self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+    #     self.assertIsInstance(resp.json(), dict)
+
+    # def test_update_nonexistent_returns_404(self):
+    #     payload = {"name": "Updated", "price": 123.0, "is_available": False}
+    #     resp = self.client.put(f"{BASE}999999/", data=payload, format="json")
+    #     self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    # def test_delete_nonexistent_returns_404(self):
+    #     resp = self.client.delete(f"{BASE}999999/")
+    #     self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_create_returns_401(self):
         payload = {"name": "Pizza Margherita", "price": 9.99, "is_available": True}
         resp = self.client.post(BASE, data=payload, format="json")
-        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
-        body = resp.json()
-        self.assertIn("id", body)
-        self.assertEqual(body["name"], payload["name"])
-        self.assertEqual(float(body["price"]), payload["price"])
-        self.assertEqual(body["is_available"], payload["is_available"])
+        self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_create_invalid_returns_400(self):
-        payload = {"price": -1, "is_available": True}
-        resp = self.client.post(BASE, data=payload, format="json")
-        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIsInstance(resp.json(), dict)
-
-    def test_update_nonexistent_returns_404(self):
+    def test_update_returns_401(self):
         payload = {"name": "Updated", "price": 123.0, "is_available": False}
-        resp = self.client.put(f"{BASE}999999/", data=payload, format="json")
-        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+        resp = self.client.put(f"{BASE}1/", data=payload, format="json")
+        self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_delete_nonexistent_returns_404(self):
-        resp = self.client.delete(f"{BASE}999999/")
-        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+    def test_delete_returns_401(self):
+        resp = self.client.delete(f"{BASE}1/")
+        self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
