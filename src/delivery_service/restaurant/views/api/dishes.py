@@ -1,9 +1,11 @@
 # restaurant/views/api/dishes.py
-from drf_spectacular.utils import OpenApiResponse, extend_schema
+from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 from restaurant.serializers.dishes import DishSerializer
-from restaurant.services.dishes import create_dish, delete_dish, get_all_dishes, get_dish_by_id, has_dish, update_dish
+from restaurant.services.dishes import get_all_dishes, get_dish_by_id
+
+from .responses import RESPONSES
 
 
 @extend_schema(tags=["Dishes"])
@@ -15,7 +17,7 @@ class DishViewSet(viewsets.ViewSet):
         description="Return hardcoded example dishes (no database yet).",
         responses={
             200: DishSerializer(many=True),
-            500: OpenApiResponse(description="Internal server error"),
+            500: RESPONSES[500](),
         },
     )
     def list(self, request):
@@ -27,8 +29,8 @@ class DishViewSet(viewsets.ViewSet):
         summary="Retrieve a dish by ID",
         responses={
             200: DishSerializer,
-            404: OpenApiResponse(description="Dish not found"),
-            500: OpenApiResponse(description="Internal server error"),
+            404: RESPONSES[404]("Dish"),
+            500: RESPONSES[500](),
         },
     )
     def retrieve(self, request, pk=None):
@@ -44,59 +46,61 @@ class DishViewSet(viewsets.ViewSet):
         summary="Create a dish (mock)",
         responses={
             201: DishSerializer,
-            400: OpenApiResponse(description="Bad request"),
-            401: OpenApiResponse(description="Not authorized"),
-            403: OpenApiResponse(description="Forbidden"),
-            500: OpenApiResponse(description="Internal server error"),
+            400: RESPONSES[400](),
+            401: RESPONSES[401](),
+            403: RESPONSES[403](),
+            500: RESPONSES[500](),
         },
     )
     def create(self, request):
-        serializer = DishSerializer(data=request.data)
-        if serializer.is_valid():
-            # Mock: assign a fake ID and echo back
-            data = create_dish(serializer.validated_data.copy())
-            return Response(data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+        # serializer = DishSerializer(data=request.data)
+        # if serializer.is_valid():
+        # 	# Mock: assign a fake ID and echo back
+        # 	data = create_dish(serializer.validated_data.copy())
+        # 	return Response(data, status=status.HTTP_201_CREATED)
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @extend_schema(
         summary="Update a dish (mock)",
         responses={
             200: DishSerializer,
-            400: OpenApiResponse(description="Bad request"),
-            401: OpenApiResponse(description="Not authorized"),
-            403: OpenApiResponse(description="Forbidden"),
-            404: OpenApiResponse(description="Dish not found"),
-            500: OpenApiResponse(description="Internal server error"),
+            400: RESPONSES[400](),
+            401: RESPONSES[401](),
+            403: RESPONSES[403](),
+            404: RESPONSES[404]("Dish"),
+            500: RESPONSES[500](),
         },
     )
-    def update(self, request, pk=None):
-        if pk is None:
-            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
-        if not has_dish(pk):
-            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
-        serializer = DishSerializer(data=request.data)
-        if serializer.is_valid():
-            data = update_dish(pk, serializer.validated_data.copy())
-            return Response(data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def partial_update(self, request, pk=None):
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+        # if pk is None:
+        # 	return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        # if not has_dish(pk):
+        # 	return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        # serializer = DishSerializer(data=request.data)
+        # if serializer.is_valid():
+        # 	data = update_dish(pk, serializer.validated_data.copy())
+        # 	return Response(data, status=status.HTTP_200_OK)
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # def partial_update(self, request, pk=None):
     # 	pass
 
     @extend_schema(
-        summary="Delete a dish (mock)",
+        summary="Delete a dish",
         responses={
-            204: OpenApiResponse(description="Dish deleted"),
-            401: OpenApiResponse(description="Not authorized"),
-            403: OpenApiResponse(description="Forbidden"),
-            404: OpenApiResponse(description="Dish not found"),
-            500: OpenApiResponse(description="Internal server error"),
+            204: RESPONSES[204]("Dish"),
+            401: RESPONSES[401](),
+            403: RESPONSES[403](),
+            500: RESPONSES[500](),
         },
     )
     def destroy(self, request, pk=None):
-        if pk is None:
-            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
-        if not has_dish(pk):
-            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
-        delete_dish(pk)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+        # if pk is None:
+        # 	return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        # if not has_dish(pk):
+        # 	return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        # delete_dish(pk)
+        # return Response(status=status.HTTP_204_NO_CONTENT)
