@@ -21,12 +21,11 @@ repos:
 
   # 3. Flake8 (Лінтинг коду)
   - repo: https://github.com/pycqa/flake8
-    rev: 7.0.0 # Використовуйте останню стабільну версію
+    rev: 7.3.0 # Використовуйте останню стабільну версію
     hooks:
       - id: flake8
         # Додаємо необхідні розширення: bugbear, bandit та mccabe
         additional_dependencies:
-          - flake8-pyproject==1.2.3
           - flake8-bugbear==24.4.26
           - flake8-bandit==4.1.1
           - mccabe==0.7.0
