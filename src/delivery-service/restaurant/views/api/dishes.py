@@ -3,7 +3,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 from restaurant.serializers.dishes import DishSerializer
-from restaurant.services.dishes import get_all_dishes, get_dish_by_id
+from restaurant.services.dishes import get_dishes, get_dish_by_id
 
 from .responses import RESPONSES
 
@@ -21,7 +21,7 @@ class DishViewSet(viewsets.ViewSet):
         },
     )
     def list(self, request):
-        data = get_all_dishes()
+        data = get_dishes()
         serializer = DishSerializer(data, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

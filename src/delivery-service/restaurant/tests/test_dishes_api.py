@@ -45,9 +45,9 @@ class DishesApiTests(APITestCase):
         resp = self.client.post(BASE, data=payload, format="json")
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_update_returns_401(self):
+    def test_partial_update_returns_401(self):
         payload = {"name": "Updated", "price": 123.0, "is_available": False}
-        resp = self.client.put(f"{BASE}1/", data=payload, format="json")
+        resp = self.client.patch(f"{BASE}1/", data=payload, format="json")
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_delete_returns_401(self):
