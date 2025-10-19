@@ -3,6 +3,7 @@ psycopg[binary]
 argon2-cffi
 zxcvbn
 djangorestframework
+djangorestframework-simplejwt
 drf-spectacular
 pillow
 python-dotenv
