@@ -53,7 +53,11 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": (
         ["rest_framework.renderers.JSONRenderer"] + (["rest_framework.renderers.BrowsableAPIRenderer"] if DEBUG else [])
     ),
-    "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        # for browsable API - disable in production!
+        "rest_framework.authentication.SessionAuthentication",
+    ),
 }
 
 SPECTACULAR_SETTINGS = {

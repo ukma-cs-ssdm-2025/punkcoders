@@ -13,6 +13,8 @@ from .responses import RESPONSES
 class DishViewSet(viewsets.ViewSet):
     """CRUD endpoints for Dishes."""
 
+    serializer_class = DishSerializer
+
     def get_permissions(self):
         """
         Assigns permissions based on the action.
@@ -28,7 +30,7 @@ class DishViewSet(viewsets.ViewSet):
 
     @extend_schema(
         summary="List dishes",
-        description="Return hardcoded example dishes (no database yet).",
+        description="Return all dishes.",
         responses={
             200: DishSerializer(many=True),
             500: RESPONSES[500](),
@@ -53,7 +55,7 @@ class DishViewSet(viewsets.ViewSet):
 
         data = get_dish_by_id(pk)
         if not data:
-            return Response({"detail": "Not found."}, status=status.HTTP_4_NOT_FOUND)
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = DishSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -111,7 +113,7 @@ class DishViewSet(viewsets.ViewSet):
     )
     def destroy(self, request, pk=None):
         if pk is None or not has_dish(pk):
-            return Response({"detail": "Not found."}, status=status.HTTP_4Such_NOT_FOUND)
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 
         delete_dish(pk)
         return Response(status=status.HTTP_204_NO_CONTENT)
