@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from restaurant.models import Category, Dish, DishIngredient, Ingredient
+from restaurant.services.dishes import create_dish, update_dish
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -10,6 +11,7 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ["id", "name", "slug"]
+        read_only_fields = ["slug"]
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -75,3 +77,21 @@ class DishSerializer(serializers.ModelSerializer):
             "ingredients",
             "ingredients_data",  # For writing only
         ]
+
+    def create(self, validated_data):
+        """
+        This is the new, correct place to call the service.
+        DRF's ModelViewSet calls serializer.save(), which in turn calls this method.
+        """
+        # print("\n\nIn DishViewSet.create with data:", validated_data)
+        # pdb.set_trace()
+        dish = create_dish(validated_data)
+        # print("Created dish:", dish)
+        # print("\n\n")
+        return dish
+
+    def update(self, instance, validated_data):
+        """
+        This is the new, correct place to call the update service.
+        """
+        return update_dish(instance, validated_data)

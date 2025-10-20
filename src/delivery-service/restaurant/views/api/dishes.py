@@ -3,7 +3,11 @@ from rest_framework import parsers, viewsets
 from rest_framework.permissions import AllowAny
 from restaurant.models import Category, Dish, Ingredient
 from restaurant.serializers.dishes import CategorySerializer, DishSerializer, IngredientSerializer
-from restaurant.services.dishes import create_dish, get_dishes_queryset, update_dish
+from restaurant.services.dishes import get_dishes_queryset  # , create_dish, update_dish
+
+# import pdb
+# from rest_framework.response import Response
+# from rest_framework import status
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -65,11 +69,3 @@ class DishViewSet(viewsets.ModelViewSet):
                 sort_by=self.request.query_params.get("sort"),
             )
         return super().get_queryset()
-
-    def perform_create(self, serializer):
-        # We override this to pass the validated data to our service layer
-        create_dish(serializer.validated_data)
-
-    def perform_update(self, serializer):
-        # We override this to pass the instance and data to our service layer
-        update_dish(serializer.instance, serializer.validated_data)
