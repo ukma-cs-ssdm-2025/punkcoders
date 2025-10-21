@@ -156,6 +156,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Set Argon2id as the preferred password hashing algorithm
 PASSWORD_HASHERS = [
+    "accounts.hashers.MyArgon2PasswordHasher",
     "django.contrib.auth.hashers.Argon2PasswordHasher",
     "django.contrib.auth.hashers.PBKDF2PasswordHasher",
     "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
