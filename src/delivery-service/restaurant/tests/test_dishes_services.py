@@ -1,15 +1,42 @@
+import shutil
+from pathlib import Path
+
 from accounts.models import User
+from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from restaurant.models import Category, Dish, Ingredient
 from restaurant.services.dishes import create_dish, update_dish
 
+TEST_MEDIA_ROOT = Path(settings.BASE_DIR) / "test_media"
 
+
+@override_settings(MEDIA_ROOT=str(TEST_MEDIA_ROOT))
 class DishServiceTests(TestCase):
     """
     Tests for the dish service functions. These tests operate directly
     on the service layer, bypassing the API views.
     """
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        This method runs once before any tests in this class.
+        It creates the temporary media directory.
+        """
+        super().setUpClass()
+        # We explicitly create the test_media directory
+        TEST_MEDIA_ROOT.mkdir(parents=True, exist_ok=True)
+
+    @classmethod
+    def tearDownClass(cls):
+        """
+        This method runs once after all tests in this class are complete.
+        It cleans up the temporary media directory and all its contents.
+        """
+        if TEST_MEDIA_ROOT.exists():
+            shutil.rmtree(TEST_MEDIA_ROOT)
+        super().tearDownClass()
 
     def setUp(self):
         """Set up initial data for all tests."""
