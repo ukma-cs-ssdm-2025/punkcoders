@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import ValidationError, validate_password
 from rest_framework.test import APITestCase
 
 User = get_user_model()
@@ -53,3 +54,24 @@ class SecurityTests(APITestCase):
         self.assertGreaterEqual(params["m"], 12228)  # memory_cost
         self.assertGreaterEqual(params["t"], 3)  # time_cost
         self.assertGreaterEqual(params["p"], 1)  # parallelism
+
+    def test_zxcvbn_works(self):
+        """
+        Verify that the zxcvbn password validator is functional.
+        """
+        password_0 = "carpenter"
+        password_1 = "defghi6789"
+        password_2 = "R0$38uD99"
+        password_3 = "asdfghju7654rewq"
+        password_4 = "q3p948hgvqp3i4hbnarlmb309q3hi549eirjb"
+
+        with self.assertRaises(ValidationError):
+            validate_password(password_0)
+        with self.assertRaises(ValidationError):
+            validate_password(password_1)
+        with self.assertRaises(ValidationError):
+            validate_password(password_2)
+
+        # This should not raise an exception
+        validate_password(password_3)
+        validate_password(password_4)

@@ -30,5 +30,5 @@ exclude =
 # in any file inside a 'tests' directory or
 # in any file that starts with 'test_'.
 per-file-ignores =
-    */tests/*:S106
-    test_*.py:S106
+    */tests/*:S106,S105
+    test_*.py:S106,S105
