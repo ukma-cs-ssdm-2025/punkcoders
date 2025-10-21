@@ -22,4 +22,4 @@ class SecurityTests(APITestCase):
             role=User.Role.CUSTOMER,
         )
         # The stored password string should start with the algorithm identifier.
-        self.assertTrue(user.password.startswith("$argon2id$"))
+        self.assertTrue(user.password.startswith("argon2$argon2id$"))
