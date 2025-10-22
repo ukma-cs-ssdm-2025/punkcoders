@@ -22,7 +22,7 @@ def dish_list(request):
     # Отримання списку страв через сервісний шар
     # Примітка: Логіку has_ingredients та lacks_ingredients ми поки ігноруємо у view,
     # оскільки вона вимагає складнішого парсингу ID.
-    dishes = dish_service.get_dishes(
+    dishes = dish_service.get_dishes_queryset(
         category_slug=category_slug,
         search_term=search_term,
         sort_by=sort_by,

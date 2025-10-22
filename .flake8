@@ -25,3 +25,10 @@ exclude =
     build,
     dist,
     **/migrations/*.py
+
+# This tells flake8 to ignore S106 (hardcoded password)
+# in any file inside a 'tests' directory or
+# in any file that starts with 'test_'.
+per-file-ignores =
+    */tests/*:S106,S105
+    test_*.py:S106,S105
