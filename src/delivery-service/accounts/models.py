@@ -3,7 +3,6 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 
 
-# --- This is the new, important part ---
 class CustomUserManager(BaseUserManager):
     """
     Custom user model manager to handle role-based
