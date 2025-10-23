@@ -3,7 +3,6 @@
 # 1. pip install pre-commit
 # 2. pre-commit install
 
-
 repos:
   # 1. Black (Форматування коду)
   - repo: https://github.com/psf/black
