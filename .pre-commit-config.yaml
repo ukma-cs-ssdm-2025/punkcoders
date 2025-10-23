@@ -1,0 +1,32 @@
+# Цей файл використовується для налаштування pre-commit хуків.
+# Щоб його активувати, виконайте:
+# 1. pip install pre-commit
+# 2. pre-commit install
+
+repos:
+  # 1. Black (Форматування коду)
+  - repo: https://github.com/psf/black
+    rev: 24.4.2 # Використовуйте останню стабільну версію
+    hooks:
+      - id: black
+        language_version: python3.12 # Вкажіть вашу версію Python
+
+  # 2. isort (Сортування імпортів)
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2 # Використовуйте останню стабільну версію
+    hooks:
+      - id: isort
+        name: isort (python)
+        # isort автоматично знайде конфігурацію у pyproject.toml
+
+  # 3. Flake8 (Лінтинг коду)
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.3.0 # Використовуйте останню стабільну версію
+    hooks:
+      - id: flake8
+        # Додаємо необхідні розширення: bugbear, bandit та mccabe
+        additional_dependencies:
+          - flake8-bugbear==24.4.26
+          - flake8-bandit==4.1.1
+          - mccabe==0.7.0
+        # Flake8 автоматично знайде конфігурацію у pyproject.toml
