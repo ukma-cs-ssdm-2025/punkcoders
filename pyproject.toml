@@ -1,0 +1,40 @@
+[tool.black] 
+line-length = 120 
+target-version = ['py312'] 
+include = '.pyi?$' 
+exclude = '''  /( .git | .hg | .mypy_cache | .tox | .venv | _build | build | dist )/ '''
+
+[tool.isort]
+profile = "black"
+line_length = 120
+known_first_party = ["delivery_service"]
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+skip_glob = ["**/migrations/*.py"] # Ігнорування міграцій Django
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+
+[tool.flake8]
+# Flake8 налаштування для сумісності з Black та додавання розширень
+
+max-line-length = 120
+extend-ignore = [
+"E203",  # Пробіл перед ':' (Конфліктує з Black)
+"W503",  # Перенесення рядка перед бінарним оператором (Конфліктує з Black)
+"E501",  # Рядок задовгий (контролюється Black, але встановлюємо для узгодженості)
+"E731",  # Не присвоюйте лямбда-вираз, використовуйте def
+]
+max-complexity = 10 # mccabe - складність функцій
+# select: C (mccabe), E/W (pycodestyle), F (pyflakes), B (bugbear), S (bandit)
+
+select = ["C", "E", "F", "W", "B", "S"]
+exclude = [
+".git",
+"pycache",
+"venv",
+"build",
+"dist",
+"**/migrations/*.py", # Ігнорування міграцій Django
+]

@@ -1,0 +1,209 @@
+erDiagram
+app_user ||--o{ user_profile : has
+app_user ||--o{ address : saves
+app_user ||--o{ order : places
+
+user_profile ||--|| courier_profile : may_have
+
+restaurant ||--o{ category : has
+category ||--o{ dish : groups
+
+%% NEW: ingredients for dishes
+ingredient ||--o{ dish_ingredient : appears_in
+dish ||--o{ dish_ingredient : composed_of
+
+restaurant ||--o{ order : receives
+order ||--o{ order_item : contains
+
+courier_profile ||--o{ order : delivers
+
+order ||--o{ payment : has
+promotion ||--o{ order_promotion : applied_to
+order ||--o{ order_promotion : uses
+
+app_user {
+bigint id PK
+citext email
+text password_hash
+text full_name
+text phone
+timestamptz created_at
+}
+user_profile {
+bigint id PK
+bigint user_id FK
+text role "client | restaurant_owner | courier | admin"
+}
+address {
+bigint id PK
+bigint user_id FK
+text line1
+text line2
+text city
+float lat
+float lon
+}
+restaurant {
+bigint id PK
+bigint owner_id FK
+bigint address_id FK
+text name
+bool is_active
+numeric rating_avg
+jsonb opening_hours_json
+}
+category {
+bigint id PK
+bigint restaurant_id FK
+text name
+int position
+}
+dish {
+bigint id PK
+bigint restaurant_id FK
+bigint category_id FK
+text name
+text description
+numeric price
+bool is_available
+text image_url
+}
+ingredient {
+bigint dish_id FK
+text name_snapshot
+numeric unit_price
+int qty
+numeric line_total
+}
+promotion {
+bigint id PK
+text code
+text discount_type "PERCENT | FIXED"
+numeric value
+numeric min_subtotal
+bigint restaurant_id FK
+timestamptz valid_from
+timestamptz valid_to
+int usage_limit
+int used_count
+}
+order_promotion {
+bigint order_id FK
+bigint promotion_id FK
+numeric applied_amount
+}
+payment {
+bigint id PK
+bigint order_id FK
+text provider
+text provider_intent_id
+numeric amount
+text currency
+text status
+timestamptz created_at
+}
+```mermaid
+erDiagram
+app_user ||--o{ user_profile : has
+app_user ||--o{ address : saves
+app_user ||--o{ order : places
+
+user_profile ||--|| courier_profile : may_have
+
+restaurant ||--o{ category : has
+category ||--o{ dish : groups
+
+restaurant ||--o{ order : receives
+order ||--o{ order_item : contains
+
+courier_profile ||--o{ order : delivers
+
+order ||--o{ payment : has
+promotion ||--o{ order_promotion : applied_to
+order ||--o{ order_promotion : uses
+
+app_user {
+bigint id PK
+citext email
+text password_hash
+text full_name
+text phone
+timestamptz created_at
+}
+user_profile {
+bigint id PK
+bigint user_id FK
+text role "client | restaurant_owner | courier | admin"
+}
+address {
+text name
+text description
+numeric price
+bool is_available
+text image_url
+}
+courier_profile {
+bigint id PK
+bigint user_id FK
+bool is_online
+bool is_busy
+text vehicle_type "bike | car | foot"
+float last_lat
+float last_lon
+timestamptz last_seen_at
+}
+order {
+bigint id PK
+bigint client_id FK
+bigint restaurant_id FK
+bigint courier_id FK
+text status "CREATED|ACCEPTED|COOKING|PICKED_UP|DELIVERED|CANCELED"
+text payment_status "PENDING|AUTHORIZED|CAPTURED|FAILED|REFUNDED"
+bigint delivery_address_id FK
+numeric subtotal
+numeric delivery_fee
+numeric discount_total
+numeric tips
+numeric tax_total
+numeric total
+text notes
+text canceled_reason
+timestamptz created_at
+timestamptz updated_at
+}
+order_item {
+bigint id PK
+bigint order_id FK
+bigint dish_id FK
+text name_snapshot
+numeric unit_price
+int qty
+numeric line_total
+}
+promotion {
+bigint id PK
+text code
+text discount_type "PERCENT | FIXED"
+numeric value
+numeric min_subtotal
+bigint restaurant_id FK
+timestamptz valid_from
+timestamptz valid_to
+int usage_limit
+int used_count
+}
+order_promotion {
+bigint order_id FK
+bigint promotion_id FK
+numeric applied_amount
+}
+payment {
+bigint id PK
+bigint order_id FK
+text provider
+text provider_intent_id
+numeric amount
+text currency
+text status
+timestamptz created_at
+}x
