@@ -37,8 +37,10 @@ apiClient.interceptors.response.use(
 
     // 4. Check for the specific error: 401 (Unauthorized)
     // We also check for `!originalRequest._retry` to prevent infinite loops
-    if (error.response.status === 401 && !originalRequest._retry) {
+    if (error.response && error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true; // Mark this request as having been retried
+
+      console.log("Access token expired, attempting to refresh...");
 
       try {
         // 5. Try to get a new access token using the refresh token

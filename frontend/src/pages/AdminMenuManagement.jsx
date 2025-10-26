@@ -1,34 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import apiClient from '../api';
 
-const initialMenuItems = [
-  { 
-    id: 1, 
-    name: 'Піца "Маргарита"', 
-    description: 'Класична піца з томатним соусом, моцарелою та базиліком.',
-    price: 150.00,
-    category: 'pizza',
-    photoUrl: 'content/margarita-pizza.png',
-    isAvailable: true 
-  },
-  { 
-    id: 2, 
-    name: 'Піца "Пепероні"', 
-    description: 'Піца з гострою ковбаскою пепероні.',
-    price: 180.00,
-    category: 'pizza',
-    photoUrl: 'content/sausage-pizza.png',
-    isAvailable: true 
-  },
-  { 
-    id: 3, 
-    name: 'Кока-Кола', 
-    description: '0.5л, холодна.',
-    price: 30.00,
-    category: 'drinks',
-    photoUrl: 'content/coke.png',
-    isAvailable: false 
-  },
-];
+// const initialMenuItems = [
+//   { 
+//     id: 1, 
+//     name: 'Піца "Маргарита"', 
+//     description: 'Класична піца з томатним соусом, моцарелою та базиліком.',
+//     price: 150.00,
+//     category: 'pizza',
+//     photoUrl: 'content/margarita-pizza.png',
+//     isAvailable: true 
+//   },
+//   { 
+//     id: 2, 
+//     name: 'Піца "Пепероні"', 
+//     description: 'Піца з гострою ковбаскою пепероні.',
+//     price: 180.00,
+//     category: 'pizza',
+//     photoUrl: 'content/sausage-pizza.png',
+//     isAvailable: true 
+//   },
+//   { 
+//     id: 3, 
+//     name: 'Кока-Кола', 
+//     description: '0.5л, холодна.',
+//     price: 30.00,
+//     category: 'drinks',
+//     photoUrl: 'content/coke.png',
+//     isAvailable: false 
+//   },
+// ];
 
 
 const defaultFormState = {
@@ -36,19 +37,60 @@ const defaultFormState = {
   name: '',
   description: '',
   price: '',
-  category: 'pizza',
-  photoUrl: '',
+  category: '1',
   isAvailable: true
 };
 
 function AdminMenuManagement() {
 
-  const [menuItems, setMenuItems] = useState(initialMenuItems);
-  
-  const [formData, setFormData] = useState(defaultFormState);
-  
-  const [editingId, setEditingId] = useState(null);
+  useEffect(() => {
+    fetchDishes();
+  }, []);
 
+  const [menuItems, setMenuItems] = useState([]);
+  const [formData, setFormData] = useState(defaultFormState);
+  const [editingId, setEditingId] = useState(null);
+  const [photoFile, setPhotoFile] = useState(null);
+
+  const fetchDishes = async () => {
+    try {
+      const response = await apiClient.get('/dishes/');
+      setMenuItems(response.data);
+    } catch (error) {
+      console.error('Error fetching dishes:', error);
+    }
+  }
+
+  const createDish = async (dish) => {
+    try {
+      const response = await apiClient.post('/dishes/', dish);
+      setMenuItems(prevItems => [response.data, ...prevItems]);
+    } catch (error) {
+      console.error('Error creating dish:', error);
+    }
+  }
+
+  const updateDish = async (id, updatedDish) => {
+    try {
+      const response = await apiClient.patch(`/dishes/${id}/`, updatedDish);
+      setMenuItems(prevItems => 
+        prevItems.map(item => 
+          item.id === id ? response.data : item
+        )
+      );
+    } catch (error) {
+      console.error('Error updating dish:', error);
+    }
+  }
+
+  const deleteDish = async (id) => {
+    try {
+      await apiClient.delete(`/dishes/${id}/`);
+      setMenuItems(prevItems => prevItems.filter(item => item.id !== id));
+    } catch (error) {
+      console.error('Error deleting dish:', error);
+    }
+  }
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -62,19 +104,32 @@ function AdminMenuManagement() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    const dishData = new FormData();
+
+    // 2. Add all the text/number/boolean fields from state
+    dishData.append('name', formData.name);
+    dishData.append('description', formData.description);
+    dishData.append('price', formData.price);
+    dishData.append('isAvailable', formData.isAvailable);
+    
+    // CRITICAL: Send 'category_id' as expected by your serializer
+    dishData.append('category_id', formData.category);
+
+    // 3. Add the file *only if* one was selected
+    if (photoFile) {
+      dishData.append('photo', photoFile);
+    }
+
     if (editingId) {
-      setMenuItems(prevItems => 
-        prevItems.map(item => 
-          item.id === editingId ? { ...formData, id: editingId, price: parseFloat(formData.price) } : item
-        )
-      );
+      updateDish(editingId, dishData);//, price: parseFloat(formData.price) });
+      // setMenuItems(prevItems => 
+      //   prevItems.map(item => 
+      //     item.id === editingId ? { ...formData, id: editingId, price: parseFloat(formData.price) } : item
+      //   )
+      // );
     } else {
-      const newItem = {
-        ...formData,
-        id: Date.now(),
-        price: parseFloat(formData.price)
-      };
-      setMenuItems(prevItems => [newItem, ...prevItems]);
+      createDish(dishData);
+      // setMenuItems(prevItems => [newItem, ...prevItems]);
     }
     
 
@@ -90,7 +145,8 @@ function AdminMenuManagement() {
 
   const handleDelete = (id) => {
     if (window.confirm('Ви впевнені, що хочете видалити цю страву?')) {
-      setMenuItems(prevItems => prevItems.filter(item => item.id !== id));
+      deleteDish(id);
+      // setMenuItems(prevItems => prevItems.filter(item => item.id !== id));
     }
   };
 
@@ -158,14 +214,13 @@ function AdminMenuManagement() {
           </div>
 
           <div className="form-group form-group-full">
-            <label htmlFor="photoUrl">URL фото</label>
+            <label htmlFor="photo">Фото (необов'язково)</label>
             <input
-              type="text"
-              id="photoUrl"
-              name="photoUrl"
-              value={formData.photoUrl}
-              onChange={handleInputChange}
-              required
+              type="file"
+              id="photo"
+              name="photo"
+              accept="image/*"
+              onChange={(e) => setPhotoFile(e.target.files[0] || null)}
             />
           </div>
           
