@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "restaurant",
     "accounts",
-    "corsheaders.middleware.CorsMiddleware",
+    "corsheaders",
 ]
 
 # Allow the React development server to access the API
@@ -81,6 +81,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "app.urls"
