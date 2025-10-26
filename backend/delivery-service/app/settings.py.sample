@@ -105,15 +105,15 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': 'db',
-        'PORT': '5432',
-        'TEST': {
-            'NAME': 'test_db',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("PG_DATABASE", "postgres"), # Use PG_DATABASE or DB_NAME if defined in .env
+        "USER": os.environ.get("PG_USER", "postgres"),     # Use PG_USER, fallback to safe 'postgres'
+        "PASSWORD": os.environ.get("PG_PASSWORD", "postgres"), # Use PG_PASSWORD, fallback to safe 'postgres'
+        "HOST": os.environ.get("DB_HOST", "db"),
+        "PORT": os.environ.get("PG_PORT", "5432"),
+        "TEST": {
+            "NAME": "test_db",
         },
     }
 }
