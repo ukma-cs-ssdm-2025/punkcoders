@@ -37,7 +37,7 @@ const defaultFormState = {
   name: '',
   description: '',
   price: '',
-  category: '1',
+  category: '',
   isAvailable: true
 };
 
@@ -45,9 +45,11 @@ function AdminMenuManagement() {
 
   useEffect(() => {
     fetchDishes();
+    fetchCategories();
   }, []);
 
   const [menuItems, setMenuItems] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState(defaultFormState);
   const [editingId, setEditingId] = useState(null);
   const [photoFile, setPhotoFile] = useState(null);
@@ -60,6 +62,23 @@ function AdminMenuManagement() {
       console.error('Error fetching dishes:', error);
     }
   }
+
+  const fetchCategories = async () => {
+    try {
+      const response = await apiClient.get('/categories/');
+      setCategories(response.data); // Save categories in state
+      console.log('Fetched categories:', response.data);
+      // Set the form's default category to the first one in the list
+      if (response.data.length > 0) {
+        setFormData(prevData => ({
+          ...prevData,
+          category: response.data[0].id
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
 
   const createDish = async (dish) => {
     try {
@@ -153,6 +172,9 @@ function AdminMenuManagement() {
   const clearForm = () => {
     setFormData(defaultFormState);
     setEditingId(null);
+    setPhotoFile(null);
+    const fileInput = document.getElementById('photo');
+    if (fileInput) fileInput.value = null;
   };
   
   return (
@@ -207,9 +229,11 @@ function AdminMenuManagement() {
               value={formData.category}
               onChange={handleInputChange}
             >
-              <option value="pizza">🍕 Піца</option>
-              <option value="drinks">🥤 Напої</option>
-              <option value="sauces">🧂 Соуси</option>
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
             </select>
           </div>
 
