@@ -1,13 +1,16 @@
 import pytest
 from django.apps import apps
 
+
 @pytest.mark.django_db
 def test_restaurant_app_registered():
     assert apps.is_installed("restaurant")
 
+
 def test_admin_login_page_accessible(client):
     resp = client.get("/admin/login/")
     assert resp.status_code == 200
+
 
 def test_openapi_schema_available(client):
     # DRF Spectacular schema endpoint
