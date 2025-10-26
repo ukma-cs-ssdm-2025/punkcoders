@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
 import AdminMenuManagement from './AdminMenuManagement';
+import AdminCategoryManagement from './AdminCategoryManagement';
 import AdminReports from './AdminReports';
 import AdminSettings from './AdminSettings';
 import '../Admin.css';
@@ -14,6 +15,9 @@ function AdminPage() {
           <ul>
             <li>
               <NavLink to="/admin/menu">Керування меню</NavLink>
+            </li>
+            <li>
+              <NavLink to="/admin/categories">Категорії</NavLink>
             </li>
             <li>
               <NavLink to="/admin/reports">Звіти</NavLink>
@@ -35,6 +39,8 @@ function AdminPage() {
           
           <Route path="menu" element={<AdminMenuManagement />} /> 
           
+          <Route path="categories" element={<AdminCategoryManagement />} />
+
           <Route path="reports" element={<AdminReports />} /> 
           
           <Route path="settings" element={<AdminSettings />} /> 
