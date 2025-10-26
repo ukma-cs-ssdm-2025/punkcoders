@@ -1,19 +1,31 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './LoginPage.css'; 
 
 function LoginPage() {
-  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    console.log('Спроба входу з даними:');
-    console.log('Email:', email);
-    console.log('Password:', password);
+  const navigate = useNavigate();
 
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log('Спроба входу з даними:', email, password);
+
+    if (email === "manager@clickeat.com" && password === "12345") {
+      
+      const fakeToken = "my-super-secret-manager-token-12345";
+      
+      localStorage.setItem('managerAuthToken', fakeToken);
+      
+      alert('Вхід успішний! Токен збережено в localStorage.');
+      
+      navigate('/admin/menu'); 
+
+    } else {
+      alert('Неправильний email або пароль (спробуйте manager@clickeat.com / 12345)');
+    }
   };
 
   return (
@@ -32,9 +44,8 @@ function LoginPage() {
           <input
             type="email"
             id="email"
-            name="email"
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
@@ -44,8 +55,7 @@ function LoginPage() {
           <input
             type="password"
             id="password"
-            name="password"
-            value={password} 
+            value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
