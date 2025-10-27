@@ -115,9 +115,9 @@ jobs:
         env:
           DJANGO_SETTINGS_MODULE: app.settings
           SECRET_KEY: test-secret-key-for-ci
-          DB_NAME: postgres
-          DB_USER: root
-          DB_PASSWORD: root
+          DB_NAME: staging_db
+          DB_USER: django_user
+          DB_PASSWORD: correcthorsebatterystaple
           DB_HOST: localhost
           DB_PORT: 5432
         run: |
