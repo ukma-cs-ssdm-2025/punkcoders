@@ -57,7 +57,7 @@ class DishServiceTests(TestCase):
             "description": "Just plain fries.",
             "price": 4.99,
             "category": self.category,
-            "is_available": True,
+            # "is_available": True,
         }
 
         dish = create_dish(dish_data)
@@ -66,6 +66,7 @@ class DishServiceTests(TestCase):
         self.assertEqual(Dish.objects.count(), 1)
         self.assertEqual(dish.name, "Simple Fries")
         self.assertEqual(dish.category, self.category)
+        self.assertEqual(dish.is_available, True)  # Default value
 
     def test_create_dish_with_ingredients(self):
         """Test creating a dish with a list of ingredients."""

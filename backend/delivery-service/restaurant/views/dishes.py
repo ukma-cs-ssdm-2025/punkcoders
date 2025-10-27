@@ -3,7 +3,6 @@ from rest_framework import parsers, viewsets
 from rest_framework.permissions import AllowAny
 from restaurant.models import Category, Dish, Ingredient
 from restaurant.serializers.dishes import CategorySerializer, DishSerializer, IngredientSerializer
-from restaurant.services.dishes import get_dishes_queryset  # , create_dish, update_dish
 
 # import pdb
 # from rest_framework.response import Response
@@ -62,10 +61,19 @@ class DishViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         # Use the service function to get the filtered/sorted queryset
         # for the list view.
-        if self.action == "list":
-            return get_dishes_queryset(
-                category_slug=self.request.query_params.get("category"),
-                search_term=self.request.query_params.get("q"),
-                sort_by=self.request.query_params.get("sort"),
-            )
+        # TODO: fuck, it's incorrect. don't use, we don't have any filtering rn
+        # if self.action == "list":
+        #     qs = get_dishes_queryset(
+        #         category_slug=self.request.query_params.get("category"),
+        #         search_term=self.request.query_params.get("q"),
+        #         sort_by=self.request.query_params.get("sort"),
+        #     )
+        #     print(qs)
+        #     print(super().get_queryset())
+        #     return qs
+        # return get_dishes_queryset(
+        #     category_slug=self.request.query_params.get("category"),
+        #     search_term=self.request.query_params.get("q"),
+        #     sort_by=self.request.query_params.get("sort"),
+        # )
         return super().get_queryset()
