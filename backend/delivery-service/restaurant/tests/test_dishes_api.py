@@ -10,6 +10,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from restaurant.models import Category, Dish
+from restaurant.serializers.dishes import DishSerializer
 
 TEST_MEDIA_ROOT = Path(settings.BASE_DIR) / "test_media"
 
@@ -99,6 +100,22 @@ class MenuApiTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Category.objects.count(), 2)  # Initial + new one
         self.assertEqual(response.data["name"], "New Category")
+        self.assertIn("slug", response.data)
+        self.assertEqual(response.data["slug"], "new-category")
+
+    def test_create_two_categories_succeeds_for_manager(self):
+        """
+        Tests that a logged-in manager can successfully create a category.
+        """
+        self.client.force_authenticate(user=self.manager_user)
+        # this kinda assumes the previous test passed and this works properly
+        self.client.post(self.categories_url, {"name": "New Category"})
+        response = self.client.post(self.categories_url, {"name": "Another Category"})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Category.objects.count(), 3)  # Initial + new one + another
+        self.assertEqual(response.data["name"], "Another Category")
+        self.assertIn("slug", response.data)
+        self.assertEqual(response.data["slug"], "another-category")
 
     def test_create_dish_fails_for_anonymous(self):
         """
@@ -135,11 +152,33 @@ class MenuApiTests(APITestCase):
             "description": "A new creation.",
             "price": 12.50,
             "category_id": self.category.id,
+            # "is_available": True,
         }
         response = self.client.post(self.dishes_url, data=dish_data, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Dish.objects.count(), 2)  # The setUp dish + this new one
         self.assertEqual(response.data["name"], "New Dish by Manager")
+        self.assertEqual(float(response.data["price"]), 12.50)
+        self.assertEqual(response.data["is_available"], True)  # Default value
+
+    def test_create_unvailable_dish_succeeds_for_manager(self):
+        """
+        Tests that a manager can create a dish with JSON data.
+        """
+        self.client.force_authenticate(user=self.manager_user)
+        dish_data = {
+            "name": "New Dish by Manager",
+            "description": "A new creation.",
+            "price": 12.50,
+            "category_id": self.category.id,
+            "is_available": False,
+        }
+        response = self.client.post(self.dishes_url, data=dish_data, format="multipart")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Dish.objects.count(), 2)  # The setUp dish + this new one
+        self.assertEqual(response.data["name"], "New Dish by Manager")
+        self.assertEqual(float(response.data["price"]), 12.50)
+        self.assertEqual(response.data["is_available"], False)  # Default value
 
     def test_create_dish_with_photo_upload(self):
         """
@@ -285,6 +324,22 @@ class MenuApiTests(APITestCase):
         self.assertEqual(float(self.dish.price), 99.99)
         # Check that the name (which wasn't sent) is unchanged
         self.assertEqual(self.dish.name, "Test Dish")
+
+    def test_partial_update_dish_with_identical_data_succeeds_for_manager(self):
+        """
+        Tests that a manager can partially update a dish with identical data (PATCH /api/dishes/<id>/).
+        """
+        self.client.force_authenticate(user=self.manager_user)
+        update_data = DishSerializer(self.dish).data  # Get current data
+        update_data["category_id"] = update_data["category"]["id"]  # Adjust for write field
+        del update_data["category"]  # Remove read-only field
+        del update_data["photo"]  # Remove photo to avoid upload issues
+        response = self.client.patch(self.dish_detail_url, data=update_data, format="multipart")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Refresh the dish from the database to check the change
+        self.dish.refresh_from_db()
+        self.assertEqual(self.dish.name, "Test Dish")  # Name should remain unchanged
 
     def test_delete_dish_fails_for_anonymous(self):
         """

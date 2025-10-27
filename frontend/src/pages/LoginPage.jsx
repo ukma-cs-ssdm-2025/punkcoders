@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './LoginPage.css'; 
+import axios from 'axios';
 
 function LoginPage() {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const navigate = useNavigate();
@@ -11,20 +12,32 @@ function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Спроба входу з даними:', email, password);
+    console.log('Надсилаємо дані на сервер:', username, password);
 
-    if (email === "manager@clickeat.com" && password === "12345") {
+    try {
+      // 1. Надсилаємо POST-запит на ваш Django ендпоінт
+      const response = await axios.post('http://localhost:8000/api/token/', {
+        // Ми припускаємо, що ваш Django налаштований на вхід по 'email'.
+        // Якщо він очікує 'username', змініть 'email' на 'username'.
+        username: username, 
+        password: password
+      });
+
+      // 2. Якщо запит успішний (код 200), Django поверне токени
+      console.log('Сервер відповів:', response.data);
       
-      const fakeToken = "my-super-secret-manager-token-12345";
-      
-      localStorage.setItem('managerAuthToken', fakeToken);
-      
-      alert('Вхід успішний! Токен збережено в localStorage.');
-      
+      // 3. Зберігаємо ОБИДВА токени у localStorage
+      localStorage.setItem('accessToken', response.data.access);
+      localStorage.setItem('refreshToken', response.data.refresh);
+
+      // 4. Повідомляємо користувача та перенаправляємо його
+      alert('Вхід успішний! Токени збережено.');
       navigate('/admin/menu'); 
 
-    } else {
-      alert('Неправильний email або пароль (спробуйте manager@clickeat.com / 12345)');
+    } catch (error) {
+      // 5. Якщо сервер повернув помилку (400, 401, 500)
+      console.error('Помилка входу:', error.response ? error.response.data : error.message);
+      alert('Неправильний username або пароль. Спробуйте ще раз.');
     }
   };
 
@@ -40,12 +53,12 @@ function LoginPage() {
         <h2>Вхід для менеджерів</h2>
         
         <div className="form-group">
-          <label htmlFor="email">Email</label>
+          <label htmlFor="username">username</label>
           <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="username"
+            id="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             required
           />
         </div>

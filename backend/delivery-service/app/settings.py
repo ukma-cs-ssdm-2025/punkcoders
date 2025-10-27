@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 
+from corsheaders.defaults import default_headers
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -46,6 +47,17 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "restaurant",
     "accounts",
+    "corsheaders",
+]
+
+# Allow the React development server to access the API
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:5173",  # Vite's default dev server
+    "http://localhost:5173",
+]
+
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    "Authorization",  # Add this!
 ]
 
 REST_FRAMEWORK = {
@@ -56,7 +68,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
         # for browsable API - disable in production!
-        "rest_framework.authentication.SessionAuthentication",
+        # "rest_framework.authentication.SessionAuthentication",
     ),
 }
 
@@ -67,6 +79,7 @@ SPECTACULAR_SETTINGS = {
 }
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -104,11 +117,11 @@ WSGI_APPLICATION = "app.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DB_NAME", "postgres"),
-        "USER": os.environ.get("DB_USER", "root"),
-        "PASSWORD": os.environ.get("DB_PASSWORD", "root"),
+        "NAME": os.environ.get("PG_DATABASE", "postgres"),  # Use PG_DATABASE or DB_NAME if defined in .env
+        "USER": os.environ.get("PG_USER", "postgres"),  # Use PG_USER, fallback to safe 'postgres'
+        "PASSWORD": os.environ.get("PG_PASSWORD", "postgres"),  # Use PG_PASSWORD, fallback to safe 'postgres'
         "HOST": os.environ.get("DB_HOST", "db"),
-        "PORT": os.environ.get("DB_PORT", "5432"),
+        "PORT": os.environ.get("PG_PORT", "5432"),
         "TEST": {
             "NAME": "test_db",
         },

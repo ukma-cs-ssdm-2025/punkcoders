@@ -16,3 +16,4 @@ mccabe
 pytest
 pytest-django
 coverage
+django-cors-headers

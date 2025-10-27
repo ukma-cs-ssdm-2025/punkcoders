@@ -1,6 +1,6 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
-from restaurant.views.api.dishes import CategoryViewSet, DishViewSet, IngredientViewSet
+from restaurant.views.dishes import CategoryViewSet, DishViewSet, IngredientViewSet
 
 router = DefaultRouter()
 router.register(r"dishes", DishViewSet, basename="dish")

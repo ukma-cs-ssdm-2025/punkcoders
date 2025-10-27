@@ -1,78 +1,103 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form'; // 1. Import useForm
+import apiClient from '../api'; // Your API client
+import { toast } from 'react-toastify';
 
-const initialCategories = [
-  { 
-    id: 1, 
-    name: 'Піца',
-    emoji: '🍕'
-  },
-  { 
-    id: 2, 
-    name: 'Напої',
-    emoji: '🥤'
-  },
-  { 
-    id: 3, 
-    name: 'Соуси',
-    emoji: '🧂'
-  },
-];
-
+// This is just for resetting the form, react-hook-form handles the state
 const defaultFormState = {
-  id: null,
   name: '',
-  emoji: '🍕'
 };
 
 function AdminCategoryManagement() {
-
-  const [categories, setCategories] = useState(initialCategories);
-  
-  const [formData, setFormData] = useState(defaultFormState);
-  
+  // --- State for the LIST of categories ---
+  const [categories, setCategories] = useState([]);
   const [editingId, setEditingId] = useState(null);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevData => ({
-      ...prevData,
-      [name]: value
-    }));
-  };
+  // --- 2. Initialize react-hook-form ---
+  const { 
+    register,         // Connects inputs to the form
+    handleSubmit,     // Wraps your submit function
+    reset,            // Clears the form
+    setValue,         // Sets a field's value (for editing)
+    setError,         // Sets server-side errors
+    formState: { errors } // Contains all validation errors
+  } = useForm({
+    defaultValues: defaultFormState
+  });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // --- Data Fetching (GET) ---
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
-    if (editingId) {
-      setCategories(prevItems => 
-        prevItems.map(item => 
-          item.id === editingId ? { ...formData, id: editingId } : item
-        )
-      );
-    } else {
-      const newItem = {
-        ...formData,
-        id: Date.now()
-      };
-      setCategories(prevItems => [newItem, ...prevItems]);
+  const fetchCategories = async () => {
+    try {
+      const response = await apiClient.get('/categories/');
+      setCategories(response.data);
+    } catch (error) {
+      toast.error("Не вдалося завантажити категорії."); 
+      console.error('Error fetching categories:', error);
     }
-    
-    clearForm();
   };
 
+  // --- 3. Create the real submit handler ---
+  // This function receives the 'data' object from react-hook-form
+  const onSubmit = async (data) => {
+    try {
+      if (editingId) {
+        // UPDATE (PATCH)
+        await apiClient.patch(`/categories/${editingId}/`, data);
+      } else {
+        // CREATE (POST)
+        await apiClient.post('/categories/', data);
+      }
+      
+      // Success: Clear the form and reload the list
+      clearForm();
+      fetchCategories();
+      toast.success(`Категорія успішно ${editingId ? 'оновлена' : 'додана'}.`);
+    } catch (error) {
+      // --- 4. Handle Django's "you filled it out wrong" errors ---
+      if (error.response && error.response.status === 400) {
+        const serverErrors = error.response.data; // e.g., { name: ["This name is already taken."] }
+        
+        // Loop over the errors from Django and set them in the form
+        for (const [field, message] of Object.entries(serverErrors)) {
+          setError(field, {
+            type: 'server',
+            message: message[0] // Show the first error message
+          });
+        }
+      } else {
+        toast.error("Сталася непередбачена помилка.");
+        console.error('An unexpected error occurred:', error);
+      }
+    }
+  };
+
+  // --- CRUD Helper Functions ---
   const handleEdit = (item) => {
+    // 5. Populate the form fields using setValue
+    setValue('name', item.name);
     setEditingId(item.id);
-    setFormData(item);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Ви впевнені, що хочете видалити цю категорію?')) {
-      setCategories(prevItems => prevItems.filter(item => item.id !== id));
+      try {
+        await apiClient.delete(`/categories/${id}/`);
+        fetchCategories(); // Reload the list after deleting
+        toast.success("Категорію успішно видалено.");
+      } catch (error) {
+        toast.error("Не вдалося видалити категорію.");
+        console.error('Error deleting category:', error);
+      }
     }
   };
 
   const clearForm = () => {
-    setFormData(defaultFormState);
+    // 6. Reset the form state and our editingId state
+    reset(defaultFormState);
     setEditingId(null);
   };
   
@@ -80,7 +105,8 @@ function AdminCategoryManagement() {
     <div>
       <h2>Керування категоріями</h2>
       
-      <form className="admin-form" onSubmit={handleSubmit}>
+      {/* 7. Use handleSubmit(onSubmit) to wrap the form */}
+      <form className="admin-form" onSubmit={handleSubmit(onSubmit)}>
         <h3>{editingId ? 'Редагувати категорію' : 'Додати нову категорію'}</h3>
         <div className="form-grid">
           
@@ -89,25 +115,16 @@ function AdminCategoryManagement() {
             <input
               type="text"
               id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              required
+              // 8. "Register" the input (replaces value, name, and onChange)
+              {...register('name', { 
+                required: 'Назва не може бути порожньою' 
+              })}
             />
+            {/* 9. Automatically show validation errors */}
+            {errors.name && <span className="error-message">{errors.name.message}</span>}
           </div>
           
-          <div className="form-group">
-            <label htmlFor="emoji">Емоджі</label>
-            <input
-              type="text"
-              id="emoji"
-              name="emoji"
-              value={formData.emoji}
-              onChange={handleInputChange}
-              placeholder="🍕"
-              maxLength="2"
-            />
-          </div>
+          {/* The emoji field is removed, as requested */ }
 
         </div>
         
@@ -131,7 +148,7 @@ function AdminCategoryManagement() {
       <table className="admin-table">
         <thead>
           <tr>
-            <th>Емоджі</th>
+            {/* Emoji column is removed */}
             <th>Назва</th>
             <th>Дії</th>
           </tr>
@@ -139,7 +156,6 @@ function AdminCategoryManagement() {
         <tbody>
           {categories.map(item => (
             <tr key={item.id}>
-              <td style={{ fontSize: '1.5rem' }}>{item.emoji}</td>
               <td>{item.name}</td>
               <td className="actions">
                 <button className="admin-button" onClick={() => handleEdit(item)}>

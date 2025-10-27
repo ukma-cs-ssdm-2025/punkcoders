@@ -63,6 +63,8 @@ class DishSerializer(serializers.ModelSerializer):
     # This field handles the actual image file upload.
     photo = serializers.ImageField(required=False, allow_null=True)
 
+    is_available = serializers.BooleanField(default=True, required=False)
+
     class Meta:
         model = Dish
         fields = [
