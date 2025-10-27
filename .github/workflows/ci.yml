@@ -20,9 +20,9 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_DB: staging_db
-          POSTGRES_USER: django_user
-          POSTGRES_PASSWORD: correcthorsebatterystaple
+          POSTGRES_DB: test_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -68,9 +68,9 @@ jobs:
         env:
           DJANGO_SETTINGS_MODULE: app.settings
           SECRET_KEY: test-secret-key-for-ci
-          DB_NAME: staging_db
-          DB_USER: django_user
-          DB_PASSWORD: correcthorsebatterystaple
+          DB_NAME: test_db
+          DB_USER: postgres
+          DB_PASSWORD: postgres
           DB_HOST: localhost
           DB_PORT: 5432
         run: |
@@ -81,9 +81,9 @@ jobs:
         env:
           DJANGO_SETTINGS_MODULE: app.settings
           SECRET_KEY: test-secret-key-for-ci
-          DB_NAME: staging_db
-          DB_USER: django_user
-          DB_PASSWORD: correcthorsebatterystaple
+          DB_NAME: test_db
+          DB_USER: postgres
+          DB_PASSWORD: postgres
           DB_HOST: localhost
           DB_PORT: 5432
         run: |
@@ -115,9 +115,9 @@ jobs:
         env:
           DJANGO_SETTINGS_MODULE: app.settings
           SECRET_KEY: test-secret-key-for-ci
-          DB_NAME: staging_db
-          DB_USER: django_user
-          DB_PASSWORD: correcthorsebatterystaple
+          DB_NAME: test_db
+          DB_USER: postgres
+          DB_PASSWORD: postgres
           DB_HOST: localhost
           DB_PORT: 5432
         run: |
