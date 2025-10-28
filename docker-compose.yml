@@ -1,0 +1,60 @@
+services:
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: sh /app/startup.sh
+    volumes:
+      - ./backend/delivery-service:/app
+    ports:
+      - "${APP_PORT}:8000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgres://${PG_USER}:${PG_PASSWORD}@db:${PG_PORT}/${PG_DATABASE}
+      - PYTHONUNBUFFERED=1
+      - DJANGO_LOG_LEVEL=INFO
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    env_file:
+      - .env
+    networks:
+      - app-network
+
+  frontend:
+    # Tells Docker Compose to build the image using the Dockerfile located in the './frontend' directory
+    build:
+      context: ./frontend
+    container_name: react_frontend
+    # Note: The command here will default to the CMD in the frontend/Dockerfile
+    volumes:
+      - ./frontend:/app  # Mount the code for HMR/live changes
+      - /app/node_modules # Exclude node_modules from the mount
+    ports:
+      # Map host port 5173 to container port 5173
+      - "5173:5173"
+    networks:
+      - app-network
+      
+  db:
+    image: postgres:16
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${PG_PORT}:5432"
+    environment:
+      - POSTGRES_USER=${PG_USER}
+      - POSTGRES_PASSWORD=${PG_PASSWORD}
+      - POSTGRES_DB=${PG_DATABASE}
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
