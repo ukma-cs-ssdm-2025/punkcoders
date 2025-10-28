@@ -4,7 +4,7 @@ import axios from 'axios';
 
 // 1. Create the base axios instance
 const apiClient = axios.create({
-  baseURL: 'http://localhost:8000/api/v0', // Your Django base API URL
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v0/'
 });
 
 // 2. The "Request" Interceptor
