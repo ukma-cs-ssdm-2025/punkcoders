@@ -32,5 +32,6 @@ FROM nginx:1.25-alpine AS production
 COPY --from=build /app/dist /usr/share/nginx/html
 # Copy the Nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+RUN echo "VITE_API_URL during build is: $VITE_API_URL"
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
