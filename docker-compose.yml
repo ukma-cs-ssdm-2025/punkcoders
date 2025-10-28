@@ -3,7 +3,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    command: sh /app/startup.sh
+      target: development
     volumes:
       - ./backend/delivery-service:/app
     ports:
@@ -28,6 +28,7 @@ services:
     # Tells Docker Compose to build the image using the Dockerfile located in the './frontend' directory
     build:
       context: ./frontend
+      target: development
     container_name: react_frontend
     # Note: The command here will default to the CMD in the frontend/Dockerfile
     volumes:
