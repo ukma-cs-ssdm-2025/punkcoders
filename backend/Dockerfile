@@ -7,18 +7,17 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 # Copy project files
 COPY ./delivery-service/ /app/
+COPY requirements/ /app/requirements
 
 FROM base AS development
 # Install dependencies
-COPY requirements/dev.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements/dev.txt
 # run the thing
 CMD ["sh", "/app/startup.sh"]
 
 FROM base AS production
 # Install dependencies
-COPY requirements/prod.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements/prod.txt
 # Ensure the startup script is executable
 RUN chmod +x /app/startup.sh
 # run the thing

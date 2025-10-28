@@ -121,7 +121,7 @@ WSGI_APPLICATION = "app.wsgi.application"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 # Use dj-database-url to parse DATABASE_URL provided by Render/Fly
-# Fallback to individual PG_ vars from .env for local docker-compose
+# Fallback to individual POSTGRES_ vars from .env for local docker-compose
 if "DATABASE_URL" in os.environ:
     DATABASES = {
         "default": dj_database_url.config(
@@ -129,11 +129,11 @@ if "DATABASE_URL" in os.environ:
         )  # Set ssl_require=True if Render requires SSL
     }
 else:
-    # Your existing local dev setup (reads PG_USER etc from .env)
+    # Your existing local dev setup (reads POSTGRES_USER etc from .env)
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.environ.get("POSTGRES_DB", "postgres"),
+            "NAME": os.environ.get("POSTGRES_DATABASE", "postgres"),
             "USER": os.environ.get("POSTGRES_USER", "postgres"),
             "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "postgres"),
             "HOST": os.environ.get("DB_HOST", "db"),
