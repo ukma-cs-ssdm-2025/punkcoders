@@ -21,7 +21,7 @@ CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
 
 # ----- Stage 2: Build Stage -----
 # Render doesn't make env vars available at build
-ARG VITE_API_URL_ARG="https://YOUR_DEFAULT_PROD_URL_HERE/api/v0/" 
+ARG VITE_API_URL_ARG="https://https://clickeat-backend.onrender.com/api/v0/" 
 ENV VITE_API_URL=$VITE_API_URL_ARG
 RUN echo "VITE_API_URL during build is: $VITE_API_URL"
 # We'll re-use the "development" stage to build our final files
