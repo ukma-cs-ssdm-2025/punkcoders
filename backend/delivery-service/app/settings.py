@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 
+import dj_database_url
 from corsheaders.defaults import default_headers
 from dotenv import load_dotenv
 
@@ -28,9 +29,12 @@ load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY", "default-safe-key-for-dev-only")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "1").lower() in ["1", "true", "yes"]
 
-ALLOWED_HOSTS = []
+# Read ALLOWED_HOSTS from env var as a comma-separated string
+# Default to [] for local dev, REQUIRES specific host(s) in prod
+ALLOWED_HOSTS_STR = os.getenv("ALLOWED_HOSTS", "")
+ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS_STR.split(",") if host.strip()]
 
 
 # Application definition
@@ -50,25 +54,29 @@ INSTALLED_APPS = [
     "corsheaders",
 ]
 
-# Allow the React development server to access the API
-CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:5173",  # Vite's default dev server
-    "http://localhost:5173",
-]
+# CORS Configuration
+if DEBUG:
+    # Keep localhost for local dev
+    CORS_ALLOWED_ORIGINS = [
+        "http://127.0.0.1:5173",
+        "http://localhost:5173",
+    ]
+else:
+    # Expect production frontend URL(s) via env var, comma-separated
+    CORS_ALLOWED_ORIGINS_PROD = os.getenv("CORS_ALLOWED_ORIGINS_PROD", "")
+    CORS_ALLOWED_ORIGINS = [origin.strip() for origin in CORS_ALLOWED_ORIGINS_PROD.split(",") if origin.strip()]
+    CORS_ALLOW_ALL_ORIGINS = False
 
-CORS_ALLOW_HEADERS = list(default_headers) + [
-    "Authorization",  # Add this!
-]
+CORS_ALLOW_HEADERS = list(default_headers) + ["Authorization"]
 
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_RENDERER_CLASSES": (
         ["rest_framework.renderers.JSONRenderer"] + (["rest_framework.renderers.BrowsableAPIRenderer"] if DEBUG else [])
     ),
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-        # for browsable API - disable in production!
-        # "rest_framework.authentication.SessionAuthentication",
+    "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticatedOrReadOnly",  # Example: Allow read-only for anonymous, require auth for write
     ),
 }
 
@@ -112,21 +120,26 @@ WSGI_APPLICATION = "app.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-
-# Database from environment or defaults
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("PG_DATABASE", "postgres"),  # Use PG_DATABASE or DB_NAME if defined in .env
-        "USER": os.environ.get("PG_USER", "postgres"),  # Use PG_USER, fallback to safe 'postgres'
-        "PASSWORD": os.environ.get("PG_PASSWORD", "postgres"),  # Use PG_PASSWORD, fallback to safe 'postgres'
-        "HOST": os.environ.get("DB_HOST", "db"),
-        "PORT": os.environ.get("PG_PORT", "5432"),
-        "TEST": {
-            "NAME": "test_db",
-        },
+# Use dj-database-url to parse DATABASE_URL provided by Render/Fly
+# Fallback to individual POSTGRES_ vars from .env for local docker-compose
+if "DATABASE_URL" in os.environ:
+    DATABASES = {
+        "default": dj_database_url.config(
+            conn_max_age=600, ssl_require=False
+        )  # Set ssl_require=True if Render requires SSL
     }
-}
+else:
+    # Your existing local dev setup (reads POSTGRES_USER etc from .env)
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ.get("POSTGRES_DATABASE", "postgres"),
+            "USER": os.environ.get("POSTGRES_USER", "postgres"),
+            "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "postgres"),
+            "HOST": os.environ.get("DB_HOST", "db"),
+            "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+        }
+    }
 
 
 # Password validation
@@ -160,7 +173,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
+# https://docs.djangoproject.com/en/5.2/howto/static-files/
 STATIC_URL = "static/"
+# Add this: Directory where `collectstatic` will gather files for Nginx/Gunicorn
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# Define MEDIA settings for user uploads (like dish photos)
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

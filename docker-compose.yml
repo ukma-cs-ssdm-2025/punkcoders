@@ -3,7 +3,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    command: sh /app/startup.sh
+      target: development
     volumes:
       - ./backend/delivery-service:/app
     ports:
@@ -11,7 +11,7 @@ services:
     depends_on:
       - db
     environment:
-      - DATABASE_URL=postgres://${PG_USER}:${PG_PASSWORD}@db:${PG_PORT}/${PG_DATABASE}
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DATABASE}
       - PYTHONUNBUFFERED=1
       - DJANGO_LOG_LEVEL=INFO
     logging:
@@ -23,11 +23,13 @@ services:
       - .env
     networks:
       - app-network
+    # command: sh -c printenv; sleep 3600
 
   frontend:
     # Tells Docker Compose to build the image using the Dockerfile located in the './frontend' directory
     build:
       context: ./frontend
+      target: development
     container_name: react_frontend
     # Note: The command here will default to the CMD in the frontend/Dockerfile
     volumes:
@@ -44,14 +46,15 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "${PG_PORT}:5432"
+      - "${POSTGRES_PORT}:5432"
     environment:
-      - POSTGRES_USER=${PG_USER}
-      - POSTGRES_PASSWORD=${PG_PASSWORD}
-      - POSTGRES_DB=${PG_DATABASE}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DATABASE}
       - POSTGRES_HOST_AUTH_METHOD=trust
     networks:
       - app-network
+    # command: sh -c printenv; sleep 3600
 
 volumes:
   postgres_data:

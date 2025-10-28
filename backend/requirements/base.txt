@@ -7,13 +7,5 @@ djangorestframework-simplejwt
 drf-spectacular
 pillow
 python-dotenv
-black 
-isort
-flake8
-flake8-bugbear
-flake8-bandit
-mccabe
-pytest
-pytest-django
-coverage
 django-cors-headers
+dj-database-url
