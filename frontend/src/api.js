@@ -3,7 +3,6 @@
 import axios from 'axios';
 
 // 1. Create the base axios instance
-console.log(import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v0/')
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v0/'
 });

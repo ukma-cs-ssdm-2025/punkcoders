@@ -5,7 +5,6 @@ set -e
 
 echo "Running migrations..."
 python manage.py migrate --no-input
-python manage.py create_initial_manager
 
 # Check the environment variable
 if [ "$APP_ENV" = "production" ]; then

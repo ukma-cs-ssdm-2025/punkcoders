@@ -20,11 +20,12 @@ EXPOSE 5173
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
 
 # ----- Stage 2: Build Stage -----
-# We'll re-use the "development" stage to build our final files
-FROM development AS build
 # Render doesn't make env vars available at build
 ARG VITE_API_URL_ARG="https://clickeat-backend.onrender.com/api/v0/" 
 ENV VITE_API_URL=$VITE_API_URL_ARG
+RUN echo "VITE_API_URL during build is: $VITE_API_URL"
+# We'll re-use the "development" stage to build our final files
+FROM development AS build
 # This creates the optimized 'dist' folder
 RUN npm run build
 
