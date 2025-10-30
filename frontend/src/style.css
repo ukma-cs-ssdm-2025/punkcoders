@@ -111,9 +111,8 @@ button:hover {
   display: block;
   transition: transform var(--transition);
 }
-
 .header-logo:hover img {
-  transform: rotate(-5deg) scale(1.05);
+  transform: rotate(-8deg) scale(1.05);
 }
 
 .header-navigation ul {
@@ -249,9 +248,7 @@ button:hover {
   margin-top: 15px; 
 }
 
-.header-logo:hover img {
-  transform: rotate(-8deg) scale(1.05);
-}
+
 
 .header-logo:hover h5 {
   color: var(--color-accent);
