@@ -97,7 +97,7 @@ function AdminMenuManagement() {
 
     } catch (error) {
       // 5. Handle errors from the server
-      if (error.response && error.response.status === 400) {
+      if (error.response?.status === 400) {
         // This is a validation error (e.g., "name already exists")
         const serverErrors = error.response.data;
         for (const [field, message] of Object.entries(serverErrors)) {
