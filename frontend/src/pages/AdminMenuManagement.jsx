@@ -107,6 +107,7 @@ function AdminMenuManagement() {
       } else {
         // This is a network error or 500 server error
         toast.error("Сталася неочікувана помилка. Спробуйте ще раз.");
+        console.error('Submission error:', error);
       }
     }
   };
@@ -135,6 +136,7 @@ function AdminMenuManagement() {
         fetchDishes(); // Reload the list
       } catch (error) {
         toast.error("Не вдалося видалити страву.");
+        console.error('Error deleting dish:', error);
       }
     }
   };
