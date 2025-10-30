@@ -21,7 +21,7 @@ apiClient.interceptors.request.use(
   },
   (error) => {
     // Handle any request errors
-    return Promise.reject(error);
+    throw error;
   }
 );
 
@@ -37,7 +37,7 @@ apiClient.interceptors.response.use(
 
     // 4. Check for the specific error: 401 (Unauthorized)
     // We also check for `!originalRequest._retry` to prevent infinite loops
-    if (error.response && error.response.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true; // Mark this request as having been retried
 
       console.log("Access token expired, attempting to refresh...");
@@ -76,14 +76,14 @@ apiClient.interceptors.response.use(
         
         // Redirect to login page.
         // We use window.location to force a full page reload, clearing all app state.
-        window.location.href = '/login';
+        globalThis.location.href = '/login';
 
-        return Promise.reject(refreshError);
+        throw refreshError;
       }
     }
 
     // For any other error (like 404, 500), just let it fail
-    return Promise.reject(error);
+    throw error;
   }
 );
 
