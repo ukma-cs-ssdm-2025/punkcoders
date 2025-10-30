@@ -107,8 +107,11 @@ button:hover {
 
 .header-logo img {
   height: 48px;
+  width: auto;
+  display: block;
   transition: transform var(--transition);
 }
+
 .header-logo:hover img {
   transform: rotate(-5deg) scale(1.05);
 }
@@ -235,12 +238,6 @@ button:hover {
   text-decoration: none;
   color: var(--color-text);
   transition: transform var(--transition), color var(--transition);
-}
-
-.header-logo img {
-  height: 48px;
-  width: auto;
-  display: block;
 }
 
 .header-logo h5 {
