@@ -5,6 +5,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  transition: all var(--transition);
 }
 
 
@@ -86,9 +87,7 @@ button:hover {
   margin: 0 auto;
 }
 
-* {
-  transition: all var(--transition);
-}
+
 
 
 .site-header {
