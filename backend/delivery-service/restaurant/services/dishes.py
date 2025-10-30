@@ -1,6 +1,5 @@
-# from django.core.exceptions import ObjectDoesNotExist
-from django.db import transaction  # , IntegrityError
-from restaurant.models import Dish, DishIngredient  # , Ingredient, Category
+from django.db import transaction
+from restaurant.models import Dish, DishIngredient
 
 # NOTE: The dish_to_dict function has been removed as it is no longer needed.
 # The serializers now handle all conversion from model instance to JSON.

@@ -85,11 +85,7 @@ class DishSerializer(serializers.ModelSerializer):
         This is the new, correct place to call the service.
         DRF's ModelViewSet calls serializer.save(), which in turn calls this method.
         """
-        # print("\n\nIn DishViewSet.create with data:", validated_data)
-        # pdb.set_trace()
         dish = create_dish(validated_data)
-        # print("Created dish:", dish)
-        # print("\n\n")
         return dish
 
     def update(self, instance, validated_data):

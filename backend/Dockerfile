@@ -17,8 +17,6 @@ CMD ["sh", "/app/startup.sh"]
 
 FROM base AS production
 # Install dependencies
-RUN pip install --no-cache-dir -r requirements/prod.txt
-# Ensure the startup script is executable
-RUN chmod +x /app/startup.sh
+RUN pip install --no-cache-dir -r requirements/prod.txt && chmod +x /app/startup.sh
 # run the thing
 CMD ["sh", "/app/startup.sh"]

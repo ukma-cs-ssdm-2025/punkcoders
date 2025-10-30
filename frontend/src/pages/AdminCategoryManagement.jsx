@@ -58,7 +58,7 @@ function AdminCategoryManagement() {
       toast.success(`Категорія успішно ${editingId ? 'оновлена' : 'додана'}.`);
     } catch (error) {
       // --- 4. Handle Django's "you filled it out wrong" errors ---
-      if (error.response && error.response.status === 400) {
+      if (error.response?.status === 400) {
         const serverErrors = error.response.data; // e.g., { name: ["This name is already taken."] }
         
         // Loop over the errors from Django and set them in the form
@@ -83,7 +83,7 @@ function AdminCategoryManagement() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Ви впевнені, що хочете видалити цю категорію?')) {
+    if (globalThis.confirm('Ви впевнені, що хочете видалити цю категорію?')) {
       try {
         await apiClient.delete(`/categories/${id}/`);
         fetchCategories(); // Reload the list after deleting
