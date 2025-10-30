@@ -5,6 +5,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  transition: all var(--transition);
 }
 
 
@@ -28,10 +29,10 @@ html, body {
 }
 
 body {
-  font-family: var(--font-family);
+  font-family: 'Poppins', sans-serif;
   font-size: 16px;
-  color: var(--color-text);
-  background-color: var(--color-bg);
+  color: #222;
+  background: #fff;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
@@ -86,9 +87,7 @@ button:hover {
   margin: 0 auto;
 }
 
-* {
-  transition: all var(--transition);
-}
+
 
 
 .site-header {
@@ -108,10 +107,12 @@ button:hover {
 
 .header-logo img {
   height: 48px;
+  width: auto;
+  display: block;
   transition: transform var(--transition);
 }
 .header-logo:hover img {
-  transform: rotate(-5deg) scale(1.05);
+  transform: rotate(-8deg) scale(1.05);
 }
 
 .header-navigation ul {
@@ -238,12 +239,6 @@ button:hover {
   transition: transform var(--transition), color var(--transition);
 }
 
-.header-logo img {
-  height: 48px;
-  width: auto;
-  display: block;
-}
-
 .header-logo h5 {
   font-size: 1.4rem;
   font-weight: 700;
@@ -253,9 +248,7 @@ button:hover {
   margin-top: 15px; 
 }
 
-.header-logo:hover img {
-  transform: rotate(-8deg) scale(1.05);
-}
+
 
 .header-logo:hover h5 {
   color: var(--color-accent);
@@ -473,11 +466,6 @@ button:hover {
 
 
 
-body {
-  font-family: 'Poppins', sans-serif;
-  background: #fff;
-  color: #222;
-}
 
 /* Section */
 .menu-section {

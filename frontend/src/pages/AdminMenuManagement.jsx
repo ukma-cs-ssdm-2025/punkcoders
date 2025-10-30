@@ -97,7 +97,7 @@ function AdminMenuManagement() {
 
     } catch (error) {
       // 5. Handle errors from the server
-      if (error.response && error.response.status === 400) {
+      if (error.response?.status === 400) {
         // This is a validation error (e.g., "name already exists")
         const serverErrors = error.response.data;
         for (const [field, message] of Object.entries(serverErrors)) {
@@ -128,7 +128,7 @@ function AdminMenuManagement() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Ви впевнені, що хочете видалити цю страву?')) {
+    if (globalThis.confirm('Ви впевнені, що хочете видалити цю страву?')) {
       try {
         await apiClient.delete(`/dishes/${id}/`);
         toast.success("Страву видалено.");
@@ -254,7 +254,7 @@ function AdminMenuManagement() {
         {/* ... (thead) ... */}
         <tbody>
           {menuItems.map(item => (
-            <tr key={item.id} className={!item.is_available ? 'status-unavailable' : ''}>
+            <tr key={item.id} className={item.is_available ? '' : 'status-unavailable'}>
               <td>{item.name}</td>
               <td>{Number.parseFloat(item.price).toFixed(2)} грн</td>
               <td>{item.category.name}</td>
