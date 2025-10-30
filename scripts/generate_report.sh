@@ -17,7 +17,7 @@ echo "---" >> "$OUTPUT_FILE"
 echo "## Детальний Звіт Flake8 (Лінтинг)" >> "$OUTPUT_FILE"
 
 # Запуск Flake8 та збереження результату у змінну
-FLAKE8_OUTPUT=$(python -m flake8 --config=pyproject.toml backend/delivery-service/app || true)
+FLAKE8_OUTPUT=$(python -m flake8 --config=pyproject.toml backend/delivery-service/app)
 
 if [ -z "$FLAKE8_OUTPUT" ]; then
     echo "✅ Помилок не знайдено" >> "$OUTPUT_FILE"
