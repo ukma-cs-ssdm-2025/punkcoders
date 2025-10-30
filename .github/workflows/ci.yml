@@ -46,7 +46,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r backend/requirements/dev.txt
 
-      # --- НОВИЙ КРОК ЛІНТИНГУ та ПЕРЕВІРКИ ФОРМАТУВАННЯ ---
       - name: Code Linting and Formatting Check
         working-directory: ./backend/delivery-service
         run: |
@@ -61,7 +60,6 @@ jobs:
           echo "Лінтинг коду за допомогою Flake8 (використовуючи pyproject.toml)"
           # Flake8 автоматично знайде конфігурацію та застосує всі розширення
           flake8 . --statistics
-      # --- КІНЕЦЬ КРОКУ ЛІНТИНГУ ---
 
       - name: Run Django Tests
         working-directory: ./backend/delivery-service
