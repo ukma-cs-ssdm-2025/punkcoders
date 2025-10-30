@@ -53,23 +53,3 @@ class DishViewSet(viewsets.ModelViewSet):
         if self.action in ["list", "retrieve"]:
             return [AllowAny()]
         return [IsManager()]
-
-    def get_queryset(self):
-        # Use the service function to get the filtered/sorted queryset
-        # for the list view.
-        # TODO: fuck, it's incorrect. don't use, we don't have any filtering rn
-        # if self.action == "list":
-        #     qs = get_dishes_queryset(
-        #         category_slug=self.request.query_params.get("category"),
-        #         search_term=self.request.query_params.get("q"),
-        #         sort_by=self.request.query_params.get("sort"),
-        #     )
-        #     print(qs)
-        #     print(super().get_queryset())
-        #     return qs
-        # return get_dishes_queryset(
-        #     category_slug=self.request.query_params.get("category"),
-        #     search_term=self.request.query_params.get("q"),
-        #     sort_by=self.request.query_params.get("sort"),
-        # )
-        return super().get_queryset()
