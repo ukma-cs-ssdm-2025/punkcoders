@@ -17,7 +17,7 @@ echo "## Детальний Звіт Flake8 (Лінтинг)" >> static-analysis
 # Результати перенаправляються у файл.
 # '|| true' гарантує, що скрипт завжди поверне успішний код виходу (0),
 # навіть якщо flake8 знайде помилки.
-pre-commit flake8 run --all-files >> static-analysis.md || true
+flake8 --config=pyproject.toml . >> static-analysis.md || true
 
 # 3. Додавання оновленого файлу до staged-файлів для коміту
 git add static-analysis.md
