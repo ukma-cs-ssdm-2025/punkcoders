@@ -254,7 +254,7 @@ function AdminMenuManagement() {
         {/* ... (thead) ... */}
         <tbody>
           {menuItems.map(item => (
-            <tr key={item.id} className={!item.is_available ? 'status-unavailable' : ''}>
+            <tr key={item.id} className={item.is_available ? '' : 'status-unavailable'}>
               <td>{item.name}</td>
               <td>{Number.parseFloat(item.price).toFixed(2)} грн</td>
               <td>{item.category.name}</td>
