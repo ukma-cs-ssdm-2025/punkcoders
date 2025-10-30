@@ -128,7 +128,7 @@ function AdminMenuManagement() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Ви впевнені, що хочете видалити цю страву?')) {
+    if (globalThis.confirm('Ви впевнені, що хочете видалити цю страву?')) {
       try {
         await apiClient.delete(`/dishes/${id}/`);
         toast.success("Страву видалено.");
