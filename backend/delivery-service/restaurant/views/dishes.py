@@ -4,10 +4,6 @@ from rest_framework.permissions import AllowAny
 from restaurant.models import Category, Dish, Ingredient
 from restaurant.serializers.dishes import CategorySerializer, DishSerializer, IngredientSerializer
 
-# import pdb
-# from rest_framework.response import Response
-# from rest_framework import status
-
 
 class CategoryViewSet(viewsets.ModelViewSet):
     """
