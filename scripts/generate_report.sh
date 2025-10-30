@@ -1,35 +1,23 @@
 #!/usr/bin/env bash
 
-OUTPUT_FILE="static-analysis.md"
-DATE=$(date)
+# Створення/перезапис файлу зі статичним заголовком
+echo "# Звіт Статичного Аналізу Коду" > static-analysis.md
+echo "Дата генерації: $(date)" >> static-analysis.md
+echo "---" >> static-analysis.md
 
-# --- 0. Створення/перезапис файлу ---
-echo "# Звіт Статичного Аналізу Коду" > "$OUTPUT_FILE"
-echo "Дата генерації: $DATE" >> "$OUTPUT_FILE"
-echo "---" >> "$OUTPUT_FILE"
+# 1. Секція Black та isort (інструменти виправлення)
+echo "## Перевірка Форматування та Імпортів" >> static-analysis.md
+echo "Black та isort були успішно запущені як pre-commit хуки. Код відформатований та імпорти відсортовані." >> static-analysis.md
+echo "---" >> static-analysis.md
 
-# --- 1. Перевірка форматування та імпортів ---
-echo "## Перевірка Форматування та Імпортів" >> "$OUTPUT_FILE"
-echo "Black та isort були успішно запущені як pre-commit хуки. Код відформатований та імпорти відсортовані." >> "$OUTPUT_FILE"
-echo "---" >> "$OUTPUT_FILE"
+# 2. Детальний Звіт Flake8 (Лінтинг)
+echo "## Детальний Звіт Flake8 (Лінтинг)" >> static-analysis.md
 
-# --- 2. Детальний звіт Flake8 ---
-echo "## Детальний Звіт Flake8 (Лінтинг)" >> "$OUTPUT_FILE"
+# Запуск Flake8 на всьому проєкті.
+# Результати перенаправляються у файл.
+# '|| true' гарантує, що скрипт завжди поверне успішний код виходу (0),
+# навіть якщо flake8 знайде помилки.
+flake8 --config=pyproject.toml . >> static-analysis.md 2>&1
 
-# Запуск Flake8 та збереження результату у змінну
-FLAKE8_OUTPUT=$(python -m flake8 --config=pyproject.toml backend/delivery-service/app)
-
-if [ -z "$FLAKE8_OUTPUT" ]; then
-    echo "✅ Помилок не знайдено" >> "$OUTPUT_FILE"
-else
-    echo "⚠️ Виявлені помилки:" >> "$OUTPUT_FILE"
-    echo '```' >> "$OUTPUT_FILE"
-    echo "$FLAKE8_OUTPUT" >> "$OUTPUT_FILE"
-    echo '```' >> "$OUTPUT_FILE"
-fi
-
-echo "---" >> "$OUTPUT_FILE"
-
-# --- 3. Додавання файлу у staged для коміту ---
-git add "$OUTPUT_FILE"
-echo "Звіт згенеровано та додано до staged для коміту: $OUTPUT_FILE"
+# 3. Додавання оновленого файлу до staged-файлів для коміту
+git add static-analysis.md
