@@ -522,7 +522,7 @@ body {
 .tab-pill:hover,
 .tab-pill:focus {
   background: #FF4D4D;
-  color: #f6f4f4;
+  color: #000;
   border-color: #FF4D4D;
 }
 
