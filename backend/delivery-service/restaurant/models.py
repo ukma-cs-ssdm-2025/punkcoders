@@ -138,7 +138,3 @@ class DishIngredient(models.Model):
     def __str__(self):
         type_str = "База" if self.is_base_ingredient else "Опція"
         return f"{self.dish.name} - {self.ingredient.name} ({type_str})"
-
-
-# TODO: Додати модель FavoriteDish (M:M User-Dish) пізніше, коли буде готова модель User/Customer.
-# TODO: Додати модель CustomPizzaTemplate для FR-009/FR-010, якщо кастомна піца має фіксований шаблон.
