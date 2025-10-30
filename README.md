@@ -24,6 +24,7 @@
 - If you don't have src/delivery-service/app/settings.py, copy src/delivery-service/app/settings.py.sample into it
 - Run ```cd src && docker-compose up --build```. If it doesn't work, launch the Docker app to ensure the Docker Engine is running, then try again.
 - This should run automatically when the app container goes live, but if it doesn't, run ```docker exec -it src-app-1 python manage.py migrate```
+- Create a superuser: To access the Django admin panel, run the command in a new terminal (or after exiting the previous one): ```docker exec -it src-app-1 python manage.py createsuperuser```
 - Go to localhost:8000 in your browser
 
 ## СТРАТЕГІЯ ГІЛКУВАННЯ
