@@ -1,10 +1,8 @@
-import React from 'react';
 import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
 import AdminMenuManagement from './AdminMenuManagement';
 import AdminCategoryManagement from './AdminCategoryManagement';
 import AdminReports from './AdminReports';
 import AdminSettings from './AdminSettings';
-import '../Admin.css';
 
 function AdminPage() {
   return (

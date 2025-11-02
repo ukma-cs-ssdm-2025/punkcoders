@@ -1,4 +1,4 @@
-import React from 'react';
+import "../styles/homepage.css";
 
 function HomePage() {
   return (
@@ -23,15 +23,15 @@ function HomePage() {
           </div>
 
           <div className="header-actions">
-            <button className="theme-toggle" aria-label="Перемкнути тему">
+            <button className="btn btn-secondary" aria-label="Перемкнути тему">
               <img src="/content/Shopicons_Light_Sun.png" alt="Sun-Logo-Light_Theme" />
             </button>
 
-            <a href="/login" className="button button-secondary">
+            <a href="/login" className="btn btn-secondary">
               Log in <img src="/content/Shopicons_Light_Account.png" alt="" />
             </a>
 
-            <a href="/cart" className="header-cart-button">
+            <a href="/cart" className="btn btn-secondary header-cart-button">
               <span> <img src="/content/Shopicons_Light_Cart6.png" alt="" /></span>
               <span className="cart-counter">0</span>
             </a>
@@ -53,7 +53,7 @@ function HomePage() {
               Our mission is to satisfy your appetite with delectable dishes,
               delivered swiftly and at no extra cost.
             </p>
-            <button className="hero-btn">Get Started</button>
+            <button className="btn btn-primary btn-large btn-pill">Get Started</button>
           </div>
         </section>
         
@@ -94,9 +94,9 @@ function HomePage() {
           <h2 className="section-title">A Menu That Will Always<br />Capture Your Heart</h2>
 
           <div className="category-tabs">
-            <button className="tab-pill">🍕 Pizza</button>
-            <button className="tab-pill">🥤 Drinks</button>
-            <button className="tab-pill">🧂 Sauces</button>
+            <button className="btn btn-tertiary btn-pill">🍕 Pizza</button>
+            <button className="btn btn-tertiary btn-pill">🥤 Drinks</button>
+            <button className="btn btn-tertiary btn-pill">🧂 Sauces</button>
           </div>
 
           <div className="menu-cards">
@@ -111,7 +111,7 @@ function HomePage() {
                 <h3 className="product-title">Sausage Pizza</h3>
                 <p className="product-price">$7.49</p>
                 <div className="stars">⭐️⭐️⭐️⭐️</div>
-                <button className="read-btn">read more</button>
+                <button className="btn btn-secondary btn-pill">read more</button>
               </div>
             </div>
 
@@ -126,7 +126,7 @@ function HomePage() {
                 <h3 className="product-title">Margherita pizza</h3>
                 <p className="product-price">$6.40</p>
                 <div className="stars">⭐️⭐️⭐️</div>
-                <button className="read-btn">read more</button>
+                <button className="btn btn-secondary btn-pill">read more</button>
               </div>
             </div>
 
@@ -141,7 +141,7 @@ function HomePage() {
                 <h3 className="product-title">Meatlovers pizza</h3>
                 <p className="product-price">$9.17</p>
                 <div className="stars">⭐️⭐️⭐️⭐️</div>
-                <button className="read-btn">read more</button>
+                <button className="btn btn-seondary btn-pill">Read more</button>
               </div>
             </div>
           </div>
@@ -151,7 +151,7 @@ function HomePage() {
           </div>
 
           <div className="view-btn-container">
-            <button className="view-menu-btn">View Full Menu</button>
+            <button className="btn btn-primary btn-large btn-pill">View Full Menu</button>
           </div>
         </section>
       </main>

@@ -9,7 +9,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import apiClient from '../api';
 import Header from '../Common.jsx';
-import './MenuPage.css';
+import '../styles/menu.css';
 
 // --- React Query Client ---
 const queryClient = new QueryClient({
@@ -157,9 +157,6 @@ function MainContent() {
   );
 }
 
-/**
- * Displays the category tabs using your .tab-pill class
- */
 function CategoryTabs({
   categories,
   isLoading,
@@ -173,7 +170,7 @@ function CategoryTabs({
     return (
       <div className="category-tabs">
         {[...Array(3)].map((_, i) => (
-          <button key={i} className="tab-pill" disabled style={{ opacity: 0.5 }}>
+          <button key={i} className="btn btn-tertiary btn-pill" disabled style={{ opacity: 0.5 }}>
             Loading...
           </button>
         ))}
@@ -197,7 +194,7 @@ function CategoryTabs({
           key={category.id}
           // --- KEY CHANGE: Call with the SLUG, not the ID ---
           onClick={() => onSelectCategory(category.slug)}
-          className={`tab-pill ${
+          className={`btn btn-tertiary btn-pill ${
             selectedCategoryID === category.id ? 'active' : ''
           }`}
         >
@@ -242,7 +239,7 @@ function DishList({ selectedCategoryID }) {
             <div className="card-content" style={{ filter: 'blur(4px)' }}>
               <h3 className="product-title">Loading...</h3>
               <p className="product-price">$...</p>
-              <button className="read-btn">read more</button>
+              <button className="btn btn-secondary btn-pill">Read more</button>
             </div>
           </div>
         ))}
@@ -335,14 +332,14 @@ function DishCard({ dish, onShowDetails }) {
         
         <div className="card-actions">
           <button 
-            className="read-btn"
+            className="btn btn-primary btn-pill"
             onClick={handleAddToCart}
             disabled={!dish.is_available}
           >
             Add to Cart
           </button>
           <button 
-            className="read-btn"
+            className="btn btn-secondary btn-pill"
             onClick={handleShowDetails}
           >
             Read more
@@ -422,13 +419,13 @@ function DishDetailModal({ dishId, onClose }) {
         </div>
         
         <div className="modal-footer">
-          <button onClick={onClose} className="read-btn">
+          <button onClick={onClose} className="btn btn-neutral">
             Close
           </button>
           <button
             onClick={handleAddToCart}
             disabled={!dish?.is_available || isLoading}
-            className="cart-btn-modal"
+            className="btn btn-primary btn-pill"
           >
             Add to Cart
           </button>

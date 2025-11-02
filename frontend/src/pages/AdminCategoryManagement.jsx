@@ -135,7 +135,7 @@ function AdminCategoryManagement() {
           {editingId && (
             <button 
               type="button" 
-              className="admin-button admin-button-secondary" 
+              className="btn btn-secondary" 
               onClick={clearForm}
             >
               Скасувати редагування
@@ -161,7 +161,7 @@ function AdminCategoryManagement() {
                 <button className="admin-button" onClick={() => handleEdit(item)}>
                   Редагувати
                 </button>
-                <button className="admin-button admin-button-secondary" onClick={() => handleDelete(item.id)}>
+                <button className="btn btn-secondary" onClick={() => handleDelete(item.id)}>
                   Видалити
                 </button>
               </td>

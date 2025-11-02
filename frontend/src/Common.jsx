@@ -25,11 +25,11 @@ export default function Header() {
             <img src="/content/Shopicons_Light_Sun.png" alt="Sun-Logo-Light_Theme" />
           </button>
 
-          <a href="/login" className="button button-secondary">
+          <a href="/login" className="btn btn-secondary">
             Log in <img src="/content/Shopicons_Light_Account.png" alt="" />
           </a>
 
-          <a href="/cart" className="header-cart-button">
+          <a href="/cart" className="btn btn-secondary header-cart-button">
             <span> <img src="/content/Shopicons_Light_Cart6.png" alt="" /></span>
             <span className="cart-counter">0</span>
           </a>

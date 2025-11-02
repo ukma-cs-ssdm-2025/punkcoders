@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import './LoginPage.css'; 
+import '../styles/login.css'; 
 import axios from 'axios';
 
 function LoginPage() {
@@ -74,7 +74,7 @@ function LoginPage() {
           />
         </div>
         
-        <button type="submit" className="login-button">
+        <button type="submit" className=".btn .btn-primary .btn-block .btn-large">
           Увійти
         </button>
         
