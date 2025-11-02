@@ -141,6 +141,29 @@ function AdminMenuManagement() {
     }
   };
 
+  const handleAvailabilityToggle = async (dishId, newAvailability) => {
+    const originalMenuItems = [...menuItems];
+
+    const dishData = new FormData();
+      dishData.append('is_available', newAvailability);
+
+    setMenuItems(prevItems =>
+      prevItems.map(item =>
+        item.id === dishId ? { ...item, is_available: newAvailability } : item
+      )
+    );
+
+    try {
+      await apiClient.patch(`/dishes/${dishId}/`, dishData);
+      // Optional: Show a very subtle success message
+      // toast.success("Availability updated!"); 
+    } catch (error) {
+      toast.error("Failed to update availability. Please try again.");
+      console.error('Error updating availability:', error);
+      setMenuItems(originalMenuItems);
+    }
+  };
+
   const clearForm = () => {
     reset(defaultFormState); // Resets all fields to their defaults
     setEditingId(null);
@@ -261,6 +284,16 @@ function AdminMenuManagement() {
               <td>{item.name}</td>
               <td>{Number.parseFloat(item.price).toFixed(2)} грн</td>
               <td>{item.category.name}</td>
+              <td>
+                <input
+                  type="checkbox"
+                  checked={item.is_available}
+                  onChange={(e) =>
+                    handleAvailabilityToggle(item.id, e.target.checked)
+                  }
+                  style={{ cursor: 'pointer', transform: 'scale(1.2)' }}
+                />
+              </td>
               <td>{item.is_available ? 'Доступна' : 'Недоступна'}</td>
               <td className="actions">
                 <button className="admin-button" onClick={() => handleEdit(item)}>
