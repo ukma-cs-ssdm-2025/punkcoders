@@ -12,7 +12,7 @@ function HomePage() {
 
           <nav className="header-navigation">
             <ul>
-              <li><a href="/">Меню</a></li>
+              <li><a href="/menu">Меню</a></li>
               <li><a href="/faq">FAQ</a></li>
             </ul>
           </nav>
