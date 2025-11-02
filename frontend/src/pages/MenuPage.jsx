@@ -26,13 +26,11 @@ const queryClient = new QueryClient({
 
 // --- API Fetching Functions ---
 
-/**
- * Fetches the list of categories.
- * Corresponds to: GET /categories/
- */
 const fetchCategories = async () => {
+  console.log('Fetching categories from /categories/');
   try {
     const response = await apiClient.get('/categories/');
+    console.log('Categories fetched:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching categories:', error);
@@ -41,18 +39,16 @@ const fetchCategories = async () => {
   }
 };
 
-/**
- * Fetches dishes for a specific category slug.
- * Corresponds to: GET /dishes/?category__slug=<slug>
- */
-const fetchDishesByCategory = async (slug) => {
-  if (!slug) return [];
+const fetchDishesByCategory = async (id) => {
+  let url = `/dishes/` + (id ? `?category_id=${id}` : '');
+  console.log('Fetching dishes from URL:', url);
   try {
-    const response = await apiClient.get(`/dishes/?category__slug=${slug}`);
+    const response = await apiClient.get(url);
+    console.log(`Dishes fetched for category ${id}:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`Error fetching dishes for category ${slug}:`, error);
-    toast.error(`Could not load dishes for ${slug}.`);
+    console.error(`Error fetching dishes for category ${id}:`, error);
+    toast.error(`Could not load dishes for this category.`);
     throw error;
   }
 };
@@ -62,9 +58,11 @@ const fetchDishesByCategory = async (slug) => {
  * Corresponds to: GET /dishes/:id/
  */
 const fetchDishDetails = async (dishId) => {
+  console.log(`Fetching dish details from /dishes/${dishId}/`);
   if (!dishId) return null;
   try {
     const response = await apiClient.get(`/dishes/${dishId}/`);
+    console.log(`Dish details fetched for ID ${dishId}:`, response.data);
     return response.data;
   } catch (error) {
     console.error(`Error fetching dish details for ID ${dishId}:`, error);
@@ -78,15 +76,7 @@ export default function MenuPage() {
   return (
     <QueryClientProvider client={queryClient}>
       <Header />
-      
       <MainContent />
-
-      {/* <ToastContainer
-        position="bottom-right"
-        autoClose={3000}
-        theme="colored"
-        newestOnTop
-      /> */}
     </QueryClientProvider>
   );
 }
@@ -98,7 +88,7 @@ export default function MenuPage() {
  * This renders the <main> and <section> wrappers from your HomePage.jsx
  */
 function MainContent() {
-  const [selectedCategorySlug, setSelectedCategorySlug] = useState(null);
+  const [selectedCategoryID, setSelectedCategoryID] = useState(null);
 
   return (
     <main>
@@ -107,11 +97,11 @@ function MainContent() {
         <h2 className="section-title">A Menu That Will Always<br />Capture Your Heart</h2>
 
         <CategoryTabs
-          selectedCategorySlug={selectedCategorySlug}
-          onSelectCategory={setSelectedCategorySlug}
+          selectedCategoryID={selectedCategoryID}
+          onSelectCategory={setSelectedCategoryID}
         />
 
-        <DishList selectedCategorySlug={selectedCategorySlug} />
+        <DishList selectedCategoryID={selectedCategoryID} />
       </section>
     </main>
   );
@@ -120,7 +110,7 @@ function MainContent() {
 /**
  * Displays the category tabs using your .tab-pill class
  */
-function CategoryTabs({ selectedCategorySlug, onSelectCategory }) {
+function CategoryTabs({ selectedCategoryID, onSelectCategory }) {
   const {
     data: categories,
     isLoading,
@@ -132,10 +122,10 @@ function CategoryTabs({ selectedCategorySlug, onSelectCategory }) {
 
   // Set the first category as selected by default
   React.useEffect(() => {
-    if (!selectedCategorySlug && categories && categories.length > 0) {
-      onSelectCategory(categories[0].slug);
+    if (!selectedCategoryID && categories && categories.length > 0) {
+      onSelectCategory(categories[0].id);
     }
-  }, [categories, selectedCategorySlug, onSelectCategory]);
+  }, [categories, selectedCategoryID, onSelectCategory]);
 
   if (isLoading) {
     return (
@@ -169,9 +159,9 @@ function CategoryTabs({ selectedCategorySlug, onSelectCategory }) {
       {categories.map((category) => (
         <button
           key={category.id}
-          onClick={() => onSelectCategory(category.slug)}
+          onClick={() => onSelectCategory(category.id)}
           // We use the .active class defined in <CustomStyles>
-          className={`tab-pill ${selectedCategorySlug === category.slug ? 'active' : ''}`}
+          className={`tab-pill ${selectedCategoryID === category.id ? 'active' : ''}`}
         >
           {category.name}
         </button>
@@ -183,7 +173,7 @@ function CategoryTabs({ selectedCategorySlug, onSelectCategory }) {
 /**
  * Displays the list of dishes using your .menu-cards and .card classes
  */
-function DishList({ selectedCategorySlug }) {
+function DishList({ selectedCategoryID }) {
   const [viewingDishId, setViewingDishId] = useState(null);
 
   const {
@@ -191,12 +181,12 @@ function DishList({ selectedCategorySlug }) {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ['dishes', selectedCategorySlug],
-    queryFn: () => fetchDishesByCategory(selectedCategorySlug),
-    enabled: !!selectedCategorySlug,
+    queryKey: ['dishes', selectedCategoryID],
+    queryFn: () => fetchDishesByCategory(selectedCategoryID),
+    enabled: !!selectedCategoryID,
   });
 
-  if (!selectedCategorySlug) {
+  if (!selectedCategoryID) {
     return (
       <div style={{ padding: '2rem 0', color: '#555' }}>
         <p>Please select a category above to see the available dishes.</p>
