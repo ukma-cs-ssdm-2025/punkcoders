@@ -242,7 +242,7 @@ function DishList({ selectedCategoryID }) {
             <div className="card-content" style={{ filter: 'blur(4px)' }}>
               <h3 className="product-title">Loading...</h3>
               <p className="product-price">$...</p>
-              <button className="read-btn">read more</button>
+              <button className="tab-pill">read more</button>
             </div>
           </div>
         ))}
@@ -342,7 +342,7 @@ function DishCard({ dish, onShowDetails }) {
             Add to Cart
           </button>
           <button 
-            className="read-btn"
+            className="tab-pill"
             onClick={handleShowDetails}
           >
             Read more
