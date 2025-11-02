@@ -57,6 +57,8 @@ class User(AbstractUser):
     class Role(models.TextChoices):
         MANAGER = "MANAGER", "Manager"
         CUSTOMER = "CUSTOMER", "Customer"
+        KITCHEN_STAFF = "KITCHEN_STAFF", "Kitchen Staff"
+        COURIER = "COURIER", "Courier"
         # You can still add more roles here later
 
     role = models.CharField(max_length=20, choices=Role.choices)
