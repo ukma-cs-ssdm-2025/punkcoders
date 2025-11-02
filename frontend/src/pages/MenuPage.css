@@ -112,7 +112,7 @@
 }
 .modal-footer button.cart-btn-modal {
     background: var(--color-accent, #FF6F61);
-    color: white;
+    color: #4B2E05;
     border: none;
     border-radius: 50px;
     padding: 10px 24px;

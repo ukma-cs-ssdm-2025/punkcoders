@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   QueryClient,
   QueryClientProvider,
   useQuery,
 } from '@tanstack/react-query';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import apiClient from '../api';
 import Header from '../Common.jsx';
@@ -89,51 +89,33 @@ export default function MenuPage() {
  * This renders the <main> and <section> wrappers from your HomePage.jsx
  */
 function MainContent() {
-  // const [selectedCategoryID, setSelectedCategoryID] = useState(null);
-
-  // --- NEW: React Router hooks ---
-  // Get the slug (e.g., "appetizers") from the URL
   const { categorySlug } = useParams();
-  // Get the function to change the URL
   const navigate = useNavigate();
 
-  // --- MOVED: Fetch categories here instead of in CategoryTabs ---
   const { data: categories, isLoading: categoriesLoading } = useQuery({
     queryKey: ['categories'],
     queryFn: fetchCategories,
   });
 
-  // --- NEW: A memo to derive the selected category ID from the slug ---
   const currentCategory = React.useMemo(() => {
     if (!categories) return null;
 
-    // If there's a slug in the URL, find the matching category
     if (categorySlug) {
       return categories.find((c) => c.slug === categorySlug);
     }
     
-    // If no slug, default to the first category
     return categories[0] || null;
   }, [categories, categorySlug]);
 
-  // The ID we pass down to other components
   const selectedCategoryID = currentCategory ? currentCategory.id : null;
 
-  // --- NEW: Effect to set default URL ---
-  // If the user lands on just "/menu", we redirect them
-  // to the first category's slug (e.g., "/menu/appetizers")
   React.useEffect(() => {
     if (categories && categories.length > 0 && !categorySlug) {
       navigate(`/menu/${categories[0].slug}`, { replace: true });
     }
   }, [categories, categorySlug, navigate]);
 
-  // --- NEW: URL-changing click handler ---
-  // This function will be passed to CategoryTabs
   const handleSelectCategory = (newSlug) => {
-    // We don't set state, we just change the URL.
-    // The component will re-render and the `useMemo` above
-    // will pick up the change.
     navigate(`/menu/${newSlug}`);
   };
 
@@ -293,7 +275,6 @@ function DishList({ selectedCategoryID }) {
 function DishCard({ dish, onShowDetails }) {
   const handleAddToCart = (e) => {
     e.stopPropagation(); // Prevent modal from opening
-    // TODO: Implement Add to Cart logic
     toast.success(`${dish.name} added to cart! (Not really)`);
   };
 
