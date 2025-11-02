@@ -12,7 +12,7 @@ class CustomUserCreationForm(UserCreationForm):
 
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ("username", "email")  # Customers don't set their role
+        fields = ("username", "email", "role")
 
 
 class CustomAuthenticationForm(AuthenticationForm):
