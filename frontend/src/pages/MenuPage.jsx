@@ -328,17 +328,26 @@ function DishCard({ dish, onShowDetails }) {
           Unavailable
         </div>
       )}
-
-      <div className="cart-btn" onClick={handleAddToCart}>
-        <img src="/content/cart.png" alt="add to cart" />
-      </div>
-
+        
       <div className="card-content">
         <h3 className="product-title">{dish.name}</h3>
         <p className="product-price">${dish.price}</p>
-        <button className="read-btn" onClick={handleShowDetails}>
-          Read more
-        </button>
+        
+        <div className="card-actions">
+          <button 
+            className="read-btn"
+            onClick={handleAddToCart}
+            disabled={!dish.is_available}
+          >
+            Add to Cart
+          </button>
+          <button 
+            className="read-btn"
+            onClick={handleShowDetails}
+          >
+            Read more
+          </button>
+        </div>
       </div>
     </div>
   );
