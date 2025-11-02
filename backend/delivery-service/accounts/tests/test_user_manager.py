@@ -1,5 +1,6 @@
 # accounts/test_models.py
 from django.contrib.auth import get_user_model
+from django.db.utils import IntegrityError
 from django.test import TestCase
 
 User = get_user_model()
@@ -7,23 +8,16 @@ User = get_user_model()
 
 class UserManagerTests(TestCase):
 
-    def test_create_user_defaults_to_customer(self):
-        """
-        Tests that create_user() correctly sets the default role to CUSTOMER.
-        """
-        user = User.objects.create_user(username="testuser", email="normal@user.com", password="foo")
-
-        self.assertEqual(user.role, User.Role.CUSTOMER)
-        self.assertFalse(user.is_staff)
-        self.assertFalse(user.is_superuser)
-        self.assertTrue(user.is_active)
+    def test_create_user_requires_role(self):
+        with self.assertRaises((ValueError, IntegrityError)):
+            User.objects.create_user(username="norole", email="a@a.a", password="foo", role=None)
 
     def test_create_user_requires_email(self):
         """
         Tests that creating a user without an email raises a ValueError.
         """
         with self.assertRaises(ValueError):
-            User.objects.create_user(username="noemail", email=None, password="foo")
+            User.objects.create_user(username="noemail", email=None, password="foo", role=User.Role.MANAGER)
 
     def test_create_superuser_is_manager(self):
         """
@@ -47,7 +41,7 @@ class UserManagerTests(TestCase):
                 username="super2",
                 email="super2@user.com",
                 password="foo",
-                role=User.Role.CUSTOMER,  # Attempt to override
+                role=User.Role.COURIER,  # Attempt to override
             )
 
     def test_create_superuser_raises_error_if_is_staff_false(self):
