@@ -210,6 +210,7 @@ function AdminMenuManagement() {
                 </option>
               ))}
             </select>
+            {errors.category && <span className="error-message">{errors.category.message}</span>}
           </div>
 
           <div className="form-group form-group-full">
