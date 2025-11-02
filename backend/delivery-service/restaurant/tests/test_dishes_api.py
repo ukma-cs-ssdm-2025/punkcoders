@@ -203,10 +203,9 @@ class MenuApiTests(APITestCase):
         response = self.client.post(self.dishes_url, data=dish_data, format="multipart")
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertIn("photo", response.data)
-        photo_url = response.data.get("photo")
+        self.assertIn("photo_url", response.data)
+        photo_url = response.data.get("photo_url")
         self.assertIsNotNone(photo_url)
-        # This assumes your MEDIA_URL is correctly set up.
         self.assertIn("/dishes_photos/", photo_url)
         self.assertTrue(photo_url.endswith(".gif"))
 
@@ -333,7 +332,7 @@ class MenuApiTests(APITestCase):
         update_data = DishSerializer(self.dish).data  # Get current data
         update_data["category_id"] = update_data["category"]["id"]  # Adjust for write field
         del update_data["category"]  # Remove read-only field
-        del update_data["photo"]  # Remove photo to avoid upload issues
+        del update_data["photo_url"]  # ditto
         response = self.client.patch(self.dish_detail_url, data=update_data, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
