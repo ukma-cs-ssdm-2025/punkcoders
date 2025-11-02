@@ -21,7 +21,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/admin/*" element={<AdminPage />} />
-        <Route path="/menu" element={<MenuPage />} />
+        <Route path="/menu/:categorySlug?" element={<MenuPage />} />
         <Route path="*" element={<h2>404: Page Not Found</h2>} />
       </Routes>
     </>

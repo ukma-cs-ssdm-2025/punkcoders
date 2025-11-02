@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   QueryClient,
   QueryClientProvider,
@@ -88,7 +89,53 @@ export default function MenuPage() {
  * This renders the <main> and <section> wrappers from your HomePage.jsx
  */
 function MainContent() {
-  const [selectedCategoryID, setSelectedCategoryID] = useState(null);
+  // const [selectedCategoryID, setSelectedCategoryID] = useState(null);
+
+  // --- NEW: React Router hooks ---
+  // Get the slug (e.g., "appetizers") from the URL
+  const { categorySlug } = useParams();
+  // Get the function to change the URL
+  const navigate = useNavigate();
+
+  // --- MOVED: Fetch categories here instead of in CategoryTabs ---
+  const { data: categories, isLoading: categoriesLoading } = useQuery({
+    queryKey: ['categories'],
+    queryFn: fetchCategories,
+  });
+
+  // --- NEW: A memo to derive the selected category ID from the slug ---
+  const currentCategory = React.useMemo(() => {
+    if (!categories) return null;
+
+    // If there's a slug in the URL, find the matching category
+    if (categorySlug) {
+      return categories.find((c) => c.slug === categorySlug);
+    }
+    
+    // If no slug, default to the first category
+    return categories[0] || null;
+  }, [categories, categorySlug]);
+
+  // The ID we pass down to other components
+  const selectedCategoryID = currentCategory ? currentCategory.id : null;
+
+  // --- NEW: Effect to set default URL ---
+  // If the user lands on just "/menu", we redirect them
+  // to the first category's slug (e.g., "/menu/appetizers")
+  React.useEffect(() => {
+    if (categories && categories.length > 0 && !categorySlug) {
+      navigate(`/menu/${categories[0].slug}`, { replace: true });
+    }
+  }, [categories, categorySlug, navigate]);
+
+  // --- NEW: URL-changing click handler ---
+  // This function will be passed to CategoryTabs
+  const handleSelectCategory = (newSlug) => {
+    // We don't set state, we just change the URL.
+    // The component will re-render and the `useMemo` above
+    // will pick up the change.
+    navigate(`/menu/${newSlug}`);
+  };
 
   return (
     <main>
@@ -97,8 +144,11 @@ function MainContent() {
         <h2 className="section-title">A Menu That Will Always<br />Capture Your Heart</h2>
 
         <CategoryTabs
+          // --- UPDATED PROPS ---
+          categories={categories}
+          isLoading={categoriesLoading}
           selectedCategoryID={selectedCategoryID}
-          onSelectCategory={setSelectedCategoryID}
+          onSelectCategory={handleSelectCategory} // Pass the new handler
         />
 
         <DishList selectedCategoryID={selectedCategoryID} />
@@ -110,42 +160,28 @@ function MainContent() {
 /**
  * Displays the category tabs using your .tab-pill class
  */
-function CategoryTabs({ selectedCategoryID, onSelectCategory }) {
-  const {
-    data: categories,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ['categories'],
-    queryFn: fetchCategories,
-  });
-
-  // Set the first category as selected by default
-  React.useEffect(() => {
-    if (!selectedCategoryID && categories && categories.length > 0) {
-      onSelectCategory(categories[0].id);
-    }
-  }, [categories, selectedCategoryID, onSelectCategory]);
+function CategoryTabs({
+  categories,
+  isLoading,
+  selectedCategoryID,
+  onSelectCategory,
+}) {
+  // --- REMOVED: useQuery for categories (moved to MainContent) ---
+  // --- REMOVED: useEffect for default selection (moved to MainContent) ---
 
   if (isLoading) {
     return (
       <div className="category-tabs">
-        {/* Skeleton loaders matching your style */}
         {[...Array(3)].map((_, i) => (
-          <button key={i} className="tab-pill" disabled style={{ opacity: 0.5 }}>Loading...</button>
+          <button key={i} className="tab-pill" disabled style={{ opacity: 0.5 }}>
+            Loading...
+          </button>
         ))}
       </div>
     );
   }
 
-  if (isError) {
-    return (
-      <div className="category-tabs">
-        <p style={{ color: 'red' }}>Error loading categories.</p>
-      </div>
-    );
-  }
-
+  // We can just check the passed-in prop
   if (!categories || categories.length === 0) {
     return (
       <div className="category-tabs">
@@ -159,9 +195,11 @@ function CategoryTabs({ selectedCategoryID, onSelectCategory }) {
       {categories.map((category) => (
         <button
           key={category.id}
-          onClick={() => onSelectCategory(category.id)}
-          // We use the .active class defined in <CustomStyles>
-          className={`tab-pill ${selectedCategoryID === category.id ? 'active' : ''}`}
+          // --- KEY CHANGE: Call with the SLUG, not the ID ---
+          onClick={() => onSelectCategory(category.slug)}
+          className={`tab-pill ${
+            selectedCategoryID === category.id ? 'active' : ''
+          }`}
         >
           {category.name}
         </button>
