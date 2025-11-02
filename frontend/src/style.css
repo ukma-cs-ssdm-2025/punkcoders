@@ -553,6 +553,11 @@ button:hover {
   transition: .25s;
 }
 
+.read-btn:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
 .read-btn:hover {
   opacity: .8;
 }
