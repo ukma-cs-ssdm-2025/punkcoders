@@ -61,7 +61,9 @@ class DishSerializer(serializers.ModelSerializer):
     ingredients_data = IngredientDataSerializer(many=True, write_only=True, required=False)
 
     # This field handles the actual image file upload.
-    photo = serializers.ImageField(required=False, allow_null=True)
+    photo = serializers.ImageField(required=False, allow_null=True, write_only=True)
+    # and this the image download
+    photo_url = serializers.SerializerMethodField()
 
     is_available = serializers.BooleanField(default=True, required=False)
 
@@ -73,12 +75,24 @@ class DishSerializer(serializers.ModelSerializer):
             "description",
             "price",
             "photo",
+            "photo_url",
             "is_available",
             "category",
             "category_id",
             "ingredients",
-            "ingredients_data",  # For writing only
+            "ingredients_data",
         ]
+
+    def get_photo_url(self, obj):
+        """
+        Returns the absolute URL for the dish photo, or None if no photo exists.
+        """
+        if not obj.photo:
+            return None
+        request = self.context.get("request")
+        if request:
+            return request.build_absolute_uri(obj.photo.url)
+        return obj.photo.url
 
     def create(self, validated_data):
         """

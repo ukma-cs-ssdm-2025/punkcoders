@@ -313,7 +313,7 @@ function DishCard({ dish, onShowDetails }) {
       {/* Assuming /content/ paths are available */}
       <img src="/content/heart.png" className="fav-icon" alt="favorite" />
       <img
-        src={dish.photo || `https://placehold.co/600x400/E5E7EB/333?text=${encodeURIComponent(dish.name)}`}
+        src={dish.photo_url || `https://placehold.co/600x400/E5E7EB/333?text=${encodeURIComponent(dish.name)}`}
         alt={dish.name}
         className="card-img"
         onError={handleImageError}
@@ -386,7 +386,7 @@ function DishDetailModal({ dishId, onClose }) {
           {dish && (
             <>
               <img
-                src={dish.photo || `https://placehold.co/400x400/E5E7EB/333?text=${encodeURIComponent(dish.name)}`}
+                src={dish.photo_url || `https://placehold.co/400x400/E5E7EB/333?text=${encodeURIComponent(dish.name)}`}
                 alt={dish.name}
                 onError={handleImageError}
               />
