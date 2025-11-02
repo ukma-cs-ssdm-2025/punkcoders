@@ -241,7 +241,7 @@ function DishList({ selectedCategoryID }) {
             <div style={{ height: '200px', background: '#eee' }} />
             <div className="card-content" style={{ filter: 'blur(4px)' }}>
               <h3 className="product-title">Loading...</h3>
-              <p className="product-price">$...</p>
+              <p className="product-price">...₴</p>
               <button className="tab-pill">read more</button>
             </div>
           </div>
@@ -331,7 +331,7 @@ function DishCard({ dish, onShowDetails }) {
         
       <div className="card-content">
         <h3 className="product-title">{dish.name}</h3>
-        <p className="product-price">${dish.price}</p>
+        <p className="product-price">{dish.price}₴</p>
         
         <div className="card-actions">
           <button 
@@ -399,7 +399,7 @@ function DishDetailModal({ dishId, onClose }) {
                 alt={dish.name}
                 onError={handleImageError}
               />
-              <p className="modal-price">${dish.price}</p>
+              <p className="modal-price">{dish.price}₴</p>
               <p>{dish.description}</p>
               
               {dish.ingredients && dish.ingredients.length > 0 && (
