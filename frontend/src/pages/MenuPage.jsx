@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   QueryClient,
@@ -225,19 +226,23 @@ function DishList({ selectedCategoryID }) {
   }
 
   if (isLoading) {
+    const skeletons = [];
+    for (let i = 0; i < 3; i++) {
+      skeletons.push(
+      <div key={i} className="card" style={{ opacity: 0.5, pointerEvents: 'none' }}>
+        <div style={{ height: '200px', background: '#eee' }} />
+        <div className="card-content" style={{ filter: 'blur(4px)' }}>
+        <h3 className="product-title">Loading...</h3>
+        <p className="product-price">...₴</p>
+        <button className="tab-pill">read more</button>
+        </div>
+      </div>
+      );
+    }
+
     return (
       <div className="menu-cards">
-        {/* Skeleton loaders matching the .card structure */}
-        {[...Array(3)].map((_, i) => (
-          <div key={i} className="card" style={{ opacity: 0.5, pointerEvents: 'none' }}>
-            <div style={{ height: '200px', background: '#eee' }} />
-            <div className="card-content" style={{ filter: 'blur(4px)' }}>
-              <h3 className="product-title">Loading...</h3>
-              <p className="product-price">...₴</p>
-              <button className="tab-pill">read more</button>
-            </div>
-          </div>
-        ))}
+      {skeletons}
       </div>
     );
   }
