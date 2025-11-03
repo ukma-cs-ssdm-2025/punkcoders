@@ -28,10 +28,8 @@ const queryClient = new QueryClient({
 // --- API Fetching Functions ---
 
 const fetchCategories = async () => {
-  console.log('Fetching categories from /categories/');
   try {
     const response = await apiClient.get('/categories/');
-    console.log('Categories fetched:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching categories:', error);
@@ -148,8 +146,6 @@ function CategoryTabs({
   selectedCategoryID,
   onSelectCategory,
 }) {
-  // --- REMOVED: useQuery for categories (moved to MainContent) ---
-  // --- REMOVED: useEffect for default selection (moved to MainContent) ---
 
   if (isLoading) {
     return (
