@@ -16,6 +16,7 @@ function LoginPage() {
 
     try {
       // 1. Надсилаємо POST-запит на ваш Django ендпоінт
+      // TODO: use apiClient
       const response = await axios.post('http://localhost:8000/api/token/', {
         // Ми припускаємо, що ваш Django налаштований на вхід по 'email'.
         // Якщо він очікує 'username', змініть 'email' на 'username'.
