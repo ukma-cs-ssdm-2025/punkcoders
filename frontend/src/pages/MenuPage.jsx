@@ -140,6 +140,7 @@ function MainContent() {
 /**
  * Displays the category tabs using your .tab-pill class
  */
+
 function CategoryTabs({
   categories,
   isLoading,
@@ -184,6 +185,19 @@ function CategoryTabs({
       ))}
     </div>
   );
+}
+
+CategoryTabs.propTypes = {
+  categories: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      name: PropTypes.string.isRequired,
+      slug: PropTypes.string.isRequired
+    })
+  ).isRequired,
+  isLoading: PropTypes.bool,
+  selectedCategoryID: PropTypes.number,
+  onSelectCategory: PropTypes.func.isRequired,
 }
 
 /**
@@ -265,6 +279,10 @@ function DishList({ selectedCategoryID }) {
   );
 }
 
+DishList.propTypes = {
+  selectedCategoryID: PropTypes.number,
+}
+
 /**
  * Displays a single dish card using your .card structure
  */
@@ -330,6 +348,17 @@ function DishCard({ dish, onShowDetails }) {
   );
 }
 
+DishCard.propTypes = {
+  dish: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired,
+    price: PropTypes.number.isRequired,
+    photo_url: PropTypes.string,
+    is_available: PropTypes.bool.isRequired,
+  }).isRequired,
+  onShowDetails: PropTypes.func.isRequired,
+}
+
 /**
  * Modal to display full dish details.
  * This uses the custom styles from the <CustomStyles> component.
@@ -353,7 +382,6 @@ function DishDetailModal({ dishId, onClose }) {
   if (!dishId) return null;
 
   const handleAddToCart = () => {
-    // TODO: Implement Add to Cart logic
     toast.success(`${dish.name} added to cart! (Not really)`);
     onClose(); // Close modal after adding
   };
@@ -415,3 +443,7 @@ function DishDetailModal({ dishId, onClose }) {
   );
 }
 
+DishDetailModal.propTypes = {
+  dishId: PropTypes.number,
+  onClose: PropTypes.func.isRequired,
+}
