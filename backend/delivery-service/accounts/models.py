@@ -17,10 +17,6 @@ class CustomUserManager(BaseUserManager):
             raise ValueError("The Email must be set")
         email = self.normalize_email(email)
 
-        # --- This handles Requirement 1 ---
-        # Set default role if not provided
-        extra_fields.setdefault("role")
-
         user = self.model(username=username, email=email, **extra_fields)
         user.set_password(password)
         user.save()

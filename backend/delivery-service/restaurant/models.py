@@ -10,6 +10,7 @@ class Category(models.Model):
     """
 
     name = models.CharField(max_length=100, unique=True, verbose_name="Назва категорії")
+    # TODO: remove (downscoped this)
     is_alcoholic = models.BooleanField(
         default=False,
         verbose_name="Алкогольна категорія",
@@ -78,6 +79,7 @@ class Dish(models.Model):
     )
 
     # FR-045, FR-047: Поля для відстеження змін, які можуть знадобитися для нотифікацій.
+    # TODO: remove (downscoped?)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
