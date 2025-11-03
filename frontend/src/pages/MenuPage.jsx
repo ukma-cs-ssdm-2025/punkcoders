@@ -150,13 +150,18 @@ function CategoryTabs({
 }) {
 
   if (isLoading) {
+    let skeletons = [];
+    for (let i = 0; i < 3; i++) {
+      skeletons.push(
+        <button key={i} className="tab-pill" disabled style={{ opacity: 0.5 }}> 
+          Loading...
+        </button>
+      );
+    }
+
     return (
       <div className="category-tabs">
-        {[...Array(3)].map((_, i) => (
-          <button key={i} className="tab-pill" disabled style={{ opacity: 0.5 }}>
-            Loading...
-          </button>
-        ))}
+        {skeletons}
       </div>
     );
   }
