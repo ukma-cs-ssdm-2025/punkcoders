@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   QueryClient,
   QueryClientProvider,
   useQuery,
 } from '@tanstack/react-query';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import apiClient from '../api';
 import Header from '../Common.jsx';
@@ -28,10 +29,8 @@ const queryClient = new QueryClient({
 // --- API Fetching Functions ---
 
 const fetchCategories = async () => {
-  console.log('Fetching categories from /categories/');
   try {
     const response = await apiClient.get('/categories/');
-    console.log('Categories fetched:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching categories:', error);
@@ -89,51 +88,33 @@ export default function MenuPage() {
  * This renders the <main> and <section> wrappers from your HomePage.jsx
  */
 function MainContent() {
-  // const [selectedCategoryID, setSelectedCategoryID] = useState(null);
-
-  // --- NEW: React Router hooks ---
-  // Get the slug (e.g., "appetizers") from the URL
   const { categorySlug } = useParams();
-  // Get the function to change the URL
   const navigate = useNavigate();
 
-  // --- MOVED: Fetch categories here instead of in CategoryTabs ---
   const { data: categories, isLoading: categoriesLoading } = useQuery({
     queryKey: ['categories'],
     queryFn: fetchCategories,
   });
 
-  // --- NEW: A memo to derive the selected category ID from the slug ---
   const currentCategory = React.useMemo(() => {
     if (!categories) return null;
 
-    // If there's a slug in the URL, find the matching category
     if (categorySlug) {
       return categories.find((c) => c.slug === categorySlug);
     }
     
-    // If no slug, default to the first category
     return categories[0] || null;
   }, [categories, categorySlug]);
 
-  // The ID we pass down to other components
   const selectedCategoryID = currentCategory ? currentCategory.id : null;
 
-  // --- NEW: Effect to set default URL ---
-  // If the user lands on just "/menu", we redirect them
-  // to the first category's slug (e.g., "/menu/appetizers")
   React.useEffect(() => {
     if (categories && categories.length > 0 && !categorySlug) {
       navigate(`/menu/${categories[0].slug}`, { replace: true });
     }
   }, [categories, categorySlug, navigate]);
 
-  // --- NEW: URL-changing click handler ---
-  // This function will be passed to CategoryTabs
   const handleSelectCategory = (newSlug) => {
-    // We don't set state, we just change the URL.
-    // The component will re-render and the `useMemo` above
-    // will pick up the change.
     navigate(`/menu/${newSlug}`);
   };
 
@@ -160,23 +141,27 @@ function MainContent() {
 /**
  * Displays the category tabs using your .tab-pill class
  */
+
 function CategoryTabs({
   categories,
   isLoading,
   selectedCategoryID,
   onSelectCategory,
 }) {
-  // --- REMOVED: useQuery for categories (moved to MainContent) ---
-  // --- REMOVED: useEffect for default selection (moved to MainContent) ---
 
   if (isLoading) {
+    let skeletons = [];
+    for (let i = 0; i < 3; i++) {
+      skeletons.push(
+        <button key={i} className="tab-pill" disabled style={{ opacity: 0.5 }}> 
+          Loading...
+        </button>
+      );
+    }
+
     return (
       <div className="category-tabs">
-        {[...Array(3)].map((_, i) => (
-          <button key={i} className="tab-pill" disabled style={{ opacity: 0.5 }}>
-            Loading...
-          </button>
-        ))}
+        {skeletons}
       </div>
     );
   }
@@ -208,6 +193,19 @@ function CategoryTabs({
   );
 }
 
+CategoryTabs.propTypes = {
+  categories: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      name: PropTypes.string.isRequired,
+      slug: PropTypes.string.isRequired
+    })
+  ).isRequired,
+  isLoading: PropTypes.bool,
+  selectedCategoryID: PropTypes.number,
+  onSelectCategory: PropTypes.func.isRequired,
+}
+
 /**
  * Displays the list of dishes using your .menu-cards and .card classes
  */
@@ -233,19 +231,23 @@ function DishList({ selectedCategoryID }) {
   }
 
   if (isLoading) {
+    const skeletons = [];
+    for (let i = 0; i < 3; i++) {
+      skeletons.push(
+      <div key={i} className="card" style={{ opacity: 0.5, pointerEvents: 'none' }}>
+        <div style={{ height: '200px', background: '#eee' }} />
+        <div className="card-content" style={{ filter: 'blur(4px)' }}>
+        <h3 className="product-title">Loading...</h3>
+        <p className="product-price">...₴</p>
+        <button className="tab-pill">read more</button>
+        </div>
+      </div>
+      );
+    }
+
     return (
       <div className="menu-cards">
-        {/* Skeleton loaders matching the .card structure */}
-        {[...Array(3)].map((_, i) => (
-          <div key={i} className="card" style={{ opacity: 0.5, pointerEvents: 'none' }}>
-            <div style={{ height: '200px', background: '#eee' }} />
-            <div className="card-content" style={{ filter: 'blur(4px)' }}>
-              <h3 className="product-title">Loading...</h3>
-              <p className="product-price">$...</p>
-              <button className="tab-pill">read more</button>
-            </div>
-          </div>
-        ))}
+      {skeletons}
       </div>
     );
   }
@@ -287,13 +289,16 @@ function DishList({ selectedCategoryID }) {
   );
 }
 
+DishList.propTypes = {
+  selectedCategoryID: PropTypes.number,
+}
+
 /**
  * Displays a single dish card using your .card structure
  */
 function DishCard({ dish, onShowDetails }) {
   const handleAddToCart = (e) => {
     e.stopPropagation(); // Prevent modal from opening
-    // TODO: Implement Add to Cart logic
     toast.success(`${dish.name} added to cart! (Not really)`);
   };
 
@@ -331,7 +336,7 @@ function DishCard({ dish, onShowDetails }) {
         
       <div className="card-content">
         <h3 className="product-title">{dish.name}</h3>
-        <p className="product-price">${dish.price}</p>
+        <p className="product-price">{dish.price}₴</p>
         
         <div className="card-actions">
           <button 
@@ -351,6 +356,17 @@ function DishCard({ dish, onShowDetails }) {
       </div>
     </div>
   );
+}
+
+DishCard.propTypes = {
+  dish: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired,
+    price: PropTypes.number.isRequired,
+    photo_url: PropTypes.string,
+    is_available: PropTypes.bool.isRequired,
+  }).isRequired,
+  onShowDetails: PropTypes.func.isRequired,
 }
 
 /**
@@ -376,7 +392,6 @@ function DishDetailModal({ dishId, onClose }) {
   if (!dishId) return null;
 
   const handleAddToCart = () => {
-    // TODO: Implement Add to Cart logic
     toast.success(`${dish.name} added to cart! (Not really)`);
     onClose(); // Close modal after adding
   };
@@ -399,7 +414,7 @@ function DishDetailModal({ dishId, onClose }) {
                 alt={dish.name}
                 onError={handleImageError}
               />
-              <p className="modal-price">${dish.price}</p>
+              <p className="modal-price">{dish.price}₴</p>
               <p>{dish.description}</p>
               
               {dish.ingredients && dish.ingredients.length > 0 && (
@@ -438,3 +453,7 @@ function DishDetailModal({ dishId, onClose }) {
   );
 }
 
+DishDetailModal.propTypes = {
+  dishId: PropTypes.number,
+  onClose: PropTypes.func.isRequired,
+}
