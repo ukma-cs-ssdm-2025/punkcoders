@@ -95,7 +95,7 @@
 
 .admin-button {
   background: var(--color-accent, #FF6F61);
-  color: white;
+  color: #4B2E05;
   border: none;
   border-radius: var(--radius, 12px);
   padding: 0.7em 1.4em;

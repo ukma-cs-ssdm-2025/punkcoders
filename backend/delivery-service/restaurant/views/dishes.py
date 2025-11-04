@@ -3,10 +3,7 @@ from rest_framework import parsers, viewsets
 from rest_framework.permissions import AllowAny
 from restaurant.models import Category, Dish, Ingredient
 from restaurant.serializers.dishes import CategorySerializer, DishSerializer, IngredientSerializer
-
-# import pdb
-# from rest_framework.response import Response
-# from rest_framework import status
+from restaurant.services.dishes import get_dishes_queryset
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -59,21 +56,13 @@ class DishViewSet(viewsets.ModelViewSet):
         return [IsManager()]
 
     def get_queryset(self):
-        # Use the service function to get the filtered/sorted queryset
-        # for the list view.
-        # TODO: fuck, it's incorrect. don't use, we don't have any filtering rn
-        # if self.action == "list":
-        #     qs = get_dishes_queryset(
-        #         category_slug=self.request.query_params.get("category"),
-        #         search_term=self.request.query_params.get("q"),
-        #         sort_by=self.request.query_params.get("sort"),
-        #     )
-        #     print(qs)
-        #     print(super().get_queryset())
-        #     return qs
-        # return get_dishes_queryset(
-        #     category_slug=self.request.query_params.get("category"),
-        #     search_term=self.request.query_params.get("q"),
-        #     sort_by=self.request.query_params.get("sort"),
-        # )
-        return super().get_queryset()
+        """
+        This is the magic part.
+        This method overrides the default .queryset property.
+        """
+        # 1. Get the 'category_id' from the request's query parameters
+        # e.g., /api/dishes/?category_id=1
+        category_id = self.request.query_params.get("category_id")
+
+        # 2. Call your service with the (optional) category_id
+        return get_dishes_queryset(category_id=category_id)

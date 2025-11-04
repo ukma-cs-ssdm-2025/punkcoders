@@ -97,7 +97,7 @@ function AdminMenuManagement() {
 
     } catch (error) {
       // 5. Handle errors from the server
-      if (error.response && error.response.status === 400) {
+      if (error.response?.status === 400) {
         // This is a validation error (e.g., "name already exists")
         const serverErrors = error.response.data;
         for (const [field, message] of Object.entries(serverErrors)) {
@@ -107,6 +107,7 @@ function AdminMenuManagement() {
       } else {
         // This is a network error or 500 server error
         toast.error("Сталася неочікувана помилка. Спробуйте ще раз.");
+        console.error('Submission error:', error);
       }
     }
   };
@@ -128,14 +129,38 @@ function AdminMenuManagement() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Ви впевнені, що хочете видалити цю страву?')) {
+    if (globalThis.confirm('Ви впевнені, що хочете видалити цю страву?')) {
       try {
         await apiClient.delete(`/dishes/${id}/`);
         toast.success("Страву видалено.");
         fetchDishes(); // Reload the list
       } catch (error) {
         toast.error("Не вдалося видалити страву.");
+        console.error('Error deleting dish:', error);
       }
+    }
+  };
+
+  const handleAvailabilityToggle = async (dishId, newAvailability) => {
+    const originalMenuItems = [...menuItems];
+
+    const dishData = new FormData();
+      dishData.append('is_available', newAvailability);
+
+    setMenuItems(prevItems =>
+      prevItems.map(item =>
+        item.id === dishId ? { ...item, is_available: newAvailability } : item
+      )
+    );
+
+    try {
+      await apiClient.patch(`/dishes/${dishId}/`, dishData);
+      // Optional: Show a very subtle success message
+      // toast.success("Availability updated!"); 
+    } catch (error) {
+      toast.error("Failed to update availability. Please try again.");
+      console.error('Error updating availability:', error);
+      setMenuItems(originalMenuItems);
     }
   };
 
@@ -208,6 +233,7 @@ function AdminMenuManagement() {
                 </option>
               ))}
             </select>
+            {errors.category && <span className="error-message">{errors.category.message}</span>}
           </div>
 
           <div className="form-group form-group-full">
@@ -254,10 +280,20 @@ function AdminMenuManagement() {
         {/* ... (thead) ... */}
         <tbody>
           {menuItems.map(item => (
-            <tr key={item.id} className={!item.is_available ? 'status-unavailable' : ''}>
+            <tr key={item.id} className={item.is_available ? '' : 'status-unavailable'}>
               <td>{item.name}</td>
-              <td>{parseFloat(item.price).toFixed(2)} грн</td>
+              <td>{Number.parseFloat(item.price).toFixed(2)} грн</td>
               <td>{item.category.name}</td>
+              <td>
+                <input
+                  type="checkbox"
+                  checked={item.is_available}
+                  onChange={(e) =>
+                    handleAvailabilityToggle(item.id, e.target.checked)
+                  }
+                  style={{ cursor: 'pointer', transform: 'scale(1.2)' }}
+                />
+              </td>
               <td>{item.is_available ? 'Доступна' : 'Недоступна'}</td>
               <td className="actions">
                 <button className="admin-button" onClick={() => handleEdit(item)}>

@@ -2,10 +2,13 @@
 
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/';
+const VERSION = 'v0';
+
 // 1. Create the base axios instance
 console.log(import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v0/')
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v0/'
+  baseURL: API_URL + VERSION,
 });
 
 // 2. The "Request" Interceptor
@@ -22,7 +25,7 @@ apiClient.interceptors.request.use(
   },
   (error) => {
     // Handle any request errors
-    return Promise.reject(error);
+    throw error;
   }
 );
 
@@ -38,7 +41,7 @@ apiClient.interceptors.response.use(
 
     // 4. Check for the specific error: 401 (Unauthorized)
     // We also check for `!originalRequest._retry` to prevent infinite loops
-    if (error.response && error.response.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true; // Mark this request as having been retried
 
       console.log("Access token expired, attempting to refresh...");
@@ -52,7 +55,7 @@ apiClient.interceptors.response.use(
 
         // Make the refresh request using a NEW, separate axios instance
         // to avoid this interceptor catching its own errors
-        const response = await axios.post('http://localhost:8000/api/token/refresh/', {
+        const response = await axios.post(API_URL + 'token/refresh/', {
           refresh: refreshToken
         });
 
@@ -77,15 +80,16 @@ apiClient.interceptors.response.use(
         
         // Redirect to login page.
         // We use window.location to force a full page reload, clearing all app state.
-        window.location.href = '/login';
+        globalThis.location.href = '/login';
 
-        return Promise.reject(refreshError);
+        throw refreshError;
       }
     }
 
     // For any other error (like 404, 500), just let it fail
-    return Promise.reject(error);
+    throw error;
   }
 );
 
 export default apiClient;
+export { API_URL };

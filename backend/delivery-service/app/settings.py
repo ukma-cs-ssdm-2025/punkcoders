@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 
 import dj_database_url
+import slugify
 from corsheaders.defaults import default_headers
 from dotenv import load_dotenv
 
@@ -26,7 +27,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 load_dotenv()
-SECRET_KEY = os.getenv("SECRET_KEY", "default-safe-key-for-dev-only")
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY environment variable is not set!")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "1").lower() in ["1", "true", "yes"]
@@ -52,7 +55,10 @@ INSTALLED_APPS = [
     "restaurant",
     "accounts",
     "corsheaders",
+    "autoslug",
 ]
+
+AUTOSLUG_SLUGIFY_FUNCTION = slugify.slugify
 
 # CORS Configuration
 if DEBUG:

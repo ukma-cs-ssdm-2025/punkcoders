@@ -1,44 +1,29 @@
-# from django.core.exceptions import ObjectDoesNotExist
-from django.db import transaction  # , IntegrityError
-from restaurant.models import Dish, DishIngredient  # , Ingredient, Category
+from django.db import transaction
+from restaurant.models import Dish, DishIngredient
 
 # NOTE: The dish_to_dict function has been removed as it is no longer needed.
 # The serializers now handle all conversion from model instance to JSON.
 
 
-def get_dishes_queryset(category_slug=None, search_term=None, sort_by="name"):
+def get_dishes_queryset(category_id=None):
     """
-    Returns a queryset of dishes with filtering and sorting.
-    The view will handle serialization.
+    Returns a queryset of available dishes, optionally filtered by category_id.
     """
-    queryset = (
-        Dish.objects.filter(is_available=True)
-        .select_related("category")
-        .prefetch_related("dishingredient_set__ingredient")
+    # Start with all available dishes and pre-load related data
+    # to prevent N+1 query problems.
+    queryset = Dish.objects.select_related("category").prefetch_related(  # .filter(is_available=True)
+        "dishingredient_set__ingredient"
     )
 
-    if category_slug:
-        queryset = queryset.filter(category__slug=category_slug)
+    # If a category_id is provided, filter the queryset
+    if category_id:
+        # Use category_id=category_id for a direct foreign key check
+        queryset = queryset.filter(category_id=category_id)
 
-    if search_term:
-        queryset = queryset.filter(name__icontains=search_term)
-
-    if sort_by == "price_asc":
-        queryset = queryset.order_by("price")
-    elif sort_by == "price_desc":
-        queryset = queryset.order_by("-price")
-    else:
-        queryset = queryset.order_by("name")
+    # Order by name by default
+    queryset = queryset.order_by("name")
 
     return queryset
-
-
-def get_dish_by_id(pk):
-    """Returns a single Dish instance or None."""
-    try:
-        return Dish.objects.get(pk=pk)
-    except (Dish.DoesNotExist, ValueError, TypeError):
-        return None
 
 
 @transaction.atomic
@@ -93,12 +78,3 @@ def update_dish(dish_instance, validated_data):
         DishIngredient.objects.bulk_create(dish_ingredients)
 
     return dish_instance
-
-
-def delete_dish(pk):
-    """Deletes a dish by ID."""
-    dish = get_dish_by_id(pk)
-    if dish:
-        dish.delete()
-        return True
-    return False

@@ -34,11 +34,11 @@ class PermissionTests(APITestCase):
     @classmethod
     def setUpTestData(cls):
         # Create the users we'll need for testing
-        cls.customer_user = User.objects.create_user(
-            username="customer",
-            email="customer@example.com",
+        cls.courier_user = User.objects.create_user(
+            username="courier",
+            email="courier@example.com",
             password="password123",
-            role=User.Role.CUSTOMER,
+            role=User.Role.COURIER,
         )
 
         cls.manager_user = User.objects.create_superuser(
@@ -52,13 +52,13 @@ class PermissionTests(APITestCase):
     def test_user_can_login_with_valid_credentials(self):
         # Assumes you have a token login endpoint at /api/token/
         # This URL depends on your auth package (e.g., Simple JWT)
-        response = self.client.post(LOGIN_URL, {"username": "customer", "password": "password123"}, format="json")
+        response = self.client.post(LOGIN_URL, {"username": "courier", "password": "password123"}, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("access", response.data)  # Or whatever your token is named
 
     def test_user_cannot_login_with_invalid_password(self):
-        response = self.client.post(LOGIN_URL, {"username": "customer", "password": "wrongpassword"}, format="json")
+        response = self.client.post(LOGIN_URL, {"username": "courier", "password": "wrongpassword"}, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -76,13 +76,12 @@ class PermissionTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_customer_user_cannot_access_protected_view(self):
+    def test_unauthorized_user_cannot_access_protected_view(self):
         """
         GET /protected-view/
-        Tests that a logged-in CUSTOMER gets a 403 Forbidden.
+        Tests that a logged-in COURIER gets a 403 Forbidden.
         """
-        # Log in as the customer
-        self.client.force_authenticate(user=self.customer_user)
+        self.client.force_authenticate(user=self.courier_user)
 
         with self.settings(ROOT_URLCONF=__name__):
             response = self.client.get(self.protected_url)

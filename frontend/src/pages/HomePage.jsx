@@ -12,7 +12,7 @@ function HomePage() {
 
           <nav className="header-navigation">
             <ul>
-              <li><a href="/">Меню</a></li>
+              <li><a href="/menu">Меню</a></li>
               <li><a href="/faq">FAQ</a></li>
             </ul>
           </nav>
@@ -109,7 +109,7 @@ function HomePage() {
 
               <div className="card-content">
                 <h3 className="product-title">Sausage Pizza</h3>
-                <p className="product-price">$7.49</p>
+                <p className="product-price">7.49₴</p>
                 <div className="stars">⭐️⭐️⭐️⭐️</div>
                 <button className="read-btn">read more</button>
               </div>
@@ -124,7 +124,7 @@ function HomePage() {
 
               <div className="card-content">
                 <h3 className="product-title">Margherita pizza</h3>
-                <p className="product-price">$6.40</p>
+                <p className="product-price">6.40₴</p>
                 <div className="stars">⭐️⭐️⭐️</div>
                 <button className="read-btn">read more</button>
               </div>
@@ -139,7 +139,7 @@ function HomePage() {
 
               <div className="card-content">
                 <h3 className="product-title">Meatlovers pizza</h3>
-                <p className="product-price">$9.17</p>
+                <p className="product-price">9.17₴</p>
                 <div className="stars">⭐️⭐️⭐️⭐️</div>
                 <button className="read-btn">read more</button>
               </div>
