@@ -3,6 +3,7 @@ from rest_framework import parsers, viewsets
 from rest_framework.permissions import AllowAny
 from restaurant.models import Category, Dish, Ingredient
 from restaurant.serializers.dishes import CategorySerializer, DishSerializer, IngredientSerializer
+from restaurant.services.dishes import get_dishes_queryset
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -53,3 +54,15 @@ class DishViewSet(viewsets.ModelViewSet):
         if self.action in ["list", "retrieve"]:
             return [AllowAny()]
         return [IsManager()]
+
+    def get_queryset(self):
+        """
+        This is the magic part.
+        This method overrides the default .queryset property.
+        """
+        # 1. Get the 'category_id' from the request's query parameters
+        # e.g., /api/dishes/?category_id=1
+        category_id = self.request.query_params.get("category_id")
+
+        # 2. Call your service with the (optional) category_id
+        return get_dishes_queryset(category_id=category_id)

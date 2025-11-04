@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 
 import dj_database_url
+import slugify
 from corsheaders.defaults import default_headers
 from dotenv import load_dotenv
 
@@ -54,7 +55,10 @@ INSTALLED_APPS = [
     "restaurant",
     "accounts",
     "corsheaders",
+    "autoslug",
 ]
+
+AUTOSLUG_SLUGIFY_FUNCTION = slugify.slugify
 
 # CORS Configuration
 if DEBUG:

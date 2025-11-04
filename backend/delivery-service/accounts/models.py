@@ -12,15 +12,10 @@ class CustomUserManager(BaseUserManager):
     def create_user(self, username, email, password, **extra_fields):
         """
         Create and save a User with the given email and password.
-        Defaults the role to CUSTOMER.
         """
         if not email:
             raise ValueError("The Email must be set")
         email = self.normalize_email(email)
-
-        # --- This handles Requirement 1 ---
-        # Set default role if not provided
-        extra_fields.setdefault("role", User.Role.CUSTOMER)
 
         user = self.model(username=username, email=email, **extra_fields)
         user.set_password(password)
@@ -56,7 +51,8 @@ class CustomUserManager(BaseUserManager):
 class User(AbstractUser):
     class Role(models.TextChoices):
         MANAGER = "MANAGER", "Manager"
-        CUSTOMER = "CUSTOMER", "Customer"
+        KITCHEN_STAFF = "KITCHEN_STAFF", "Kitchen Staff"
+        COURIER = "COURIER", "Courier"
         # You can still add more roles here later
 
     role = models.CharField(max_length=20, choices=Role.choices)

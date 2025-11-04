@@ -9,3 +9,5 @@ pillow
 python-dotenv
 django-cors-headers
 dj-database-url
+django-autoslug
+python-slugify

@@ -1,6 +1,6 @@
+from autoslug.fields import AutoSlugField
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.utils.text import slugify
 
 
 class Category(models.Model):
@@ -10,16 +10,17 @@ class Category(models.Model):
     """
 
     name = models.CharField(max_length=100, unique=True, verbose_name="Назва категорії")
+    # TODO: remove (downscoped this)
     is_alcoholic = models.BooleanField(
         default=False,
         verbose_name="Алкогольна категорія",
         help_text="Відзначте, якщо категорія містить алкоголь (важливо для обмежень оплати - FR-020).",
     )
-    slug = models.SlugField(
-        max_length=100,
+    slug = AutoSlugField(
+        populate_from="name",
         unique=True,
-        blank=True,
-        help_text="URL-friendly назва категорії (автоматично генерується).",
+        always_update=False,
+        max_length=100,
     )
 
     class Meta:
@@ -29,30 +30,6 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
-
-    def save(self, *args, **kwargs):
-        """
-        Автоматично генерує унікальний slug з назви перед збереженням.
-        """
-        # Генеруємо slug лише якщо його немає, або якщо змінилася назва
-        if not self.slug or (self.name and not self.slug.startswith(slugify(self.name))):
-            new_slug = slugify(self.name)
-            original_slug = new_slug
-            counter = 1
-
-            # --- Цей цикл гарантує унікальність ---
-            # Поки slug з таким іменем ВЖЕ ІСНУЄ в базі даних...
-            # .exclude(pk=self.pk) потрібен, щоб не знайти "самого себе" при оновленні
-            while Category.objects.filter(slug=new_slug).exclude(pk=self.pk).exists():
-                # ...ми додаємо до нього лічильник
-                new_slug = f"{original_slug}-{counter}"
-                counter += 1
-            # ------------------------------------
-
-            self.slug = new_slug
-
-        # Викликаємо "справжній" метод збереження
-        super(Category, self).save(*args, **kwargs)
 
 
 class Ingredient(models.Model):
@@ -102,6 +79,7 @@ class Dish(models.Model):
     )
 
     # FR-045, FR-047: Поля для відстеження змін, які можуть знадобитися для нотифікацій.
+    # TODO: remove (downscoped?)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:

@@ -42,7 +42,7 @@ class SecurityTests(APITestCase):
             username="hash_test_user",
             email="bogus@nunya.com",
             password="a_very_secure_password_123!",
-            role=User.Role.CUSTOMER,
+            role=User.Role.MANAGER,
         )
 
         params = self._parse_argon2_params(user.password)
