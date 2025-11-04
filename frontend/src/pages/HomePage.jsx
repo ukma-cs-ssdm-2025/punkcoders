@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 function HomePage() {
   return (
@@ -53,7 +54,7 @@ function HomePage() {
               Our mission is to satisfy your appetite with delectable dishes,
               delivered swiftly and at no extra cost.
             </p>
-            <button className="view-menu-btn">View Full Menu</button>
+            <Link to="/menu" className="view-menu-btn">View Full Menu</Link>
           </div>
         </section>
         
