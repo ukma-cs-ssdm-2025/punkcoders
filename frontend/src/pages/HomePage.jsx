@@ -17,19 +17,19 @@ function HomePage() {
             </ul>
           </nav>
 
-          <div className="header-search">
+          {/* <div className="header-search">
             <img src="/content/Shopicons_Light_Search.png" alt="Search-Icon" />
             <input type="text" placeholder="Пошук..." />
-          </div>
+          </div> */}
 
           <div className="header-actions">
             <button className="theme-toggle" aria-label="Перемкнути тему">
               <img src="/content/Shopicons_Light_Sun.png" alt="Sun-Logo-Light_Theme" />
             </button>
 
-            <a href="/login" className="button button-secondary">
+            {/* <a href="/login" className="button button-secondary">
               Log in <img src="/content/Shopicons_Light_Account.png" alt="" />
-            </a>
+            </a> */}
 
             <a href="/cart" className="header-cart-button">
               <span> <img src="/content/Shopicons_Light_Cart6.png" alt="" /></span>
@@ -53,7 +53,7 @@ function HomePage() {
               Our mission is to satisfy your appetite with delectable dishes,
               delivered swiftly and at no extra cost.
             </p>
-            <button className="hero-btn">Get Started</button>
+            <button className="view-menu-btn">View Full Menu</button>
           </div>
         </section>
         
@@ -89,7 +89,7 @@ function HomePage() {
           <img src="/content/shape-yellow.png" className="shape shape4" alt="decorative shape" />
         </section>
 
-        <section className="menu-section">
+        {/* <section className="menu-section">
           <p className="section-subtitle">OUR SELECTION</p>
           <h2 className="section-title">A Menu That Will Always<br />Capture Your Heart</h2>
 
@@ -153,7 +153,7 @@ function HomePage() {
           <div className="view-btn-container">
             <button className="view-menu-btn">View Full Menu</button>
           </div>
-        </section>
+        </section> */}
       </main>
     </>
   );
