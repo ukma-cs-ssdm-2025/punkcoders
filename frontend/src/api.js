@@ -2,9 +2,12 @@
 
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/';
+const VERSION = 'v0';
+
 // 1. Create the base axios instance
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v0/'
+  baseURL: API_URL + VERSION,
 });
 
 // 2. The "Request" Interceptor
@@ -51,7 +54,7 @@ apiClient.interceptors.response.use(
 
         // Make the refresh request using a NEW, separate axios instance
         // to avoid this interceptor catching its own errors
-        const response = await axios.post('http://localhost:8000/api/token/refresh/', {
+        const response = await axios.post(API_URL + 'token/refresh/', {
           refresh: refreshToken
         });
 
@@ -88,3 +91,4 @@ apiClient.interceptors.response.use(
 );
 
 export default apiClient;
+export { API_URL };

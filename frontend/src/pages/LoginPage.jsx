@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './LoginPage.css'; 
-import apiClient from '../api';
-import { toast } from "react-toastify";
+import { API_URL } from '../api';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 
 function LoginPage() {
   const [username, setUsername] = useState('');
@@ -13,10 +14,13 @@ function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Надсилаємо дані на сервер:', username, password);
 
     try {
-      const response = await apiClient.post('/api/token/', {
+      // use axios to avoid the api-token-checking interceptors
+      // while we're trying to set the tokens in question
+      // (and the baseURL override is neater this way)
+      console.log(API_URL);
+      const response = await axios.post(API_URL + 'token/', {
         username: username, 
         password: password
       });
@@ -28,8 +32,14 @@ function LoginPage() {
       navigate('/admin/menu'); 
 
     } catch (error) {
-      console.error('Помилка входу:', error.response ? error.response.data : error.message);
-      toast.error('Неправильний username або пароль. Спробуйте ще раз.');
+      const status = error?.response?.status;
+
+      if (status === 401) {
+        toast.error('Неправильний username або пароль. Спробуйте ще раз.');
+      } else {
+        console.error('Помилка входу:', error?.response ? error.response.data : error.message);
+        toast.error('Не вдалося увійти. Спробуйте ще раз.');
+      }
     }
   };
 
