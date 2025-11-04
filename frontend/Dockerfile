@@ -23,7 +23,7 @@ CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
 # We'll re-use the "development" stage to build our final files
 FROM development AS build
 # Render doesn't make env vars available at build
-ARG VITE_API_URL_ARG="https://clickeat-backend.onrender.com/api/v0/" 
+ARG VITE_API_URL_ARG="https://clickeat-backend.onrender.com/api/" 
 ENV VITE_API_URL=$VITE_API_URL_ARG
 # This creates the optimized 'dist' folder
 RUN npm run build
