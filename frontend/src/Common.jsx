@@ -10,24 +10,24 @@ export default function Header() {
 
         <nav className="header-navigation">
           <ul>
-            <li><a href="/menu">Меню</a></li>
+            <li><a href="/menu">Menu</a></li>
             <li><a href="/faq">FAQ</a></li>
           </ul>
         </nav>
 
-        <div className="header-search">
+        {/* <div className="header-search">
           <img src="/content/Shopicons_Light_Search.png" alt="Search-Icon" />
           <input type="text" placeholder="Пошук..." />
-        </div>
+        </div> */}
 
         <div className="header-actions">
           <button className="theme-toggle" aria-label="Перемкнути тему">
             <img src="/content/Shopicons_Light_Sun.png" alt="Sun-Logo-Light_Theme" />
           </button>
 
-          <a href="/login" className="button button-secondary">
+          {/* <a href="/login" className="button button-secondary">
             Log in <img src="/content/Shopicons_Light_Account.png" alt="" />
-          </a>
+          </a> */}
 
           <a href="/cart" className="header-cart-button">
             <span> <img src="/content/Shopicons_Light_Cart6.png" alt="" /></span>
