@@ -1,19 +1,3 @@
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
 # Punkcoders - Food Delivery App
 
 ![CI Status](https://github.com/ukma-cs-ssdm-2025/team-team12/actions/workflows/ci.yml/badge.svg)
@@ -31,7 +15,26 @@ If you are developing a production application, we recommend using TypeScript wi
 
 - Клієнти замовляють страви, кур'єри доставляють, ресторани керують меню.
 - Вимагає врахування продуктивності (оновлення в реальному часі).
+- Документація:
+ Вимоги:
+  - [User Stories](docs/requirements/user-stories.md)
+  - [Functional Requirements](docs/requirements/requirements.md)
+  - [Non-functional: Security](docs/requirements/requirements.md)
+  - [Non-functional: Performance](docs/requirements/requirements.md)
 
+- Архітектурні рішення (ADR):
+  - [ADR-001: Багатошарова архітектура](docs/decisions/ADR-001.md)
+  - [ADR-002: Django як бекенд-фреймворк](docs/decisions/ADR-002.md)
+  - [ADR-004: Клієнтська фільтрація/сортування меню](docs/decisions/ADR-003.md)
+  - [ADR-005: PostgreSQL як основна БД](docs/decisions/ADR-004.md)
+
+- Валідація та тестовий план:
+  - [RTM](docs/requirements/rtm.md)
+  - [План тестування](docs/validation/test-plan.md)
+  - [Стратегія тестування](docs/testing/testing-strategy.md)
+ 
+- Code-quality
+  - [Progress](docs/Code-quality/progress.md)
 ## How to run
 
 - Clone the repo
@@ -40,6 +43,7 @@ If you are developing a production application, we recommend using TypeScript wi
 - If you don't have src/delivery-service/app/settings.py, copy src/delivery-service/app/settings.py.sample into it
 - Run ```cd src && docker-compose up --build```. If it doesn't work, launch the Docker app to ensure the Docker Engine is running, then try again.
 - This should run automatically when the app container goes live, but if it doesn't, run ```docker exec -it src-app-1 python manage.py migrate```
+- Create a superuser: To access the Django admin panel, run the command in a new terminal (or after exiting the previous one): ```docker exec -it src-app-1 python manage.py createsuperuser```
 - Go to localhost:8000 in your browser
 
 ## СТРАТЕГІЯ ГІЛКУВАННЯ

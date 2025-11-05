@@ -1,0 +1,13 @@
+Django
+psycopg[binary]
+argon2-cffi
+zxcvbn
+djangorestframework
+djangorestframework-simplejwt
+drf-spectacular
+pillow
+python-dotenv
+django-cors-headers
+dj-database-url
+django-autoslug
+python-slugify

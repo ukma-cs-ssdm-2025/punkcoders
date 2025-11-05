@@ -20,9 +20,9 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_DB: postgres
-          POSTGRES_USER: root
-          POSTGRES_PASSWORD: root
+          POSTGRES_DB: ci_test_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -44,11 +44,10 @@ jobs:
       - name: Install dependencies and linters
         run: |
           python -m pip install --upgrade pip
-          pip install -r src/requirements.txt
+          pip install -r backend/requirements/dev.txt
 
-      # --- НОВИЙ КРОК ЛІНТИНГУ та ПЕРЕВІРКИ ФОРМАТУВАННЯ ---
       - name: Code Linting and Formatting Check
-        working-directory: ./src/delivery-service
+        working-directory: ./backend/delivery-service
         run: |
           echo "Перевірка форматування за допомогою Black"
           # Запуск black у режимі перевірки (dry-run), щоб не змінювати файли
@@ -61,29 +60,28 @@ jobs:
           echo "Лінтинг коду за допомогою Flake8 (використовуючи pyproject.toml)"
           # Flake8 автоматично знайде конфігурацію та застосує всі розширення
           flake8 . --statistics
-      # --- КІНЕЦЬ КРОКУ ЛІНТИНГУ ---
 
       - name: Run Django Tests
-        working-directory: ./src/delivery-service
+        working-directory: ./backend/delivery-service
         env:
           DJANGO_SETTINGS_MODULE: app.settings
-          SECRET_KEY: test-secret-key-for-ci
-          DB_NAME: postgres
-          DB_USER: root
-          DB_PASSWORD: root
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          DB_NAME: ci_test_db
+          DB_USER: postgres
+          DB_PASSWORD: postgres
           DB_HOST: localhost
           DB_PORT: 5432
         run: |
           python manage.py test --settings=app.settings
 
       - name: Check Django migrations
-        working-directory: ./src/delivery-service
+        working-directory: ./backend/delivery-service
         env:
           DJANGO_SETTINGS_MODULE: app.settings
-          SECRET_KEY: test-secret-key-for-ci
-          DB_NAME: postgres
-          DB_USER: root
-          DB_PASSWORD: root
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          DB_NAME: ci_test_db
+          DB_USER: postgres
+          DB_PASSWORD: postgres
           DB_HOST: localhost
           DB_PORT: 5432
         run: |
@@ -108,16 +106,16 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r src/requirements.txt
+          pip install -r backend/requirements/dev.txt
 
       - name: Generate OpenAPI Schema
-        working-directory: ./src/delivery-service
+        working-directory: ./backend/delivery-service
         env:
           DJANGO_SETTINGS_MODULE: app.settings
-          SECRET_KEY: test-secret-key-for-ci
-          DB_NAME: postgres
-          DB_USER: root
-          DB_PASSWORD: root
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          DB_NAME: ci_test_db
+          DB_USER: postgres
+          DB_PASSWORD: postgres
           DB_HOST: localhost
           DB_PORT: 5432
         run: |
