@@ -40,7 +40,7 @@ function AdminMenuManagement() {
 
   const fetchDishes = async () => {
     try {
-      const response = await apiClient.get('/dishes/');
+      const response = await apiClient.get('/menu/dishes/');
       setMenuItems(response.data);
     } catch (error) {
       toast.error("Не вдалося завантажити страви.");
@@ -50,7 +50,7 @@ function AdminMenuManagement() {
 
   const fetchCategories = async () => {
     try {
-      const response = await apiClient.get('/categories/');
+      const response = await apiClient.get('/menu/categories/');
       setCategories(response.data);
       // Set default category in the form *after* they load
       if (response.data.length > 0) {
@@ -83,11 +83,11 @@ function AdminMenuManagement() {
       // 3. Call the correct API endpoint
       if (editingId) {
         // UPDATE (PATCH)
-        await apiClient.patch(`/dishes/${editingId}/`, dishData);
+        await apiClient.patch(`/menu/dishes/${editingId}/`, dishData);
         toast.success("Страву успішно оновлено!");
       } else {
         // CREATE (POST)
-        await apiClient.post('/dishes/', dishData);
+        await apiClient.post('/menu/dishes/', dishData);
         toast.success("Страву успішно створено!");
       }
       
@@ -131,7 +131,7 @@ function AdminMenuManagement() {
   const handleDelete = async (id) => {
     if (globalThis.confirm('Ви впевнені, що хочете видалити цю страву?')) {
       try {
-        await apiClient.delete(`/dishes/${id}/`);
+        await apiClient.delete(`/menu/dishes/${id}/`);
         toast.success("Страву видалено.");
         fetchDishes(); // Reload the list
       } catch (error) {
@@ -154,7 +154,7 @@ function AdminMenuManagement() {
     );
 
     try {
-      await apiClient.patch(`/dishes/${dishId}/`, dishData);
+      await apiClient.patch(`/menu/dishes/${dishId}/`, dishData);
       // Optional: Show a very subtle success message
       // toast.success("Availability updated!"); 
     } catch (error) {
