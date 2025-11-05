@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
-from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
+from accounts.services import log_user_out_everywhere
 import logging
 
 logger = logging.getLogger(__name__)
@@ -40,6 +40,15 @@ class UserViewSet(viewsets.ModelViewSet):
             return ManagerUserCreateSerializer
         return ManagerUserSerializer
 
+    def perform_update(self, serializer):
+        """
+        Custom update/partial update logic to handle deactivation.
+        """
+        instance = serializer.save()
+        # log user out the 'is_active' flag was just set to False
+        if "is_active" in serializer.validated_data and not instance.is_active:
+            log_user_out_everywhere(instance)
+
     def perform_destroy(self, instance):
         """
         Delete a user if they have no records to their name, deactivate otherwise.
@@ -47,16 +56,7 @@ class UserViewSet(viewsets.ModelViewSet):
         try:
             instance.delete()
         except ProtectedError:
-            # log user out on all devices by blacklisting their tokens
-            tokens = OutstandingToken.objects.filter(user=instance)
-            for token in tokens:
-                try:
-                    RefreshToken(token.token).blacklist()
-                except TokenError:
-                    # This can happen if the token is already
-                    # expired or invalid. No worries.
-                    pass
-
+            log_user_out_everywhere(instance)
             instance.is_active = False
             instance.save()
 
