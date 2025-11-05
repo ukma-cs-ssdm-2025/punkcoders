@@ -44,13 +44,15 @@ class MenuApiTests(APITestCase):
     def setUp(self):
         """Set up users and initial data for all tests."""
         self.manager_user = User.objects.create_user(
-            username="manager",
+            first_name="manager",
+            last_name="user",
             password="password123",
             email="manager@delivery.com",
             role=User.Role.MANAGER,  # nosec
         )
         self.courier_user = User.objects.create_user(
-            username="courier",
+            first_name="courier",
+            last_name="user",
             password="password123",
             email="courier@delivery.com",
             role=User.Role.COURIER,  # nosec

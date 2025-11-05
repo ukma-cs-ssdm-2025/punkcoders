@@ -1,0 +1,102 @@
+from rest_framework import viewsets, generics, permissions, status
+from django.db.models import ProtectedError
+from .models import User
+from .serializers import SelfUserSerializer, ManagerUserSerializer, ManagerUserCreateSerializer
+from accounts.permissions import IsManager
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    """
+    A ViewSet for Managers to perform CRUD on *other* users.
+    """
+
+    # Use the Manager serializer by default
+    serializer_class = ManagerUserSerializer
+    permission_classes = [IsManager]
+
+    def get_queryset(self):
+        """
+        Ovverides queryset to exclude self.
+        This prevents a manager from changing their own role or deleting
+        themselves from this endpoint.
+        """
+        return User.objects.all().exclude(pk=self.request.user.pk)
+
+    def get_serializer_class(self):
+        """
+        Dynamically choose the serializer based on the action.
+        - 'create' -> Use the one that requires all fields
+        - 'list', 'update', etc. -> Use the one that only allows 'role' edits
+        """
+        if self.action == "create":
+            return ManagerUserCreateSerializer
+        return ManagerUserSerializer
+
+    def perform_destroy(self, instance):
+        """
+        Delete a user if they have no records to their name, deactivate otherwise.
+        """
+        try:
+            instance.delete()
+        except ProtectedError:
+            # log user out on all devices by blacklisting their tokens
+            tokens = OutstandingToken.objects.filter(user=instance)
+            for token in tokens:
+                try:
+                    RefreshToken(token.token).blacklist()
+                except TokenError:
+                    # This can happen if the token is already
+                    # expired or invalid. No worries.
+                    pass
+
+            instance.is_active = False
+            instance.save()
+
+
+class SelfUserView(generics.RetrieveUpdateAPIView):
+    """
+    An endpoint for any user to view and edit their own profile.
+    """
+
+    serializer_class = SelfUserSerializer
+    # Any logged-in user can access this
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        """
+        The object is always just the user making the request.
+        """
+        return self.request.user
+
+
+class LogoutView(APIView):
+    """
+    An endpoint for a user to logout.
+    Takes the 'refresh' token and blacklists it.
+    """
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        try:
+            refresh_token = request.data["refresh"]
+            if not refresh_token:
+                return Response({"detail": "Refresh token is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except TokenError:
+            return Response({"detail": "Token is invalid or expired."}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.error(f"Logout error: {str(e)}")
+            return Response({"detail": "Could not log out user."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

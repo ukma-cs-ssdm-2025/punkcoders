@@ -10,21 +10,43 @@ class UserManagerTests(TestCase):
 
     def test_create_user_requires_role(self):
         with self.assertRaises((ValueError, IntegrityError)):
-            User.objects.create_user(username="norole", email="a@a.a", password="foo", role=None)
+            User.objects.create_user(first_name="norole", last_name="user", email="a@a.a", password="foo", role=None)
 
     def test_create_user_requires_email(self):
         """
         Tests that creating a user without an email raises a ValueError.
         """
         with self.assertRaises(ValueError):
-            User.objects.create_user(username="noemail", email=None, password="foo", role=User.Role.MANAGER)
+            User.objects.create_user(
+                first_name="noemail", last_name="user", email=None, password="foo", role=User.Role.MANAGER
+            )
+
+    def test_create_user_requires_first_name(self):
+        """
+        Tests that creating a user without a first name raises a ValueError.
+        """
+        with self.assertRaises(ValueError):
+            User.objects.create_user(
+                first_name=None, last_name="user", email="a@a.a", password="foo", role=User.Role.MANAGER
+            )
+
+    def test_create_user_requires_last_name(self):
+        """
+        Tests that creating a user without a last name raises a ValueError.
+        """
+        with self.assertRaises(ValueError):
+            User.objects.create_user(
+                first_name="nolastname", last_name=None, email="a@a.a", password="foo", role=User.Role.MANAGER
+            )
 
     def test_create_superuser_is_manager(self):
         """
         Tests that create_superuser() correctly sets the role to MANAGER
         and enables all required flags.
         """
-        admin_user = User.objects.create_superuser(username="super", email="super@user.com", password="foo")
+        admin_user = User.objects.create_superuser(
+            first_name="super", last_name="user", email="super@user.com", password="foo"
+        )
 
         self.assertEqual(admin_user.role, User.Role.MANAGER)
         self.assertTrue(admin_user.is_staff)
@@ -38,7 +60,8 @@ class UserManagerTests(TestCase):
         """
         with self.assertRaises(ValueError):
             User.objects.create_superuser(
-                username="super2",
+                first_name="super2",
+                last_name="user",
                 email="super2@user.com",
                 password="foo",
                 role=User.Role.COURIER,  # Attempt to override
@@ -50,7 +73,8 @@ class UserManagerTests(TestCase):
         """
         with self.assertRaises(ValueError):
             User.objects.create_superuser(
-                username="super3",
+                first_name="super3",
+                last_name="user",
                 email="super3@user.com",
                 password="foo",
                 is_staff=False,
