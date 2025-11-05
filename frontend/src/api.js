@@ -1,16 +1,12 @@
-// src/apiClient.js
-
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/';
 const VERSION = 'v0';
 
-// 1. Create the base axios instance
 const apiClient = axios.create({
   baseURL: API_URL + VERSION,
 });
 
-// 2. The "Request" Interceptor
 // This code runs BEFORE any request is sent
 apiClient.interceptors.request.use(
   (config) => {
@@ -28,7 +24,6 @@ apiClient.interceptors.request.use(
   }
 );
 
-// 3. The "Response" Interceptor
 // This code runs AFTER a response is received, but ONLY if there's an error
 apiClient.interceptors.response.use(
   (response) => {
