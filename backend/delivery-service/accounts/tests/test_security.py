@@ -39,7 +39,8 @@ class SecurityTests(APITestCase):
         equal to our defined security baseline.
         """
         user = User.objects.create_user(
-            username="hash_test_user",
+            first_name="hash_test",
+            last_name="user",
             email="bogus@nunya.com",
             password="a_very_secure_password_123!",
             role=User.Role.MANAGER,

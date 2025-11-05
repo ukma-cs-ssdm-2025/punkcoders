@@ -17,16 +17,18 @@ class Command(BaseCommand):
             return
 
         # Read credentials from environment variables
-        username = os.environ.get("INITIAL_MANAGER_USERNAME")
         email = os.environ.get("INITIAL_MANAGER_EMAIL")
         password = os.environ.get("INITIAL_MANAGER_PASSWORD")
+        first_name = os.environ.get("INITIAL_MANAGER_FIRST_NAME")
+        last_name = os.environ.get("INITIAL_MANAGER_LAST_NAME")
 
         # Validate that all variables are set
-        if not all([username, email, password]):
+        if not all([email, password, first_name, last_name]):
             self.stderr.write(
                 self.style.ERROR(
-                    "Missing environment variables: INITIAL_MANAGER_USERNAME, "
-                    "INITIAL_MANAGER_EMAIL, INITIAL_MANAGER_PASSWORD"
+                    "Missing environment variables: "
+                    "INITIAL_MANAGER_EMAIL, INITIAL_MANAGER_PASSWORD, "
+                    "INITIAL_MANAGER_FIRST_NAME, INITIAL_MANAGER_LAST_NAME"
                 )
             )
             # Optionally raise an error to stop startup if desired
@@ -34,11 +36,16 @@ class Command(BaseCommand):
             return  # Or just exit gracefully
 
         # Create the superuser
-        self.stdout.write(f"Creating manager '{username}'...")
+        self.stdout.write(f"Creating manager '{first_name} {last_name}'...")
         try:
             User.objects.create_user(
-                username=username, email=email, password=password, role=User.Role.MANAGER, is_staff=True
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name,
+                role=User.Role.MANAGER,
+                is_staff=True,
             )
-            self.stdout.write(self.style.SUCCESS(f"Manager '{username}' created successfully."))
+            self.stdout.write(self.style.SUCCESS(f"Manager '{first_name} {last_name}' created successfully."))
         except Exception as e:
             self.stderr.write(self.style.ERROR(f"Error creating manager: {e}"))
