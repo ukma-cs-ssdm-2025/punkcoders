@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 
 function LoginPage() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ function LoginPage() {
       // (and the baseURL override is neater this way)
       console.log(API_URL);
       const response = await axios.post(API_URL + 'token/', {
-        username: username, 
+        email: email, 
         password: password
       });
       
@@ -35,7 +35,7 @@ function LoginPage() {
       const status = error?.response?.status;
 
       if (status === 401) {
-        toast.error('Неправильний username або пароль. Спробуйте ще раз.');
+        toast.error('Неправильний email або пароль. Спробуйте ще раз.');
       } else {
         console.error('Помилка входу:', error?.response ? error.response.data : error.message);
         toast.error('Не вдалося увійти. Спробуйте ще раз.');
@@ -55,12 +55,12 @@ function LoginPage() {
         <h2>Вхід для менеджерів</h2>
         
         <div className="form-group">
-          <label htmlFor="username">username</label>
+          <label htmlFor="email">email</label>
           <input
-            type="username"
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
