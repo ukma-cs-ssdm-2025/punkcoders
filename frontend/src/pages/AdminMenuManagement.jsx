@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form'; // 1. Import the hook
 import apiClient from '../api';
 import { toast } from 'react-toastify'; // For general error messages
@@ -75,7 +75,7 @@ function AdminMenuManagement() {
     dishData.append('category_id', data.category); // Your API wants category_id
 
     // 2. Handle the optional file upload
-    if (data.photo && data.photo.length > 0) {
+    if (data.photo?.length > 0) {
       dishData.append('photo', data.photo[0]); // data.photo is a FileList
     }
 

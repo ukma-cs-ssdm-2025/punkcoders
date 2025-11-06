@@ -19,7 +19,6 @@ function LoginPage() {
       // use axios to avoid the api-token-checking interceptors
       // while we're trying to set the tokens in question
       // (and the baseURL override is neater this way)
-      console.log(API_URL);
       const response = await axios.post(API_URL + 'token/', {
         email: email, 
         password: password
