@@ -35,14 +35,16 @@ class PermissionTests(APITestCase):
     def setUpTestData(cls):
         # Create the users we'll need for testing
         cls.courier_user = User.objects.create_user(
-            username="courier",
+            first_name="courier",
+            last_name="user",
             email="courier@example.com",
             password="password123",
             role=User.Role.COURIER,
         )
 
         cls.manager_user = User.objects.create_superuser(
-            username="manager",
+            first_name="manager",
+            last_name="user",
             email="manager@example.com",
             password="password123",
         )
@@ -50,15 +52,21 @@ class PermissionTests(APITestCase):
         cls.protected_url = "/protected-view/"
 
     def test_user_can_login_with_valid_credentials(self):
-        # Assumes you have a token login endpoint at /api/token/
-        # This URL depends on your auth package (e.g., Simple JWT)
-        response = self.client.post(LOGIN_URL, {"username": "courier", "password": "password123"}, format="json")
+        response = self.client.post(
+            LOGIN_URL,
+            {"email": "courier@example.com", "first_name": "courier", "last_name": "user", "password": "password123"},
+            format="json",
+        )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn("access", response.data)  # Or whatever your token is named
+        self.assertIn("access", response.data)
 
     def test_user_cannot_login_with_invalid_password(self):
-        response = self.client.post(LOGIN_URL, {"username": "courier", "password": "wrongpassword"}, format="json")
+        response = self.client.post(
+            LOGIN_URL,
+            {"email": "courier@example.com", "first_name": "courier", "last_name": "user", "password": "wrongpassword"},
+            format="json",
+        )
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 

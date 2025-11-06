@@ -32,7 +32,7 @@ function AdminCategoryManagement() {
 
   const fetchCategories = async () => {
     try {
-      const response = await apiClient.get('/categories/');
+      const response = await apiClient.get('/menu/categories/');
       setCategories(response.data);
     } catch (error) {
       toast.error("Не вдалося завантажити категорії."); 
@@ -46,10 +46,10 @@ function AdminCategoryManagement() {
     try {
       if (editingId) {
         // UPDATE (PATCH)
-        await apiClient.patch(`/categories/${editingId}/`, data);
+        await apiClient.patch(`/menu/categories/${editingId}/`, data);
       } else {
         // CREATE (POST)
-        await apiClient.post('/categories/', data);
+        await apiClient.post('/menu/categories/', data);
       }
       
       // Success: Clear the form and reload the list
@@ -85,7 +85,7 @@ function AdminCategoryManagement() {
   const handleDelete = async (id) => {
     if (globalThis.confirm('Ви впевнені, що хочете видалити цю категорію?')) {
       try {
-        await apiClient.delete(`/categories/${id}/`);
+        await apiClient.delete(`/menu/categories/${id}/`);
         fetchCategories(); // Reload the list after deleting
         toast.success("Категорію успішно видалено.");
       } catch (error) {

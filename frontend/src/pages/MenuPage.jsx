@@ -30,7 +30,7 @@ const queryClient = new QueryClient({
 
 const fetchCategories = async () => {
   try {
-    const response = await apiClient.get('/categories/');
+    const response = await apiClient.get('/menu/categories/');
     return response.data;
   } catch (error) {
     console.error('Error fetching categories:', error);
@@ -40,7 +40,7 @@ const fetchCategories = async () => {
 };
 
 const fetchDishesByCategory = async (id) => {
-  let url = `/dishes/` + (id ? `?category_id=${id}` : '');
+  let url = `/menu/dishes/` + (id ? `?category_id=${id}` : '');
   console.log('Fetching dishes from URL:', url);
   try {
     const response = await apiClient.get(url);
@@ -55,13 +55,13 @@ const fetchDishesByCategory = async (id) => {
 
 /**
  * Fetches the full details for a single dish by its ID.
- * Corresponds to: GET /dishes/:id/
+ * Corresponds to: GET /menu/dishes/:id/
  */
 const fetchDishDetails = async (dishId) => {
-  console.log(`Fetching dish details from /dishes/${dishId}/`);
+  console.log(`Fetching dish details from /menu/dishes/${dishId}/`);
   if (!dishId) return null;
   try {
-    const response = await apiClient.get(`/dishes/${dishId}/`);
+    const response = await apiClient.get(`/menu/dishes/${dishId}/`);
     console.log(`Dish details fetched for ID ${dishId}:`, response.data);
     return response.data;
   } catch (error) {

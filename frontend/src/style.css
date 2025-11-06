@@ -1,27 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
 
+:root {
+  --font-family: 'Nunito', sans-serif;
+  --color-bg: #FFF8E7;
+  --color-primary: #FFCBA4;
+  --color-accent: #FF6F61;
+  --color-text: #4B2E05;
+  --color-highlight: #FFA45B;
+  --radius: 12px;
+  --transition: 0.3s ease;
+  --container-width: 1200px;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  transition: all var(--transition);
-}
-
-
-
-:root {
-  --font-family: 'Nunito', sans-serif;
-
-  --color-bg: #FFF8E7;        
-  --color-primary: #FFCBA4;    
-  --color-accent: #FF6F61;     
-  --color-text: #4B2E05;       
-  --color-highlight: #FFA45B;  
-
-  --radius: 12px;
-  --transition: 0.3s ease;
-  --container-width: 1200px;
 }
 
 html, body {
@@ -42,6 +37,7 @@ a {
   text-decoration: none;
   transition: color var(--transition);
 }
+
 a:hover {
   color: var(--color-bg);
 }
@@ -55,6 +51,7 @@ img {
   display: block;
   border-radius: var(--radius);
 }
+
 h2, h3, h4, h5, h6 {
   color: var(--color-text);
   font-weight: 700;
@@ -65,15 +62,22 @@ p {
   margin-bottom: 1rem;
 }
 
-button {
+button,
+.hero-btn,
+.button.button-secondary,
+.view-menu-btn,
+.read-btn {
   font-family: var(--font-family);
-  background: var(--color-accent);
-  color: white;
   border: none;
   border-radius: var(--radius);
-  padding: 0.7em 1.4em;
   cursor: pointer;
   transition: background var(--transition), transform var(--transition);
+}
+
+button {
+  background: var(--color-accent);
+  color: white;
+  padding: 0.7em 1.4em;
 }
 
 button:hover {
@@ -86,9 +90,6 @@ button:hover {
   max-width: var(--container-width);
   margin: 0 auto;
 }
-
-
-
 
 .site-header {
   background-color: var(--color-primary);
@@ -105,14 +106,37 @@ button:hover {
   justify-content: space-between;
 }
 
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  color: var(--color-text);
+  transition: transform var(--transition), color var(--transition);
+}
+
 .header-logo img {
   height: 48px;
   width: auto;
-  display: block;
   transition: transform var(--transition);
 }
+
 .header-logo:hover img {
   transform: rotate(-8deg) scale(1.05);
+}
+
+.header-logo h5 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: 0.5px;
+  line-height: 1;
+  margin-top: 15px;
+}
+
+.header-logo:hover h5 {
+  color: var(--color-accent);
+  transform: translateY(-1px);
 }
 
 .header-navigation ul {
@@ -160,12 +184,10 @@ button:hover {
   background-color: var(--color-accent);
   color: white;
   padding: 0.2rem 1.2rem;
-  border-radius: var(--radius);
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   font-weight: 600;
-  transition: background var(--transition), transform var(--transition);
 }
 
 .button.button-secondary:hover {
@@ -214,47 +236,6 @@ button:hover {
   justify-content: center;
 }
 
-@media (max-width: 768px) {
-  .header-navigation ul {
-    gap: 1rem;
-  }
-
-  .header-actions {
-    gap: 0.5rem;
-  }
-
-  .button.button-secondary,
-  .header-cart-button {
-    padding: 0.5rem 0.8rem;
-    font-size: 0.9rem;
-  }
-}
-
-.header-logo {
-  display: flex;
-  align-items: center; 
-  gap: 0.6rem;
-  text-decoration: none;
-  color: var(--color-text);
-  transition: transform var(--transition), color var(--transition);
-}
-
-.header-logo h5 {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: var(--color-text);
-  letter-spacing: 0.5px;
-  line-height: 1; 
-  margin-top: 15px; 
-}
-
-
-
-.header-logo:hover h5 {
-  color: var(--color-accent);
-  transform: translateY(-1px);
-}
-
 .header-search {
   display: flex;
   align-items: center;
@@ -289,7 +270,6 @@ button:hover {
   color: #999;
 }
 
-/*Main section*/
 .hero {
   position: relative;
   background: url('src/content/pizza-bg.jpg') center/cover no-repeat;
@@ -334,6 +314,8 @@ button:hover {
 
 .hero h1 .highlight {
   color: var(--color-accent);
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 10px;
 }
 
 .hero p {
@@ -348,9 +330,6 @@ button:hover {
   font-size: 1.1rem;
   padding: 0.8rem 1.8rem;
   border-radius: 30px;
-  border: none;
-  cursor: pointer;
-  transition: background var(--transition), transform var(--transition);
 }
 
 .hero-btn:hover {
@@ -358,23 +337,12 @@ button:hover {
   transform: translateY(-3px);
 }
 
-@media (max-width: 768px) {
-  .hero h1 {
-    font-size: 2.2rem;
-  }
-
-  .hero p {
-    font-size: 1rem;
-  }
-}
-
 .offerings {
-  position: relative;
   background-color: #fff;
   padding: 6rem 0;
+  position: relative;
   overflow: hidden;
 }
-
 
 .offerings-grid {
   display: flex;
@@ -437,25 +405,9 @@ button:hover {
   50% { transform: translateY(-15px) rotate(45deg); }
 }
 
-@media (max-width: 768px) {
-  .offerings-grid {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .offering-card {
-    width: 90%;
-  }
-}
-
-
-
-
-/* Section */
 .menu-section {
   text-align: center;
   padding: 60px 0;
-  position: relative;
 }
 
 .section-subtitle {
@@ -526,15 +478,10 @@ button:hover {
   background: linear-gradient(to top, #FF4D4D, transparent);
 }
 
-
-.product-title {
-  font-size: 20px;
-  font-weight: 600;
-}
-
+.product-title,
 .product-price {
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 600;
   margin: 6px 0;
 }
 
@@ -545,21 +492,18 @@ button:hover {
 .read-btn {
   background: #FF4D4D;
   color: #000;
-  border: none;
   border-radius: 50px;
   padding: 10px 24px;
   font-size: 14px;
-  cursor: pointer;
-  transition: .25s;
-}
-
-.read-btn:disabled {
-  background: #cccccc;
-  cursor: not-allowed;
 }
 
 .read-btn:hover {
   opacity: .8;
+}
+
+.read-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
 }
 
 .view-btn-container {
@@ -568,14 +512,11 @@ button:hover {
 
 .view-menu-btn {
   background: #FF4D4D;
-  color: #000;
+  color: #fff;
   padding: 14px 36px;
-  border: none;
-  border-radius: 50px;
+  border-radius: 10px;
   font-size: 16px;
   font-weight: 600;
-  cursor: pointer;
-  transition: .25s;
   box-shadow: 0 6px 18px rgba(255,77,77,.3);
 }
 
@@ -643,4 +584,37 @@ button:hover {
 .arrow-right:hover {
   transform: translateY(-50%) translateX(4px);
   background: #f9d08a;
+}
+
+@media (max-width: 768px) {
+  .header-navigation ul {
+    gap: 1rem;
+  }
+
+  .header-actions {
+    gap: 0.5rem;
+  }
+
+  .button.button-secondary,
+  .header-cart-button {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .hero h1 {
+    font-size: 2.2rem;
+  }
+
+  .hero p {
+    font-size: 1rem;
+  }
+
+  .offerings-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .offering-card {
+    width: 90%;
+  }
 }
