@@ -19,7 +19,8 @@
 **Патерн:** **Timeout**. Ми встановили ліміт часу, після якого запит вважається невдалим.
 
 **Код (до):**
-```javascript
+```
+javascript
 // api.js
 const apiClient = axios.create({
   baseURL: API_URL + VERSION,
@@ -28,9 +29,11 @@ const apiClient = axios.create({
 // ... в interceptor ...
 const response = await axios.post(API_URL + 'token/refresh/', {
   refresh: refreshToken
-});```
+});
+```
 
 **Код (після):**
+```
 const apiClient = axios.create({
   baseURL: API_URL + VERSION,
   timeout: 10000, // 10 секунд
@@ -42,6 +45,7 @@ const response = await axios.post(API_URL + 'token/refresh/', {
 }, {
   timeout: 5000 // 5 секунд
 });
+```
 
 
 potential leaky error messages - check backend views?
@@ -66,6 +70,7 @@ MenuPage.jsx:
 - fetchDishesByCategory
 
 - fetchDishDetails
+
 
 
 
