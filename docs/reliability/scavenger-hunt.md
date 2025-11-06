@@ -28,7 +28,7 @@ const apiClient = axios.create({
 // ... в interceptor ...
 const response = await axios.post(API_URL + 'token/refresh/', {
   refresh: refreshToken
-});
+});```
 
 **Код (після):**
 const apiClient = axios.create({
@@ -66,5 +66,6 @@ MenuPage.jsx:
 - fetchDishesByCategory
 
 - fetchDishDetails
+
 
 
