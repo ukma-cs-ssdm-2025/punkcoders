@@ -2,7 +2,7 @@
 from django.contrib.auth import get_user_model
 from django.db.utils import IntegrityError
 from django.test import TestCase
-
+from django.conf import settings 
 User = get_user_model()
 
 
@@ -45,7 +45,7 @@ class UserManagerTests(TestCase):
         and enables all required flags.
         """
         admin_user = User.objects.create_superuser(
-            first_name="super", last_name="user", email="super@user.com", password="foo"
+            first_name="super", last_name="user", email="super@user.com", password=settings.TEST_SECRET
         )
 
         self.assertEqual(admin_user.role, User.Role.MANAGER)
@@ -79,3 +79,4 @@ class UserManagerTests(TestCase):
                 password="foo",
                 is_staff=False,
             )
+
