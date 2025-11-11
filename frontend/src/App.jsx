@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage';
 import AdminPage from './pages/AdminPage';
 import LoginPage from './pages/LoginPage'; 
 import MenuPage from './pages/MenuPage';
+import ErrorBoundary from './ErrorBoundary';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
