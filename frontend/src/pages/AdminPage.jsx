@@ -2,11 +2,20 @@ import React from 'react';
 import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
 import AdminMenuManagement from './AdminMenuManagement';
 import AdminCategoryManagement from './AdminCategoryManagement';
+import AdminStaffManagement from './AdminStaffManagement';
 import AdminReports from './AdminReports';
 import AdminSettings from './AdminSettings';
 import '../Admin.css';
+import { useNavigate } from 'react-router-dom';
+
 
 function AdminPage() {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    navigate('/login');
+  };
   return (
     <div className="admin-layout">
       <aside className="admin-sidebar">
@@ -20,6 +29,9 @@ function AdminPage() {
               <NavLink to="/admin/categories">Категорії</NavLink>
             </li>
             <li>
+              <NavLink to="/admin/staff">Керування персоналом</NavLink>
+            </li>
+            <li>
               <NavLink to="/admin/reports">Звіти</NavLink>
             </li>
             <li>
@@ -28,6 +40,17 @@ function AdminPage() {
             <li>
               <hr />
               <a href="/">Повернутись на сайт</a>
+            </li>
+          <li>
+              <a 
+                href="#" 
+                onClick={(e) => {
+                  e.preventDefault(); 
+                  handleLogout();
+                }}
+              >
+                Вийти
+              </a>
             </li>
           </ul>
         </nav>
@@ -40,6 +63,8 @@ function AdminPage() {
           <Route path="menu" element={<AdminMenuManagement />} /> 
           
           <Route path="categories" element={<AdminCategoryManagement />} />
+
+          <Route path="staff" element={<AdminStaffManagement />} />
 
           <Route path="reports" element={<AdminReports />} /> 
           
