@@ -16,6 +16,10 @@ class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
+     #явне сортування (узгоджене з Meta.ordering)
+    queryset = Category.objects.all().order_by("name")
+    serializer_class = CategorySerializer
+
     def get_permissions(self):
         if self.action in ["list", "retrieve"]:
             return [AllowAny()]
@@ -29,7 +33,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
     - All users (including anonymous) can list and retrieve ingredients.
     """
 
-    queryset = Ingredient.objects.all()
+    queryset = Ingredient.objects.all().order_by("name") #явне сортування
     serializer_class = IngredientSerializer
 
     def get_permissions(self):
@@ -45,7 +49,13 @@ class DishViewSet(viewsets.ModelViewSet):
     - Uses the service layer for create and update logic.
     """
 
-    queryset = Dish.objects.all()
+    queryset = ( # оптимізація запиту до бази, щоб не було помилки N+1
+        Dish.objects
+        .select_related("category")
+        .prefetch_related("ingredients") 
+        .all()
+    )
+
     serializer_class = DishSerializer
     # This is the key for file uploads. It tells DRF to expect multipart form data.
     parser_classes = [parsers.MultiPartParser, parsers.FormParser]

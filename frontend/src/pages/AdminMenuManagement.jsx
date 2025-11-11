@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form'; // 1. Import the hook
+import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form'; 
 import apiClient from '../api';
-import { toast } from 'react-toastify'; // For general error messages
+import { toast } from 'react-toastify'; 
 
-// Default values for the form
 const defaultFormState = {
   name: '',
   description: '',
@@ -14,20 +13,17 @@ const defaultFormState = {
 };
 
 function AdminMenuManagement() {
-  // --- STATE ---
-  // We only keep state for data that *isn't* in the form
   const [menuItems, setMenuItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [editingId, setEditingId] = useState(null);
 
-  // --- 2. Initialize react-hook-form ---
   const { 
-    register,         // Connects inputs
-    handleSubmit,     // Wraps our submit function
-    reset,            // Clears the form
-    setValue,         // Sets form values for "Edit"
-    setError,         // Sets server-side errors
-    formState: { errors } // Object containing validation errors
+    register,         
+    handleSubmit,     
+    reset,            
+    setValue,         
+    setError,         
+    formState: { errors } 
   } = useForm({
     defaultValues: defaultFormState
   });
@@ -75,7 +71,7 @@ function AdminMenuManagement() {
     dishData.append('category_id', data.category); // Your API wants category_id
 
     // 2. Handle the optional file upload
-    if (data.photo && data.photo.length > 0) {
+    if (data.photo?.length > 0) {
       dishData.append('photo', data.photo[0]); // data.photo is a FileList
     }
 
@@ -216,6 +212,10 @@ function AdminMenuManagement() {
               {...register('price', { 
                 required: 'Ціна є обов\'язковою',
                 valueAsNumber: true,
+                min: { 
+                value: 0,
+                message: 'Ціна не може бути від\'ємною'
+              }
               })}
             />
             {errors.price && <span className="error-message">{errors.price.message}</span>}

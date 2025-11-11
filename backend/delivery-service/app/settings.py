@@ -145,7 +145,13 @@ else:
             "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "postgres"),
             "HOST": os.environ.get("DB_HOST", "db"),
             "PORT": os.environ.get("POSTGRES_PORT", "5432"),
-        }
+            # утримувати коннекшн до 60 c (зменшує overhead перепідключень)
+            "CONN_MAX_AGE": 60,
+            # statement_timeout = 3000 мс для кожного запиту
+            "OPTIONS": {
+                "options": "-c statement_timeout=3000"
+        },
+      }
     }
 
 
