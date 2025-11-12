@@ -50,8 +50,11 @@ const fetchDishesByCategory = async (id) => {
     if (error.response?.status === 404) {
       toast.error(`Цієї категорії не існує.`)
     }
-    console.error(`Error fetching dishes for category ${id}:`, error);
+    else {
+      console.error(`Error fetching dishes for category ${id}:`, error);
     toast.error(`Не вдалось завантажити страви для цієї категорії. Спробуйте ще раз.`);
+    }
+    // should this happen only fur unidentified errors?
     throw error;
   }
 };
@@ -69,8 +72,11 @@ const fetchDishDetails = async (dishId) => {
     if (error.response?.status === 404) {
       toast.error(`Цієї страви не існує.`)
     }
-    console.error(`Error fetching dish details for ID ${dishId}:`, error);
-    toast.error('Не вдалось завантажити цю страву. Спробуйте ще раз.');
+    else {
+      console.error(`Error fetching dish details for ID ${dishId}:`, error);
+      toast.error('Не вдалось завантажити цю страву. Спробуйте ще раз.');
+    }
+    // should this happen only for unidentified errors?
     throw error;
   }
 };

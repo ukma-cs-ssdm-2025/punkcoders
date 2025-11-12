@@ -138,8 +138,10 @@ function AdminMenuManagement() {
         if (error.response?.status === 404) {
           toast.error(`Цієї страви вже не існує.`)
         }
-        toast.error("Не вдалося видалити страву.");
-        console.error('Error deleting dish:', error);
+        else {
+          toast.error("Не вдалося видалити страву.");
+          console.error('Error deleting dish:', error);
+        }
       }
     }
   };
@@ -165,8 +167,10 @@ function AdminMenuManagement() {
       if (error.response?.status === 404) {
         toast.error(`Цій страві не можна змінити доступність, бо її не існує.`)
       }
-      toast.error("Не вдалось змінити доступність. Спробуйте ще раз.");
-      console.error('Error updating availability:', error);
+      else {
+        toast.error("Не вдалось змінити доступність. Спробуйте ще раз.");
+        console.error('Error updating availability:', error);
+      }
       setMenuItems(originalMenuItems);
     }
   };

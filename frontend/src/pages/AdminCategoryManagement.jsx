@@ -96,8 +96,10 @@ function AdminCategoryManagement() {
         if (error.response?.status === 404) {
           toast.error(`Цієї категорії вже не існує.`)
         }
-        toast.error("Не вдалося видалити категорію.");
-        console.error('Error deleting category:', error);
+        else {
+          toast.error("Не вдалося видалити категорію.");
+          console.error('Error deleting category:', error);
+        }
       }
     }
   };
