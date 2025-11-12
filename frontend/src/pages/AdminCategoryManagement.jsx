@@ -68,7 +68,11 @@ function AdminCategoryManagement() {
             message: message[0] // Show the first error message
           });
         }
-      } else {
+      } 
+      else if (error.response?.status === 404) {
+        toast.error(`Цю категорію не можна відредагувати, бо її не існує.`)
+      }
+      else {
         toast.error("Сталася непередбачена помилка.");
         console.error('An unexpected error occurred:', error);
       }
@@ -89,6 +93,9 @@ function AdminCategoryManagement() {
         fetchCategories(); // Reload the list after deleting
         toast.success("Категорію успішно видалено.");
       } catch (error) {
+        if (error.response?.status === 404) {
+          toast.error(`Цієї категорії вже не існує.`)
+        }
         toast.error("Не вдалося видалити категорію.");
         console.error('Error deleting category:', error);
       }

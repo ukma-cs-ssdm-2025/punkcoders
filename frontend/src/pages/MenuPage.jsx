@@ -47,8 +47,11 @@ const fetchDishesByCategory = async (id) => {
     console.log(`Dishes fetched for category ${id}:`, response.data);
     return response.data;
   } catch (error) {
+    if (error.response?.status === 404) {
+      toast.error(`Цієї категорії не існує.`)
+    }
     console.error(`Error fetching dishes for category ${id}:`, error);
-    toast.error(`Could not load dishes for this category.`);
+    toast.error(`Не вдалось завантажити страви для цієї категорії. Спробуйте ще раз.`);
     throw error;
   }
 };
@@ -58,15 +61,16 @@ const fetchDishesByCategory = async (id) => {
  * Corresponds to: GET /menu/dishes/:id/
  */
 const fetchDishDetails = async (dishId) => {
-  console.log(`Fetching dish details from /menu/dishes/${dishId}/`);
   if (!dishId) return null;
   try {
     const response = await apiClient.get(`/menu/dishes/${dishId}/`);
-    console.log(`Dish details fetched for ID ${dishId}:`, response.data);
     return response.data;
   } catch (error) {
+    if (error.response?.status === 404) {
+      toast.error(`Цієї страви не існує.`)
+    }
     console.error(`Error fetching dish details for ID ${dishId}:`, error);
-    toast.error('Could not load dish details.');
+    toast.error('Не вдалось завантажити цю страву. Спробуйте ще раз.');
     throw error;
   }
 };

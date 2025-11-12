@@ -100,7 +100,11 @@ function AdminMenuManagement() {
           // Show the error message under the correct form field
           setError(field, { type: 'server', message: message[0] });
         }
-      } else {
+      } 
+      else if (error.response?.status === 404) {
+        toast.error(`Цю страву не можна відредагувати, бо її не існує.`)
+      }
+      else {
         // This is a network error or 500 server error
         toast.error("Сталася неочікувана помилка. Спробуйте ще раз.");
         console.error('Submission error:', error);
@@ -131,6 +135,9 @@ function AdminMenuManagement() {
         toast.success("Страву видалено.");
         fetchDishes(); // Reload the list
       } catch (error) {
+        if (error.response?.status === 404) {
+          toast.error(`Цієї страви вже не існує.`)
+        }
         toast.error("Не вдалося видалити страву.");
         console.error('Error deleting dish:', error);
       }
@@ -153,8 +160,12 @@ function AdminMenuManagement() {
       await apiClient.patch(`/menu/dishes/${dishId}/`, dishData);
       // Optional: Show a very subtle success message
       // toast.success("Availability updated!"); 
-    } catch (error) {
-      toast.error("Failed to update availability. Please try again.");
+    } 
+    catch (error) {
+      if (error.response?.status === 404) {
+        toast.error(`Цій страві не можна змінити доступність, бо її не існує.`)
+      }
+      toast.error("Не вдалось змінити доступність. Спробуйте ще раз.");
       console.error('Error updating availability:', error);
       setMenuItems(originalMenuItems);
     }
