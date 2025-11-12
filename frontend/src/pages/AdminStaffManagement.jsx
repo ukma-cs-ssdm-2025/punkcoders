@@ -35,7 +35,7 @@ function AdminStaffManagement() {
   
     const fetchStaff = async () => {
     try {
-        const response = await apiClient.get('/users/staff/'); 
+        const response = await apiClient.get('/auth/users/'); 
         setStaffList(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
         toast.error("Не вдалося завантажити список персоналу.");
@@ -47,7 +47,7 @@ function AdminStaffManagement() {
   
   const onSubmit = async (data) => {
     try {
-      await apiClient.post('/users/staff/', data);
+      await apiClient.post('/auth/users/', data);
       toast.success(`Акаунт для '${data.username}' (роль: ${data.role}) успішно створено!`);
       reset(defaultFormState); 
       fetchStaff();
@@ -69,7 +69,7 @@ function AdminStaffManagement() {
   const handleDelete = async (id, username) => {
     if (globalThis.confirm(`Ви впевнені, що хочете видалити акаунт '${username}'?`)) {
       try {
-        await apiClient.delete(`/users/staff/${id}/`);
+        await apiClient.delete(`/auth/users/${id}/`);
         toast.success("Акаунт видалено.");
         fetchStaff();
       } catch (error) {
