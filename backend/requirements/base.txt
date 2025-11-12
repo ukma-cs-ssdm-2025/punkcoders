@@ -5,6 +5,8 @@ zxcvbn
 djangorestframework
 djangorestframework-simplejwt
 drf-spectacular
+drf_standardized_errors
+drf-standardized-errors[openapi]
 pillow
 python-dotenv
 django-cors-headers
