@@ -73,6 +73,9 @@ function AdminStaffManagement() {
         toast.success("Акаунт видалено.");
         fetchStaff();
       } catch (error) {
+        if (error.response?.status === 404) {
+          toast.error(`Цього акаунту вже не існує.`)
+        }
         toast.error("Не вдалося видалити акаунт.");
         console.error('Error deleting staff:', error);
       }
