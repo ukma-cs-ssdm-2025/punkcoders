@@ -1,5 +1,6 @@
 from accounts.permissions import IsManager
 from rest_framework import parsers, viewsets
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
 from restaurant.models import Category, Dish, Ingredient
 from restaurant.serializers.dishes import CategorySerializer, DishSerializer, IngredientSerializer
@@ -55,7 +56,8 @@ class DishViewSet(viewsets.ModelViewSet):
 
     serializer_class = DishSerializer
     # This is the key for file uploads. It tells DRF to expect multipart form data.
-    parser_classes = [parsers.MultiPartParser, parsers.FormParser]
+    # Accept JSON requests so API clients without file uploads are handled gracefully.
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser, parsers.JSONParser]
 
     def get_permissions(self):
         if self.action in ["list", "retrieve"]:
@@ -69,7 +71,17 @@ class DishViewSet(viewsets.ModelViewSet):
         """
         # 1. Get the 'category_id' from the request's query parameters
         # e.g., /api/dishes/?category_id=1
-        category_id = self.request.query_params.get("category_id")
+        category_param = self.request.query_params.get("category_id")
+        category_id = None
+        if category_param is not None:
+            try:
+                category_id = int(category_param)
+            except (TypeError, ValueError) as exc:
+                # Reject malformed ids instead of letting the ORM raise ValueError deeper in the stack.
+                raise ValidationError({"category_id": "Must be an integer."}) from exc
+            if category_id < 1:
+                # Ensure clients cannot query with invalid FK values that would return empty data silently.
+                raise ValidationError({"category_id": "Must be a positive integer."})
 
         # 2. Call your service with the (optional) category_id
         return get_dishes_queryset(category_id=category_id)

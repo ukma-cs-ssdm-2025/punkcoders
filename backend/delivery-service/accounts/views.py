@@ -89,7 +89,9 @@ class LogoutView(APIView):
 
     def post(self, request):
         try:
-            refresh_token = request.data["refresh"]
+            refresh_token = request.data.get(
+                "refresh"
+            )  # Варто використати request.data.get(...) та валідатор із зрозумілим повідомленням
             if not refresh_token:
                 return Response({"detail": "Refresh token is required."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -97,8 +99,7 @@ class LogoutView(APIView):
             token.blacklist()
 
             return Response(status=status.HTTP_205_RESET_CONTENT)
-        except TokenError:
+        except TokenError as exc:
+            # Tell clients exactly why logout failed without masking unexpected server bugs.
+            logger.warning("Failed to blacklist refresh token: %s", exc)
             return Response({"detail": "Token is invalid or expired."}, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            logger.error(f"Logout error: {str(e)}")
-            return Response({"detail": "Could not log out user."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

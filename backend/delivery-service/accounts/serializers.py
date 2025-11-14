@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from rest_framework import serializers
 
 from .models import User
@@ -36,13 +37,17 @@ class ManagerUserCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         # Use our custom manager to handle creation
-        user = User.objects.create_user(
-            email=validated_data["email"],
-            first_name=validated_data["first_name"],
-            last_name=validated_data["last_name"],
-            password=validated_data["password"],
-            role=validated_data["role"],
-        )
+        try:
+            user = User.objects.create_user(
+                email=validated_data["email"],
+                first_name=validated_data["first_name"],
+                last_name=validated_data["last_name"],
+                password=validated_data["password"],
+                role=validated_data["role"],
+            )
+        except IntegrityError as exc:
+            # Convert database uniqueness failures into a friendly validation error for API clients.
+            raise serializers.ValidationError({"email": "A user with this email already exists."}) from exc
         return user
 
 

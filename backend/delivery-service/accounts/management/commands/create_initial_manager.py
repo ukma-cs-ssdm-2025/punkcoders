@@ -2,7 +2,9 @@
 import os
 
 from django.contrib.auth import get_user_model
-from django.core.management.base import BaseCommand
+from django.core.exceptions import ValidationError
+from django.core.management.base import BaseCommand, CommandError
+from django.db import IntegrityError
 
 User = get_user_model()
 
@@ -46,6 +48,8 @@ class Command(BaseCommand):
                 role=User.Role.MANAGER,
                 is_staff=True,
             )
+        except (IntegrityError, ValidationError) as exc:
+            # Fail fast so deployments surface duplicate or invalid bootstrap accounts instead of hiding them.
+            raise CommandError(f"Failed to create initial manager: {exc}") from exc
+        else:
             self.stdout.write(self.style.SUCCESS(f"Manager '{first_name} {last_name}' created successfully."))
-        except Exception as e:
-            self.stderr.write(self.style.ERROR(f"Error creating manager: {e}"))
