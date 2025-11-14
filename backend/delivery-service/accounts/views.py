@@ -1,14 +1,16 @@
-from rest_framework import viewsets, generics, permissions, status
-from django.db.models import ProtectedError
-from .models import User
-from .serializers import SelfUserSerializer, ManagerUserSerializer, ManagerUserCreateSerializer
+import logging
+
 from accounts.permissions import IsManager
+from django.db.models import ProtectedError
+from rest_framework import generics, permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
-import logging
+from rest_framework_simplejwt.tokens import RefreshToken
+
+from .models import User
+from .serializers import ManagerUserCreateSerializer, ManagerUserSerializer, SelfUserSerializer
 
 logger = logging.getLogger(__name__)
 

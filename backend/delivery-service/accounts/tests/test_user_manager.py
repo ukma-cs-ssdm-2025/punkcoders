@@ -1,9 +1,9 @@
 # accounts/test_models.py
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.utils import IntegrityError
 from django.test import TestCase
 
-from django.conf import settings 
 User = get_user_model()
 
 
@@ -11,7 +11,9 @@ class UserManagerTests(TestCase):
 
     def test_create_user_requires_role(self):
         with self.assertRaises((ValueError, IntegrityError)):
-            User.objects.create_user(first_name="norole", last_name="user", email="a@a.a",  password=settings.TEST_SECRET, role=None)
+            User.objects.create_user(
+                first_name="norole", last_name="user", email="a@a.a", password=settings.TEST_SECRET, role=None
+            )
 
     def test_create_user_requires_email(self):
         """
@@ -19,7 +21,11 @@ class UserManagerTests(TestCase):
         """
         with self.assertRaises(ValueError):
             User.objects.create_user(
-                first_name="noemail", last_name="user", email=None,  password=settings.TEST_SECRET, role=User.Role.MANAGER
+                first_name="noemail",
+                last_name="user",
+                email=None,
+                password=settings.TEST_SECRET,
+                role=User.Role.MANAGER,
             )
 
     def test_create_user_requires_first_name(self):
@@ -28,7 +34,7 @@ class UserManagerTests(TestCase):
         """
         with self.assertRaises(ValueError):
             User.objects.create_user(
-                first_name=None, last_name="user", email="a@a.a",  password=settings.TEST_SECRET, role=User.Role.MANAGER
+                first_name=None, last_name="user", email="a@a.a", password=settings.TEST_SECRET, role=User.Role.MANAGER
             )
 
     def test_create_user_requires_last_name(self):
@@ -37,7 +43,11 @@ class UserManagerTests(TestCase):
         """
         with self.assertRaises(ValueError):
             User.objects.create_user(
-                first_name="nolastname", last_name=None, email="a@a.a",  password=settings.TEST_SECRET, role=User.Role.MANAGER
+                first_name="nolastname",
+                last_name=None,
+                email="a@a.a",
+                password=settings.TEST_SECRET,
+                role=User.Role.MANAGER,
             )
 
     def test_create_superuser_is_manager(self):
@@ -46,7 +56,7 @@ class UserManagerTests(TestCase):
         and enables all required flags.
         """
         admin_user = User.objects.create_superuser(
-            first_name="super", last_name="user", email="super@user.com",  password=settings.TEST_SECRET
+            first_name="super", last_name="user", email="super@user.com", password=settings.TEST_SECRET
         )
 
         self.assertEqual(admin_user.role, User.Role.MANAGER)
@@ -64,7 +74,7 @@ class UserManagerTests(TestCase):
                 first_name="super2",
                 last_name="user",
                 email="super2@user.com",
-                 password=settings.TEST_SECRET,
+                password=settings.TEST_SECRET,
                 role=User.Role.COURIER,  # Attempt to override
             )
 
@@ -77,6 +87,6 @@ class UserManagerTests(TestCase):
                 first_name="super3",
                 last_name="user",
                 email="super3@user.com",
-                 password=settings.TEST_SECRET,
+                password=settings.TEST_SECRET,
                 is_staff=False,
             )
