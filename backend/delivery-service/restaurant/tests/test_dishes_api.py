@@ -3,6 +3,7 @@ import shutil
 from pathlib import Path
 
 from accounts.models import User
+from app.common_for_tests import find_failed_attr_in_err_response
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
@@ -70,14 +71,6 @@ class MenuApiTests(APITestCase):
         self.dishes_url = reverse("dish-list")
         self.dish_detail_url = reverse("dish-detail", args=[self.dish.id])
         self.non_existent_dish_url = reverse("dish-detail", args=[9999])
-
-    def find_failed_attr_in_err_response(self, data, attr):
-        if "errors" not in data:
-            self.fail(f'"errors" not in {data}')
-        for err in data["errors"]:
-            if err["attr"] == attr:
-                return err
-        self.fail(f'no error on "{attr}" in {data}')
 
     def test_list_categories_is_public(self):
         """
@@ -299,8 +292,8 @@ class MenuApiTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         # Check that the response contains errors for the missing fields
-        self.find_failed_attr_in_err_response(response.data, "price")
-        self.find_failed_attr_in_err_response(response.data, "category_id")
+        find_failed_attr_in_err_response(response.data, "price")
+        find_failed_attr_in_err_response(response.data, "category_id")
 
     def test_partial_update_dish_fails_for_anonymous(self):
         """
@@ -426,8 +419,8 @@ class MenuApiTests(APITestCase):
         response = self.client.post(self.dishes_url, data=dish_data, format="multipart")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.find_failed_attr_in_err_response(response.data, "price")
-        self.find_failed_attr_in_err_response(response.data, "category_id")
+        find_failed_attr_in_err_response(response.data, "price")
+        find_failed_attr_in_err_response(response.data, "category_id")
 
     def test_create_dish_with_invalid_category_id_fails_400(self):
         """
@@ -444,7 +437,7 @@ class MenuApiTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         # Check for the specific error from the PrimaryKeyRelatedField
-        errdetail = self.find_failed_attr_in_err_response(response.data, "category_id")
+        errdetail = find_failed_attr_in_err_response(response.data, "category_id")
         self.assertEqual(errdetail["code"], "does_not_exist")
 
     def test_create_dish_with_invalid_photo_fails_400(self):
@@ -470,5 +463,5 @@ class MenuApiTests(APITestCase):
         response = self.client.post(self.dishes_url, data=dish_data, format="multipart")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        errdetail = self.find_failed_attr_in_err_response(response.data, "photo")
+        errdetail = find_failed_attr_in_err_response(response.data, "photo")
         self.assertEqual(errdetail["code"], "invalid_image")

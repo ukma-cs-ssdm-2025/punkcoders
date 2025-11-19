@@ -1,14 +1,16 @@
-from rest_framework import viewsets, generics, permissions, status
-from django.db.models import ProtectedError
-from .models import User
-from .serializers import SelfUserSerializer, ManagerUserSerializer, ManagerUserCreateSerializer
+import logging
+
 from accounts.permissions import IsManager
+from accounts.services import log_user_out_everywhere
+from django.db.models import ProtectedError
+from rest_framework import generics, permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
-from accounts.services import log_user_out_everywhere
-import logging
+from rest_framework_simplejwt.tokens import RefreshToken
+
+from .models import User
+from .serializers import ManagerUserCreateSerializer, ManagerUserSerializer, SelfUserSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +89,7 @@ class LogoutView(APIView):
 
     def post(self, request):
         try:
-            refresh_token = request.data["refresh"]
+            refresh_token = request.data.get("refresh", None)
             if not refresh_token:
                 return Response({"detail": "Refresh token is required."}, status=status.HTTP_400_BAD_REQUEST)
 
