@@ -1,10 +1,10 @@
-from django.test import TestCase
 from accounts.models import User
 from accounts.serializers import (
-    SelfUserSerializer,
     ManagerUserCreateSerializer,
     ManagerUserSerializer,
+    SelfUserSerializer,
 )
+from django.test import TestCase
 
 
 class UserSerializerTests(TestCase):
