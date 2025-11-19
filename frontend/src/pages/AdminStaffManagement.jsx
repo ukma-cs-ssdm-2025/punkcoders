@@ -53,7 +53,7 @@ function AdminStaffManagement() {
       fetchStaff();
       
     } catch (error) {
-    if (error.response && error.response.data) {
+    if (error.response?.data) {
         const serverErrors = error.response.data;
         for (const [field, message] of Object.entries(serverErrors)) {
         setError(field, { type: 'server', message: message[0] });
