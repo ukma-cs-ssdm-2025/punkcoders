@@ -1,6 +1,5 @@
 from collections import Counter
 
-from accounts.models import User
 from orders.models import Order, OrderItem
 from orders.services.orders import create_order
 from rest_framework import serializers
@@ -18,28 +17,52 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    user_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), source="user")
+    user_id = serializers.IntegerField(source="user.id", read_only=True)
+    guest_name = serializers.CharField(required=False, allow_blank=True)
+    guest_phone = serializers.CharField(required=False, allow_blank=True)
+    guest_address = serializers.CharField(required=False, allow_blank=True)
+
     items = OrderItemSerializer(many=True, read_only=True)
     dishes = serializers.ListField(child=serializers.IntegerField(min_value=1), write_only=True)
 
     class Meta:
         model = Order
-        fields = ["id", "user_id", "status", "total_price", "items", "dishes", "created_at", "updated_at"]
+        fields = [
+            "id",
+            "user_id",
+            "guest_name",
+            "guest_phone",
+            "guest_address",
+            "status",
+            "total_price",
+            "items",
+            "dishes",
+            "created_at",
+            "updated_at",
+        ]
         read_only_fields = ["status", "total_price", "items", "created_at", "updated_at"]
 
     def create(self, validated_data):
-        dish_ids = validated_data.pop("dishes", [])
+        request = self.context.get("request")
 
+        if request.user.is_authenticated:
+            validated_data["user"] = request.user
+        else:
+            if not validated_data.get("guest_name") or not validated_data.get("guest_phone"):
+                raise serializers.ValidationError("Guest orders require 'guest_name' and 'guest_phone'.")
+
+        dish_ids = validated_data.pop("dishes", [])
         if not dish_ids:
-            raise serializers.ValidationError({"dishes": "Add at least one dish id to create an order."})
+            raise serializers.ValidationError({"dishes": "Add at least one dish id."})
 
         unique_ids = set(dish_ids)
         dishes = Dish.objects.filter(is_available=True, id__in=unique_ids)
         found_ids = set(dishes.values_list("id", flat=True))
-        missing_ids = sorted(unique_ids - found_ids)
-        if missing_ids:
+        missing = sorted(unique_ids - found_ids)
+
+        if missing:
             raise serializers.ValidationError(
-                {"dishes": f"Unknown or unavailable dish ids: {', '.join(map(str, missing_ids))}."}
+                {"dishes": f"Unknown or unavailable dish ids: {', '.join(map(str, missing))}"}
             )
 
         dish_map = {dish.id: dish for dish in dishes}
