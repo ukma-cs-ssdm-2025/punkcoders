@@ -28,7 +28,7 @@ class DishAdmin(admin.ModelAdmin):
 # Налаштування вигляду моделі Category
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ("name", "slug", "is_alcoholic")
-    prepopulated_fields = {"slug": ("name",)}  # Автоматично генерує slug з назви
+    # prepopulated_fields = {"slug": ("name",)}  # Автоматично генерує slug з назви
 
 
 # Реєстрація моделей в Admin Panel

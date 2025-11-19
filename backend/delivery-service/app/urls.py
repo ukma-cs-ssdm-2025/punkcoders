@@ -26,6 +26,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     # API v0
     path("api/v0/menu/", include("restaurant.urls.api")),
+    path("api/v0/orders/", include("orders.urls.api")),
     path("api/v0/auth/", include("accounts.urls")),
     # API v0 documentation
     path("api/v0/schema/", SpectacularAPIView.as_view(), name="schema"),
