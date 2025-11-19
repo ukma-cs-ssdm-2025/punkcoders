@@ -71,6 +71,8 @@ jobs:
           DB_PASSWORD: postgres
           DB_HOST: localhost
           DB_PORT: 5432
+
+          TEST_SECRET: ${{ secrets.TEST_SECRET }}
         run: |
           python manage.py test --settings=app.settings
 
@@ -84,6 +86,8 @@ jobs:
           DB_PASSWORD: postgres
           DB_HOST: localhost
           DB_PORT: 5432
+
+          TEST_SECRET: ${{ secrets.TEST_SECRET }}
         run: |
           python manage.py makemigrations --check --dry-run --no-input
 
@@ -118,6 +122,8 @@ jobs:
           DB_PASSWORD: postgres
           DB_HOST: localhost
           DB_PORT: 5432
+          
+          TEST_SECRET: ${{ secrets.TEST_SECRET }}
         run: |
           python manage.py spectacular --color --file ../../openapi-generated.yaml
 

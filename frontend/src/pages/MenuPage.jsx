@@ -52,7 +52,7 @@ const fetchDishesByCategory = async (id) => {
     }
     else {
       console.error(`Error fetching dishes for category ${id}:`, error);
-    toast.error(`Не вдалось завантажити страви для цієї категорії. Спробуйте ще раз.`);
+      toast.error(`Не вдалось завантажити страви для цієї категорії. Спробуйте ще раз.`);
     }
     // should this happen only fur unidentified errors?
     throw error;
