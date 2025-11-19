@@ -3,6 +3,7 @@ import shutil
 from pathlib import Path
 
 from accounts.models import User
+from app.common_for_tests import find_failed_attr_in_err_response
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
@@ -291,8 +292,8 @@ class MenuApiTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         # Check that the response contains errors for the missing fields
-        self.assertIn("price", response.data)
-        self.assertIn("category_id", response.data)
+        find_failed_attr_in_err_response(response.data, "price")
+        find_failed_attr_in_err_response(response.data, "category_id")
 
     def test_partial_update_dish_fails_for_anonymous(self):
         """
@@ -418,8 +419,8 @@ class MenuApiTests(APITestCase):
         response = self.client.post(self.dishes_url, data=dish_data, format="multipart")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("price", response.data)
-        self.assertIn("category_id", response.data)
+        find_failed_attr_in_err_response(response.data, "price")
+        find_failed_attr_in_err_response(response.data, "category_id")
 
     def test_create_dish_with_invalid_category_id_fails_400(self):
         """
@@ -436,8 +437,8 @@ class MenuApiTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         # Check for the specific error from the PrimaryKeyRelatedField
-        self.assertIn("category_id", response.data)
-        self.assertIn("does not exist", str(response.data["category_id"]))
+        errdetail = find_failed_attr_in_err_response(response.data, "category_id")
+        self.assertEqual(errdetail["code"], "does_not_exist")
 
     def test_create_dish_with_invalid_photo_fails_400(self):
         """
@@ -462,5 +463,5 @@ class MenuApiTests(APITestCase):
         response = self.client.post(self.dishes_url, data=dish_data, format="multipart")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("photo", response.data)
-        self.assertIn("Upload a valid image", str(response.data["photo"]))
+        errdetail = find_failed_attr_in_err_response(response.data, "photo")
+        self.assertEqual(errdetail["code"], "invalid_image")

@@ -35,7 +35,7 @@ function AdminStaffManagement() {
   
     const fetchStaff = async () => {
     try {
-        const response = await apiClient.get('/users/staff/'); 
+        const response = await apiClient.get('/auth/users/'); 
         setStaffList(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
         toast.error("Не вдалося завантажити список персоналу.");
@@ -47,13 +47,13 @@ function AdminStaffManagement() {
   
   const onSubmit = async (data) => {
     try {
-      await apiClient.post('/users/staff/', data);
+      await apiClient.post('/auth/users/', data);
       toast.success(`Акаунт для '${data.username}' (роль: ${data.role}) успішно створено!`);
       reset(defaultFormState); 
       fetchStaff();
       
     } catch (error) {
-    if (error.response && error.response.data) {
+    if (error.response?.data) {
         const serverErrors = error.response.data;
         for (const [field, message] of Object.entries(serverErrors)) {
         setError(field, { type: 'server', message: message[0] });
@@ -63,21 +63,23 @@ function AdminStaffManagement() {
         console.error('Submission error:', error);
     }
     }
-
+  }
 
   
   const handleDelete = async (id, username) => {
     if (globalThis.confirm(`Ви впевнені, що хочете видалити акаунт '${username}'?`)) {
       try {
-        await apiClient.delete(`/users/staff/${id}/`);
+        await apiClient.delete(`/auth/users/${id}/`);
         toast.success("Акаунт видалено.");
         fetchStaff();
       } catch (error) {
         if (error.response?.status === 404) {
           toast.error(`Цього акаунту вже не існує.`)
         }
-        toast.error("Не вдалося видалити акаунт.");
-        console.error('Error deleting staff:', error);
+        else {
+          toast.error("Не вдалося видалити акаунт.");
+          console.error('Error deleting staff:', error);
+        }
       }
     }
   };

@@ -1,12 +1,12 @@
 import logging
 
 from accounts.permissions import IsManager
+from accounts.services import log_user_out_everywhere
 from django.db.models import ProtectedError
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import TokenError
-from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User
@@ -42,6 +42,15 @@ class UserViewSet(viewsets.ModelViewSet):
             return ManagerUserCreateSerializer
         return ManagerUserSerializer
 
+    def perform_update(self, serializer):
+        """
+        Custom update/partial update logic to handle deactivation.
+        """
+        instance = serializer.save()
+        # log user out the 'is_active' flag was just set to False
+        if "is_active" in serializer.validated_data and not instance.is_active:
+            log_user_out_everywhere(instance)
+
     def perform_destroy(self, instance):
         """
         Delete a user if they have no records to their name, deactivate otherwise.
@@ -49,16 +58,7 @@ class UserViewSet(viewsets.ModelViewSet):
         try:
             instance.delete()
         except ProtectedError:
-            # log user out on all devices by blacklisting their tokens
-            tokens = OutstandingToken.objects.filter(user=instance)
-            for token in tokens:
-                try:
-                    RefreshToken(token.token).blacklist()
-                except TokenError:
-                    # This can happen if the token is already
-                    # expired or invalid. No worries.
-                    pass
-
+            log_user_out_everywhere(instance)
             instance.is_active = False
             instance.save()
 
@@ -89,9 +89,7 @@ class LogoutView(APIView):
 
     def post(self, request):
         try:
-            refresh_token = request.data.get(
-                "refresh"
-            )  # Варто використати request.data.get(...) та валідатор із зрозумілим повідомленням
+            refresh_token = request.data.get("refresh", None)
             if not refresh_token:
                 return Response({"detail": "Refresh token is required."}, status=status.HTTP_400_BAD_REQUEST)
 
