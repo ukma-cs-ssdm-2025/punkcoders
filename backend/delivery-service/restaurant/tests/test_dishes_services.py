@@ -44,7 +44,8 @@ class DishServiceTests(TestCase):
         self.ingredient1 = Ingredient.objects.create(name="Cheese")
         self.ingredient2 = Ingredient.objects.create(name="Tomato")
         self.manager_user = User.objects.create_user(
-            username="testmanager",
+            first_name="testmanager",
+            last_name="user",
             password="password123",
             email="bogus@nunya.com",
             role=User.Role.MANAGER,  # nosec

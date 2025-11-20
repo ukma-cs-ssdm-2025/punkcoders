@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form'; // 1. Import the hook
+import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form'; 
 import apiClient from '../api';
-import { toast } from 'react-toastify'; // For general error messages
+import { toast } from 'react-toastify'; 
 
-// Default values for the form
 const defaultFormState = {
   name: '',
   description: '',
@@ -14,20 +13,17 @@ const defaultFormState = {
 };
 
 function AdminMenuManagement() {
-  // --- STATE ---
-  // We only keep state for data that *isn't* in the form
   const [menuItems, setMenuItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [editingId, setEditingId] = useState(null);
 
-  // --- 2. Initialize react-hook-form ---
   const { 
-    register,         // Connects inputs
-    handleSubmit,     // Wraps our submit function
-    reset,            // Clears the form
-    setValue,         // Sets form values for "Edit"
-    setError,         // Sets server-side errors
-    formState: { errors } // Object containing validation errors
+    register,         
+    handleSubmit,     
+    reset,            
+    setValue,         
+    setError,         
+    formState: { errors } 
   } = useForm({
     defaultValues: defaultFormState
   });
@@ -40,7 +36,7 @@ function AdminMenuManagement() {
 
   const fetchDishes = async () => {
     try {
-      const response = await apiClient.get('/dishes/');
+      const response = await apiClient.get('/menu/dishes/');
       setMenuItems(response.data);
     } catch (error) {
       toast.error("Не вдалося завантажити страви.");
@@ -50,7 +46,7 @@ function AdminMenuManagement() {
 
   const fetchCategories = async () => {
     try {
-      const response = await apiClient.get('/categories/');
+      const response = await apiClient.get('/menu/categories/');
       setCategories(response.data);
       // Set default category in the form *after* they load
       if (response.data.length > 0) {
@@ -75,7 +71,7 @@ function AdminMenuManagement() {
     dishData.append('category_id', data.category); // Your API wants category_id
 
     // 2. Handle the optional file upload
-    if (data.photo && data.photo.length > 0) {
+    if (data.photo?.length > 0) {
       dishData.append('photo', data.photo[0]); // data.photo is a FileList
     }
 
@@ -83,11 +79,11 @@ function AdminMenuManagement() {
       // 3. Call the correct API endpoint
       if (editingId) {
         // UPDATE (PATCH)
-        await apiClient.patch(`/dishes/${editingId}/`, dishData);
+        await apiClient.patch(`/menu/dishes/${editingId}/`, dishData);
         toast.success("Страву успішно оновлено!");
       } else {
         // CREATE (POST)
-        await apiClient.post('/dishes/', dishData);
+        await apiClient.post('/menu/dishes/', dishData);
         toast.success("Страву успішно створено!");
       }
       
@@ -97,16 +93,21 @@ function AdminMenuManagement() {
 
     } catch (error) {
       // 5. Handle errors from the server
-      if (error.response && error.response.status === 400) {
+      if (error.response?.status === 400) {
         // This is a validation error (e.g., "name already exists")
         const serverErrors = error.response.data;
         for (const [field, message] of Object.entries(serverErrors)) {
           // Show the error message under the correct form field
           setError(field, { type: 'server', message: message[0] });
         }
-      } else {
+      } 
+      else if (error.response?.status === 404) {
+        toast.error(`Цю страву не можна відредагувати, бо її не існує.`)
+      }
+      else {
         // This is a network error or 500 server error
         toast.error("Сталася неочікувана помилка. Спробуйте ще раз.");
+        console.error('Submission error:', error);
       }
     }
   };
@@ -128,14 +129,49 @@ function AdminMenuManagement() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Ви впевнені, що хочете видалити цю страву?')) {
+    if (globalThis.confirm('Ви впевнені, що хочете видалити цю страву?')) {
       try {
-        await apiClient.delete(`/dishes/${id}/`);
+        await apiClient.delete(`/menu/dishes/${id}/`);
         toast.success("Страву видалено.");
         fetchDishes(); // Reload the list
       } catch (error) {
-        toast.error("Не вдалося видалити страву.");
+        if (error.response?.status === 404) {
+          toast.error(`Цієї страви вже не існує.`)
+        }
+        else {
+          toast.error("Не вдалося видалити страву.");
+          console.error('Error deleting dish:', error);
+        }
       }
+    }
+  };
+
+  const handleAvailabilityToggle = async (dishId, newAvailability) => {
+    const originalMenuItems = [...menuItems];
+
+    const dishData = new FormData();
+      dishData.append('is_available', newAvailability);
+
+    setMenuItems(prevItems =>
+      prevItems.map(item =>
+        item.id === dishId ? { ...item, is_available: newAvailability } : item
+      )
+    );
+
+    try {
+      await apiClient.patch(`/menu/dishes/${dishId}/`, dishData);
+      // Optional: Show a very subtle success message
+      // toast.success("Availability updated!"); 
+    } 
+    catch (error) {
+      if (error.response?.status === 404) {
+        toast.error(`Цій страві не можна змінити доступність, бо її не існує.`)
+      }
+      else {
+        toast.error("Не вдалось змінити доступність. Спробуйте ще раз.");
+        console.error('Error updating availability:', error);
+      }
+      setMenuItems(originalMenuItems);
     }
   };
 
@@ -191,6 +227,10 @@ function AdminMenuManagement() {
               {...register('price', { 
                 required: 'Ціна є обов\'язковою',
                 valueAsNumber: true,
+                min: { 
+                value: 0,
+                message: 'Ціна не може бути від\'ємною'
+              }
               })}
             />
             {errors.price && <span className="error-message">{errors.price.message}</span>}
@@ -208,6 +248,7 @@ function AdminMenuManagement() {
                 </option>
               ))}
             </select>
+            {errors.category && <span className="error-message">{errors.category.message}</span>}
           </div>
 
           <div className="form-group form-group-full">
@@ -254,10 +295,20 @@ function AdminMenuManagement() {
         {/* ... (thead) ... */}
         <tbody>
           {menuItems.map(item => (
-            <tr key={item.id} className={!item.is_available ? 'status-unavailable' : ''}>
+            <tr key={item.id} className={item.is_available ? '' : 'status-unavailable'}>
               <td>{item.name}</td>
-              <td>{parseFloat(item.price).toFixed(2)} грн</td>
+              <td>{Number.parseFloat(item.price).toFixed(2)} грн</td>
               <td>{item.category.name}</td>
+              <td>
+                <input
+                  type="checkbox"
+                  checked={item.is_available}
+                  onChange={(e) =>
+                    handleAvailabilityToggle(item.id, e.target.checked)
+                  }
+                  style={{ cursor: 'pointer', transform: 'scale(1.2)' }}
+                />
+              </td>
               <td>{item.is_available ? 'Доступна' : 'Недоступна'}</td>
               <td className="actions">
                 <button className="admin-button" onClick={() => handleEdit(item)}>

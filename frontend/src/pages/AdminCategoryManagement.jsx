@@ -32,7 +32,7 @@ function AdminCategoryManagement() {
 
   const fetchCategories = async () => {
     try {
-      const response = await apiClient.get('/categories/');
+      const response = await apiClient.get('/menu/categories/');
       setCategories(response.data);
     } catch (error) {
       toast.error("Не вдалося завантажити категорії."); 
@@ -46,10 +46,10 @@ function AdminCategoryManagement() {
     try {
       if (editingId) {
         // UPDATE (PATCH)
-        await apiClient.patch(`/categories/${editingId}/`, data);
+        await apiClient.patch(`/menu/categories/${editingId}/`, data);
       } else {
         // CREATE (POST)
-        await apiClient.post('/categories/', data);
+        await apiClient.post('/menu/categories/', data);
       }
       
       // Success: Clear the form and reload the list
@@ -58,7 +58,7 @@ function AdminCategoryManagement() {
       toast.success(`Категорія успішно ${editingId ? 'оновлена' : 'додана'}.`);
     } catch (error) {
       // --- 4. Handle Django's "you filled it out wrong" errors ---
-      if (error.response && error.response.status === 400) {
+      if (error.response?.status === 400) {
         const serverErrors = error.response.data; // e.g., { name: ["This name is already taken."] }
         
         // Loop over the errors from Django and set them in the form
@@ -68,7 +68,11 @@ function AdminCategoryManagement() {
             message: message[0] // Show the first error message
           });
         }
-      } else {
+      } 
+      else if (error.response?.status === 404) {
+        toast.error(`Цю категорію не можна відредагувати, бо її не існує.`)
+      }
+      else {
         toast.error("Сталася непередбачена помилка.");
         console.error('An unexpected error occurred:', error);
       }
@@ -83,14 +87,19 @@ function AdminCategoryManagement() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Ви впевнені, що хочете видалити цю категорію?')) {
+    if (globalThis.confirm('Ви впевнені, що хочете видалити цю категорію?')) {
       try {
-        await apiClient.delete(`/categories/${id}/`);
+        await apiClient.delete(`/menu/categories/${id}/`);
         fetchCategories(); // Reload the list after deleting
         toast.success("Категорію успішно видалено.");
       } catch (error) {
-        toast.error("Не вдалося видалити категорію.");
-        console.error('Error deleting category:', error);
+        if (error.response?.status === 404) {
+          toast.error(`Цієї категорії вже не існує.`)
+        }
+        else {
+          toast.error("Не вдалося видалити категорію.");
+          console.error('Error deleting category:', error);
+        }
       }
     }
   };

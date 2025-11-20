@@ -10,13 +10,13 @@ class ZxcvbnPasswordValidator:
     def __init__(self, min_score=3):
         self.min_score = min_score
 
-    def validate(self, password, user=None):
+    def validate(self, password, _=None):  # that parameter is user in case we need it
         """
         Validates the password against the zxcvbn strength estimator.
         """
         # The zxcvbn library returns a score from 0 (terrible) to 4 (excellent).
         # not hardcoding user_inputs because they may change in the future, better to use django's validator
-        strength = zxcvbn(password)  # , user_inputs=[user.username if user else None, user.email if user else None])
+        strength = zxcvbn(password)
 
         if strength["score"] < self.min_score:
             # The feedback from zxcvbn is very user-friendly.

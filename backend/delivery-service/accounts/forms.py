@@ -1,4 +1,3 @@
-# from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
@@ -13,7 +12,7 @@ class CustomUserCreationForm(UserCreationForm):
 
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ("username", "email")  # Customers don't set their role
+        fields = ("email", "first_name", "last_name", "role")
 
 
 class CustomAuthenticationForm(AuthenticationForm):

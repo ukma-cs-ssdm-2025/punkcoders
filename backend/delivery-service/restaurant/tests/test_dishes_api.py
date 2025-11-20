@@ -3,6 +3,7 @@ import shutil
 from pathlib import Path
 
 from accounts.models import User
+from app.common_for_tests import find_failed_attr_in_err_response
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
@@ -44,16 +45,18 @@ class MenuApiTests(APITestCase):
     def setUp(self):
         """Set up users and initial data for all tests."""
         self.manager_user = User.objects.create_user(
-            username="manager",
+            first_name="manager",
+            last_name="user",
             password="password123",
             email="manager@delivery.com",
             role=User.Role.MANAGER,  # nosec
         )
-        self.customer_user = User.objects.create_user(
-            username="customer",
+        self.courier_user = User.objects.create_user(
+            first_name="courier",
+            last_name="user",
             password="password123",
-            email="customer@delivery.com",
-            role=User.Role.CUSTOMER,  # nosec
+            email="courier@delivery.com",
+            role=User.Role.COURIER,  # nosec
         )
         self.category = Category.objects.create(name="Test Category", slug="test-category")
         self.dish = Dish.objects.create(
@@ -83,11 +86,11 @@ class MenuApiTests(APITestCase):
         response = self.client.post(self.categories_url, {"name": "New Category"})
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_create_category_fails_for_customer(self):
+    def test_create_category_fails_for_courier(self):
         """
-        Tests that a logged-in customer gets a 403 Forbidden error.
+        Tests that a logged-in courier gets a 403 Forbidden error.
         """
-        self.client.force_authenticate(user=self.customer_user)
+        self.client.force_authenticate(user=self.courier_user)
         response = self.client.post(self.categories_url, {"name": "New Category"})
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -129,11 +132,11 @@ class MenuApiTests(APITestCase):
         response = self.client.post(self.dishes_url, data=dish_data, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_create_dish_fails_for_customer(self):
+    def test_create_dish_fails_for_courier(self):
         """
-        Tests that a customer user gets 403 on POST /api/dishes/.
+        Tests that a courier user gets 403 on POST /api/dishes/.
         """
-        self.client.force_authenticate(user=self.customer_user)
+        self.client.force_authenticate(user=self.courier_user)
         dish_data = {
             "name": "New Dish",
             "price": 5.00,
@@ -203,10 +206,9 @@ class MenuApiTests(APITestCase):
         response = self.client.post(self.dishes_url, data=dish_data, format="multipart")
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertIn("photo", response.data)
-        photo_url = response.data.get("photo")
+        self.assertIn("photo_url", response.data)
+        photo_url = response.data.get("photo_url")
         self.assertIsNotNone(photo_url)
-        # This assumes your MEDIA_URL is correctly set up.
         self.assertIn("/dishes_photos/", photo_url)
         self.assertTrue(photo_url.endswith(".gif"))
 
@@ -239,11 +241,11 @@ class MenuApiTests(APITestCase):
         response = self.client.put(self.dish_detail_url, data=update_data, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_full_update_dish_fails_for_customer(self):
+    def test_full_update_dish_fails_for_courier(self):
         """
-        Tests that a customer user gets 403 on PUT /api/dishes/<id>/.
+        Tests that a courier user gets 403 on PUT /api/dishes/<id>/.
         """
-        self.client.force_authenticate(user=self.customer_user)
+        self.client.force_authenticate(user=self.courier_user)
         update_data = {
             "name": "Full Update Name",
             "price": 99.99,
@@ -290,8 +292,8 @@ class MenuApiTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         # Check that the response contains errors for the missing fields
-        self.assertIn("price", response.data)
-        self.assertIn("category_id", response.data)
+        find_failed_attr_in_err_response(response.data, "price")
+        find_failed_attr_in_err_response(response.data, "category_id")
 
     def test_partial_update_dish_fails_for_anonymous(self):
         """
@@ -301,11 +303,11 @@ class MenuApiTests(APITestCase):
         response = self.client.patch(self.dish_detail_url, data=update_data, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_partial_update_dish_fails_for_customer(self):
+    def test_partial_update_dish_fails_for_courier(self):
         """
-        Tests that a customer user gets 403 on PATCH /api/dishes/<id>/.
+        Tests that a courier user gets 403 on PATCH /api/dishes/<id>/.
         """
-        self.client.force_authenticate(user=self.customer_user)
+        self.client.force_authenticate(user=self.courier_user)
         update_data = {"price": 99.99}
         response = self.client.patch(self.dish_detail_url, data=update_data, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -333,7 +335,7 @@ class MenuApiTests(APITestCase):
         update_data = DishSerializer(self.dish).data  # Get current data
         update_data["category_id"] = update_data["category"]["id"]  # Adjust for write field
         del update_data["category"]  # Remove read-only field
-        del update_data["photo"]  # Remove photo to avoid upload issues
+        del update_data["photo_url"]  # ditto
         response = self.client.patch(self.dish_detail_url, data=update_data, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -348,11 +350,11 @@ class MenuApiTests(APITestCase):
         response = self.client.delete(self.dish_detail_url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_delete_dish_fails_for_customer(self):
+    def test_delete_dish_fails_for_courier(self):
         """
-        Tests that a customer user gets 403 on DELETE /api/dishes/<id>/.
+        Tests that a courier user gets 403 on DELETE /api/dishes/<id>/.
         """
-        self.client.force_authenticate(user=self.customer_user)
+        self.client.force_authenticate(user=self.courier_user)
         response = self.client.delete(self.dish_detail_url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -417,8 +419,8 @@ class MenuApiTests(APITestCase):
         response = self.client.post(self.dishes_url, data=dish_data, format="multipart")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("price", response.data)
-        self.assertIn("category_id", response.data)
+        find_failed_attr_in_err_response(response.data, "price")
+        find_failed_attr_in_err_response(response.data, "category_id")
 
     def test_create_dish_with_invalid_category_id_fails_400(self):
         """
@@ -435,8 +437,8 @@ class MenuApiTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         # Check for the specific error from the PrimaryKeyRelatedField
-        self.assertIn("category_id", response.data)
-        self.assertIn("does not exist", str(response.data["category_id"]))
+        errdetail = find_failed_attr_in_err_response(response.data, "category_id")
+        self.assertEqual(errdetail["code"], "does_not_exist")
 
     def test_create_dish_with_invalid_photo_fails_400(self):
         """
@@ -461,5 +463,5 @@ class MenuApiTests(APITestCase):
         response = self.client.post(self.dishes_url, data=dish_data, format="multipart")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("photo", response.data)
-        self.assertIn("Upload a valid image", str(response.data["photo"]))
+        errdetail = find_failed_attr_in_err_response(response.data, "photo")
+        self.assertEqual(errdetail["code"], "invalid_image")

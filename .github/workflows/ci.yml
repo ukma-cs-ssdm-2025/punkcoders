@@ -46,7 +46,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r backend/requirements/dev.txt
 
-      # --- НОВИЙ КРОК ЛІНТИНГУ та ПЕРЕВІРКИ ФОРМАТУВАННЯ ---
       - name: Code Linting and Formatting Check
         working-directory: ./backend/delivery-service
         run: |
@@ -61,18 +60,18 @@ jobs:
           echo "Лінтинг коду за допомогою Flake8 (використовуючи pyproject.toml)"
           # Flake8 автоматично знайде конфігурацію та застосує всі розширення
           flake8 . --statistics
-      # --- КІНЕЦЬ КРОКУ ЛІНТИНГУ ---
 
       - name: Run Django Tests
         working-directory: ./backend/delivery-service
         env:
           DJANGO_SETTINGS_MODULE: app.settings
-          SECRET_KEY: test-secret-key-for-ci
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
           DB_NAME: ci_test_db
           DB_USER: postgres
           DB_PASSWORD: postgres
           DB_HOST: localhost
           DB_PORT: 5432
+          TEST_SECRET: ${{ secrets.TEST_SECRET }}
         run: |
           python manage.py test --settings=app.settings
 
@@ -80,12 +79,13 @@ jobs:
         working-directory: ./backend/delivery-service
         env:
           DJANGO_SETTINGS_MODULE: app.settings
-          SECRET_KEY: test-secret-key-for-ci
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
           DB_NAME: ci_test_db
           DB_USER: postgres
           DB_PASSWORD: postgres
           DB_HOST: localhost
           DB_PORT: 5432
+          TEST_SECRET: ${{ secrets.TEST_SECRET }}
         run: |
           python manage.py makemigrations --check --dry-run --no-input
 
@@ -114,12 +114,13 @@ jobs:
         working-directory: ./backend/delivery-service
         env:
           DJANGO_SETTINGS_MODULE: app.settings
-          SECRET_KEY: test-secret-key-for-ci
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
           DB_NAME: ci_test_db
           DB_USER: postgres
           DB_PASSWORD: postgres
           DB_HOST: localhost
           DB_PORT: 5432
+          TEST_SECRET: ${{ secrets.TEST_SECRET }}
         run: |
           python manage.py spectacular --color --file ../../openapi-generated.yaml
 

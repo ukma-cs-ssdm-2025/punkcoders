@@ -1,45 +1,11 @@
-import React from 'react';
+import { Link } from 'react-router-dom';
+import Header from '../Common.jsx';
 
 function HomePage() {
   return (
     <>
-      <header className="site-header">
-        <div className="container">
-          <a href="/" className="header-logo">
-            <img src="/content/Shopicons_Light_Stars.png" alt="Star-Logo" />
-            <h5>ClickEat</h5>
-          </a>
-
-          <nav className="header-navigation">
-            <ul>
-              <li><a href="/">Меню</a></li>
-              <li><a href="/faq">FAQ</a></li>
-            </ul>
-          </nav>
-
-          <div className="header-search">
-            <img src="/content/Shopicons_Light_Search.png" alt="Search-Icon" />
-            <input type="text" placeholder="Пошук..." />
-          </div>
-
-          <div className="header-actions">
-            <button className="theme-toggle" aria-label="Перемкнути тему">
-              <img src="/content/Shopicons_Light_Sun.png" alt="Sun-Logo-Light_Theme" />
-            </button>
-
-            <a href="/login" className="button button-secondary">
-              Log in <img src="/content/Shopicons_Light_Account.png" alt="" />
-            </a>
-
-            <a href="/cart" className="header-cart-button">
-              <span> <img src="/content/Shopicons_Light_Cart6.png" alt="" /></span>
-              <span className="cart-counter">0</span>
-            </a>
-          </div>
-        </div>
-      </header>
+      <Header />
       
-
       <main>
         <section className="hero" style={{ backgroundImage: "url(/content/pizza-bg.jpg)" }}>
           <div className="hero-overlay"></div>
@@ -53,7 +19,7 @@ function HomePage() {
               Our mission is to satisfy your appetite with delectable dishes,
               delivered swiftly and at no extra cost.
             </p>
-            <button className="hero-btn">Get Started</button>
+            <Link to="/menu" className="view-menu-btn">View Full Menu</Link>
           </div>
         </section>
         
@@ -89,7 +55,7 @@ function HomePage() {
           <img src="/content/shape-yellow.png" className="shape shape4" alt="decorative shape" />
         </section>
 
-        <section className="menu-section">
+        {/* <section className="menu-section">
           <p className="section-subtitle">OUR SELECTION</p>
           <h2 className="section-title">A Menu That Will Always<br />Capture Your Heart</h2>
 
@@ -109,7 +75,7 @@ function HomePage() {
 
               <div className="card-content">
                 <h3 className="product-title">Sausage Pizza</h3>
-                <p className="product-price">$7.49</p>
+                <p className="product-price">7.49₴</p>
                 <div className="stars">⭐️⭐️⭐️⭐️</div>
                 <button className="read-btn">read more</button>
               </div>
@@ -124,7 +90,7 @@ function HomePage() {
 
               <div className="card-content">
                 <h3 className="product-title">Margherita pizza</h3>
-                <p className="product-price">$6.40</p>
+                <p className="product-price">6.40₴</p>
                 <div className="stars">⭐️⭐️⭐️</div>
                 <button className="read-btn">read more</button>
               </div>
@@ -139,7 +105,7 @@ function HomePage() {
 
               <div className="card-content">
                 <h3 className="product-title">Meatlovers pizza</h3>
-                <p className="product-price">$9.17</p>
+                <p className="product-price">9.17₴</p>
                 <div className="stars">⭐️⭐️⭐️⭐️</div>
                 <button className="read-btn">read more</button>
               </div>
@@ -153,7 +119,7 @@ function HomePage() {
           <div className="view-btn-container">
             <button className="view-menu-btn">View Full Menu</button>
           </div>
-        </section>
+        </section> */}
       </main>
     </>
   );

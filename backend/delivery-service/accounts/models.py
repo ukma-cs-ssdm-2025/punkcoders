@@ -1,6 +1,7 @@
 # accounts/models.py
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class CustomUserManager(BaseUserManager):
@@ -9,25 +10,25 @@ class CustomUserManager(BaseUserManager):
     user creation.
     """
 
-    def create_user(self, username, email, password, **extra_fields):
+    def create_user(self, email, password, first_name, last_name, **extra_fields):
         """
         Create and save a User with the given email and password.
-        Defaults the role to CUSTOMER.
         """
         if not email:
             raise ValueError("The Email must be set")
+        if not first_name:
+            raise ValueError("The First Name must be set")
+        if not last_name:
+            raise ValueError("The Last Name must be set")
+
         email = self.normalize_email(email)
 
-        # --- This handles Requirement 1 ---
-        # Set default role if not provided
-        extra_fields.setdefault("role", User.Role.CUSTOMER)
-
-        user = self.model(username=username, email=email, **extra_fields)
+        user = self.model(email=email, first_name=first_name, last_name=last_name, **extra_fields)
         user.set_password(password)
         user.save()
         return user
 
-    def create_superuser(self, username, email, password, **extra_fields):
+    def create_superuser(self, email, password, first_name, last_name, **extra_fields):
         """
         Create and save a SuperUser.
         Forces the role to be MANAGER.
@@ -37,7 +38,6 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_active", True)
 
-        # --- This handles Requirement 3 ---
         # Explicitly set the role to MANAGER for superusers
         extra_fields.setdefault("role", User.Role.MANAGER)
 
@@ -50,16 +50,27 @@ class CustomUserManager(BaseUserManager):
             raise ValueError("Superuser must have is_superuser=True.")
 
         # We call our new create_user, which handles the password and saving
-        return self.create_user(username, email, password, **extra_fields)
+        return self.create_user(email, password, first_name, last_name, **extra_fields)
 
 
 class User(AbstractUser):
     class Role(models.TextChoices):
         MANAGER = "MANAGER", "Manager"
-        CUSTOMER = "CUSTOMER", "Customer"
-        # You can still add more roles here later
+        KITCHEN_STAFF = "KITCHEN_STAFF", "Kitchen Staff"
+        COURIER = "COURIER", "Courier"
 
+    username = None  # We are not using username
+    USERNAME_FIELD = "email"
     role = models.CharField(max_length=20, choices=Role.choices)
+    first_name = models.CharField(_("first name"), max_length=50, blank=False, null=False)
+    last_name = models.CharField(_("last name"), max_length=50, blank=False, null=False)
+    email = models.EmailField(_("email address"), unique=True)
+
+    # This prompts for these fields during 'createsuperuser'
+    REQUIRED_FIELDS = ["first_name", "last_name"]
 
     # --- This line hooks up our new manager ---
     objects = CustomUserManager()
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} ({self.role})"

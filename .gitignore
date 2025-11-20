@@ -1,3 +1,5 @@
+backend/delivery-service/media
+
 logs
 *.log
 npm-debug.log*

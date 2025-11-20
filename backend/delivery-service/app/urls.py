@@ -15,6 +15,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
@@ -22,8 +24,10 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    # API
-    path("api/v0/", include("restaurant.urls.api")),
+    # API v0
+    path("api/v0/menu/", include("restaurant.urls.api")),
+    path("api/v0/auth/", include("accounts.urls")),
+    # API v0 documentation
     path("api/v0/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/v0/docs/", SpectacularSwaggerView.as_view(url_name="schema")),
     path("api/v0/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
@@ -31,3 +35,6 @@ urlpatterns = [
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

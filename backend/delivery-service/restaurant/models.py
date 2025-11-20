@@ -1,6 +1,9 @@
-from django.core.validators import MinValueValidator
+from decimal import Decimal
+
+from autoslug.fields import AutoSlugField
+from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
-from django.utils.text import slugify
 
 
 class Category(models.Model):
@@ -10,16 +13,17 @@ class Category(models.Model):
     """
 
     name = models.CharField(max_length=100, unique=True, verbose_name="Назва категорії")
+    # TODO: remove (downscoped this)
     is_alcoholic = models.BooleanField(
         default=False,
         verbose_name="Алкогольна категорія",
         help_text="Відзначте, якщо категорія містить алкоголь (важливо для обмежень оплати - FR-020).",
     )
-    slug = models.SlugField(
-        max_length=100,
+    slug = AutoSlugField(
+        populate_from="name",
         unique=True,
-        blank=True,
-        help_text="URL-friendly назва категорії (автоматично генерується).",
+        always_update=False,
+        max_length=100,
     )
 
     class Meta:
@@ -29,30 +33,6 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
-
-    def save(self, *args, **kwargs):
-        """
-        Автоматично генерує унікальний slug з назви перед збереженням.
-        """
-        # Генеруємо slug лише якщо його немає, або якщо змінилася назва
-        if not self.slug or (self.name and not self.slug.startswith(slugify(self.name))):
-            new_slug = slugify(self.name)
-            original_slug = new_slug
-            counter = 1
-
-            # --- Цей цикл гарантує унікальність ---
-            # Поки slug з таким іменем ВЖЕ ІСНУЄ в базі даних...
-            # .exclude(pk=self.pk) потрібен, щоб не знайти "самого себе" при оновленні
-            while Category.objects.filter(slug=new_slug).exclude(pk=self.pk).exists():
-                # ...ми додаємо до нього лічильник
-                new_slug = f"{original_slug}-{counter}"
-                counter += 1
-            # ------------------------------------
-
-            self.slug = new_slug
-
-        # Викликаємо "справжній" метод збереження
-        super(Category, self).save(*args, **kwargs)
 
 
 class Ingredient(models.Model):
@@ -102,6 +82,7 @@ class Dish(models.Model):
     )
 
     # FR-045, FR-047: Поля для відстеження змін, які можуть знадобитися для нотифікацій.
+    # TODO: remove (downscoped?)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -140,5 +121,95 @@ class DishIngredient(models.Model):
         return f"{self.dish.name} - {self.ingredient.name} ({type_str})"
 
 
-# TODO: Додати модель FavoriteDish (M:M User-Dish) пізніше, коли буде готова модель User/Customer.
-# TODO: Додати модель CustomPizzaTemplate для FR-009/FR-010, якщо кастомна піца має фіксований шаблон.
+class Order(models.Model):
+    class Status(models.TextChoices):
+        NEW = "new", "New"
+        IN_PROGRESS = "in_progress", "In progress"
+        WAITING_FOR_COURIER = "waiting_for_courier", "Waiting for courier"
+        DELIVERING = "delivering", "Delivering"
+        PAID_CREDIT = "paid_credit", "Paid (credit)"
+        AWAITING_CASH = "awaiting_cash", "Awaiting cash payment"
+        PAID_CASH = "paid_cash", "Paid (cash)"
+
+    class PaymentMethod(models.TextChoices):
+        CREDIT = "credit", "Credit"
+        CASH = "cash", "Cash"
+
+    status = models.CharField(max_length=32, choices=Status.choices, default=Status.NEW)
+    payment_method = models.CharField(
+        max_length=16,
+        choices=PaymentMethod.choices,
+        default=PaymentMethod.CASH,
+        verbose_name="Payment method",
+    )
+
+    # Delivery address: optional if самовивіз True
+    delivery_address = models.TextField(null=True, blank=True, verbose_name="Delivery address")
+    self_pickup = models.BooleanField(default=False, verbose_name="Самовивіз")
+
+    # Phone: simple validation (ukraine-compatible). Adjust regex if you have other formats.
+    phone_regex = RegexValidator(
+        regex=r"^\+?\d{7,15}$",
+        message="Phone number must be entered in the format: +380501234567 or 0501234567. Up to 15 digits allowed.",
+    )
+    phone = models.CharField(validators=[phone_regex], max_length=20, verbose_name="Phone number")
+
+    # Timestamp
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    # Cached total price (sum of item totals). Kept for quick queries.
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal("0.00"))
+
+    class Meta:
+        verbose_name = "Order"
+        verbose_name_plural = "Orders"
+        ordering = ["-created_at"]
+
+    def clean(self):
+        # Ensure either delivery_address is set XOR self_pickup is True (one or the other)
+        if self.self_pickup and self.delivery_address:
+            raise ValidationError("If self_pickup is True, delivery_address must be empty.")
+        if (not self.self_pickup) and (not self.delivery_address):
+            raise ValidationError("Either delivery_address must be set or self_pickup must be True.")
+
+    def __str__(self):
+        return f"Order #{self.id} — {self.get_status_display()} — {self.total_amount} грн"
+
+    def mark_paid_if_self_pickup(self):
+        """
+        Business rule from issue:
+        - Самовивіз orders go from waiting_for_courier to paid for instantly.
+        We'll interpret: if self_pickup==True, then once items are created,
+        set status to PAID_CASH or PAID_CREDIT depending on payment_method.
+        """
+        if self.self_pickup:
+            if self.payment_method == self.PaymentMethod.CREDIT:
+                self.status = self.Status.PAID_CREDIT
+            else:
+                # default treat as cash
+                self.status = self.Status.PAID_CASH
+            self.save(update_fields=["status"])
+
+
+class OrderItem(models.Model):
+    """
+    Helper table to store one-to-many items of an order.
+    We snapshot unit_price at the time of ordering to preserve history.
+    """
+
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
+    # store dish reference for traceability; if deletion of dish is allowed, keep on_delete=models.PROTECT or SET_NULL
+    dish = models.ForeignKey("Dish", on_delete=models.PROTECT, related_name="+")
+    name = models.CharField(max_length=200, verbose_name="Dish name snapshot")
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
+    quantity = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
+    line_total = models.DecimalField(max_digits=12, decimal_places=2, validators=[MinValueValidator(0)])
+
+    class Meta:
+        verbose_name = "Order item"
+        verbose_name_plural = "Order items"
+
+    def save(self, *args, **kwargs):
+        # ensure line_total is consistent
+        self.line_total = (self.unit_price or Decimal("0.00")) * Decimal(self.quantity)
+        super().save(*args, **kwargs)
