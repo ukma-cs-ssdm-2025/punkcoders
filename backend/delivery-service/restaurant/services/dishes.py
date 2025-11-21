@@ -27,19 +27,37 @@ def get_dishes_queryset(category_id=None):
     return queryset
 
 
-def _validate_ingredients_payload(ingredients_data):
+def _validate_ingredients_payload(ingredients_data):  # noqa: C901
     """Ensure every ingredient id exists and appears only once before writing to the DB."""
+
+    if not isinstance(ingredients_data, (list, tuple)):
+        raise ValidationError({"ingredients_data": "Expected a list of ingredient objects."})
+
     ingredient_ids = []
     seen_ids = set()
     duplicate_ids = set()
 
-    for item in ingredients_data:
+    for index, item in enumerate(ingredients_data):
+        if not isinstance(item, dict):
+            raise ValidationError({"ingredients_data": f"Item {index} must be an object."})
+
+        if "ingredient_id" not in item:
+            raise ValidationError({"ingredients_data": f"Item {index} is missing 'ingredient_id'."})
+
         ingredient_id = item["ingredient_id"]
+        if not isinstance(ingredient_id, int):
+            raise ValidationError({"ingredients_data": f"Ingredient id at index {index} must be an integer."})
+        if ingredient_id < 1:
+            raise ValidationError({"ingredients_data": f"Ingredient id at index {index} must be positive."})
+
         ingredient_ids.append(ingredient_id)
         if ingredient_id in seen_ids:
             duplicate_ids.add(ingredient_id)
         else:
             seen_ids.add(ingredient_id)
+
+        if "is_base_ingredient" in item and not isinstance(item["is_base_ingredient"], bool):
+            raise ValidationError({"ingredients_data": f"'is_base_ingredient' at index {index} must be true or false."})
 
     if duplicate_ids:
         duplicates = ", ".join(str(ingredient_id) for ingredient_id in sorted(duplicate_ids))
