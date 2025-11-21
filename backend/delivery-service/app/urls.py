@@ -28,6 +28,7 @@ urlpatterns = [
     path("api/v0/menu/", include("restaurant.urls.api")),
     path("api/v0/orders/", include("orders.urls.api")),
     path("api/v0/auth/", include("accounts.urls")),
+    path("api/v0/", include("restaurant.urls.api")),
     # API v0 documentation
     path("api/v0/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/v0/docs/", SpectacularSwaggerView.as_view(url_name="schema")),
