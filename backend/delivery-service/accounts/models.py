@@ -10,15 +10,16 @@ class CustomUserManager(BaseUserManager):
     user creation.
     """
 
-    def create_user(self, email, password, first_name=None, last_name=None, **extra_fields):
+    def create_user(self, email, password, first_name, last_name, **extra_fields):
         """
         Create and save a User with the given email and password.
         """
         if not email:
             raise ValueError("The Email must be set")
-        if extra_fields.get("is_superuser") is not True:
-            first_name = first_name or ""
-            last_name = last_name or ""
+        if not first_name:
+            raise ValueError("The First Name must be set")
+        if not last_name:
+            raise ValueError("The Last Name must be set")
 
         email = self.normalize_email(email)
 
