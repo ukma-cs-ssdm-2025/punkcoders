@@ -4,7 +4,7 @@ import apiClient from '../api';
 import { toast } from 'react-toastify';
 
 const defaultFormState = {
-  username: '',
+  email: '',
   password: '',
   role: 'cook',
 };
@@ -48,7 +48,7 @@ function AdminStaffManagement() {
   const onSubmit = async (data) => {
     try {
       await apiClient.post('/auth/users/', data);
-      toast.success(`Акаунт для '${data.username}' (роль: ${data.role}) успішно створено!`);
+      toast.success(`Акаунт для '${data.email}' (роль: ${data.role}) успішно створено!`);
       reset(defaultFormState); 
       fetchStaff();
       
@@ -66,8 +66,8 @@ function AdminStaffManagement() {
   }
 
   
-  const handleDelete = async (id, username) => {
-    if (globalThis.confirm(`Ви впевнені, що хочете видалити акаунт '${username}'?`)) {
+  const handleDelete = async (id, email) => {
+    if (globalThis.confirm(`Ви впевнені, що хочете видалити акаунт '${email}'?`)) {
       try {
         await apiClient.delete(`/auth/users/${id}/`);
         toast.success("Акаунт видалено.");
@@ -93,13 +93,13 @@ function AdminStaffManagement() {
         <div className="form-grid">
           
           <div className="form-group">
-            <label htmlFor="username">Ім'я користувача (Логін)</label>
+            <label htmlFor="email">Email користувача</label>
             <input
               type="text"
-              id="username"
-              {...register('username', { required: 'Логін є обов\'язковим' })}
+              id="email"
+              {...register('email', { required: 'Email є обов\'язковим' })}
             />
-            {errors.username && <span className="error-message">{errors.username.message}</span>}
+            {errors.email && <span className="error-message">{errors.email.message}</span>}
           </div>
           
           <div className="form-group">
@@ -145,12 +145,12 @@ function AdminStaffManagement() {
         <tbody>
           {staffList.map(user => (
             <tr key={user.id}>
-              <td>{user.username}</td>
+              <td>{user.email}</td>
               <td>{ROLE_DISPLAY_NAMES[user.role] || user.role}</td>
               <td className="actions">
                 <button 
                   className="admin-button admin-button-secondary" 
-                  onClick={() => handleDelete(user.id, user.username)}
+                  onClick={() => handleDelete(user.id, user.email)}
                 >
                   Видалити
                 </button>
