@@ -4,7 +4,9 @@ import HomePage from './pages/HomePage';
 import AdminPage from './pages/AdminPage';
 import LoginPage from './pages/LoginPage'; 
 import MenuPage from './pages/MenuPage';
+import ChefPage from './pages/ChefPage';
 import ErrorBoundary from './ErrorBoundary';
+
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -23,6 +25,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/admin/*" element={<AdminPage />} />
         <Route path="/menu/:categorySlug?" element={<MenuPage />} />
+        <Route path="/chef" element={<ChefPage />} />
         <Route path="*" element={<h2>404: Page Not Found</h2>} />
       </Routes>
     </>
