@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import Header from '../Common.jsx';
+import Header, { Footer } from '../Common.jsx';
+
 
 function HomePage() {
   return (
@@ -121,6 +122,8 @@ function HomePage() {
           </div>
         </section> */}
       </main>
+
+      <Footer />
     </>
   );
 }
