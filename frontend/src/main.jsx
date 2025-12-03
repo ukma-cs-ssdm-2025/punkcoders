@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-query';
 import './style.css'
 import App from './App.jsx'
+import ErrorBoundary from './ErrorBoundary';
 
 // --- React Query Client ---
 const queryClient = new QueryClient({
@@ -25,10 +26,12 @@ const queryClient = new QueryClient({
 const root = createRoot(document.getElementById('root')); 
 root.render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </QueryClientProvider>
+    </ErrorBoundary>
   </React.StrictMode>
 );
