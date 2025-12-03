@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form'; // 1. Import useForm
-import apiClient from '../api'; // Your API client
+import apiClient from '../../api'; // Your API client
 import { toast } from 'react-toastify';
 
 // This is just for resetting the form, react-hook-form handles the state
