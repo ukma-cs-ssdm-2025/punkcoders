@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import apiClient from '../api';
-import Header from '../Common.jsx';
+import Header from '../components/Header.jsx';
 import './MenuPage.css';
 
 // --- API Fetching Functions ---

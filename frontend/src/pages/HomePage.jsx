@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import Header, { Footer } from '../Common.jsx';
+import Header from '../components/Header.jsx';
+import Footer from '../components/Footer.jsx';
 
 
 function HomePage() {
