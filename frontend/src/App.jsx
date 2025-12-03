@@ -32,7 +32,7 @@ function App() {
         } />
         <Route path="/menu/:categorySlug?" element={<MenuPage />} />
         <Route path="/chef" element={
-          <ProtectedRoute allowedRoles={["MANAGER", "KITCHEN"]}>
+          <ProtectedRoute allowedRoles={["MANAGER", "KITCHEN_STAFF"]}>
             <ChefPage />
           </ProtectedRoute>
         } />
