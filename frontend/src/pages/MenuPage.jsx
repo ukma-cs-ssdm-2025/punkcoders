@@ -1,30 +1,12 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useParams, useNavigate } from 'react-router-dom';
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-} from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import apiClient from '../api';
 import Header from '../Common.jsx';
 import './MenuPage.css';
-
-// --- React Query Client ---
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      refetchOnWindowFocus: false,
-      retry: (failureCount, error) => {
-        if (error.response?.status === 404) return false;
-        return failureCount < 3;
-      },
-    },
-  },
-});
 
 // --- API Fetching Functions ---
 
@@ -84,10 +66,10 @@ const fetchDishDetails = async (dishId) => {
 // --- Main App Component ---
 export default function MenuPage() {
   return (
-    <QueryClientProvider client={queryClient}>
+    <div>
       <Header />
       <MainContent />
-    </QueryClientProvider>
+    </div>
   );
 }
 

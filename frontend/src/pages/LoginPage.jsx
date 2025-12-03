@@ -4,13 +4,15 @@ import './LoginPage.css';
 import { API_URL } from '../api';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { useQueryClient } from '@tanstack/react-query';
+
 
 function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const navigate = useNavigate();
-
+  const queryClient = useQueryClient();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,6 +28,8 @@ function LoginPage() {
       
       localStorage.setItem('accessToken', response.data.access);
       localStorage.setItem('refreshToken', response.data.refresh);
+
+      queryClient.removeQueries(['user']); // delete old user data cache
 
       toast.success('Вхід успішний!');
       navigate('/admin/menu'); 
