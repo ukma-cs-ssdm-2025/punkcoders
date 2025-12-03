@@ -1,15 +1,16 @@
-import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import AdminPage from './pages/AdminPage';
 import LoginPage from './pages/LoginPage'; 
 import MenuPage from './pages/MenuPage';
 import ChefPage from './pages/ChefPage';
-import ErrorBoundary from './ErrorBoundary';
-
+import ProtectedRoute from './components/ProtectedRoute';
+import NotFound from './pages/errors/NotFound';
+import Unauthorized from './pages/errors/Unauthorized';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
 
 function App() {
   return (
@@ -23,10 +24,19 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/admin/*" element={<AdminPage />} />
+        <Route path="/unauthorized" element={<Unauthorized />} />
+        <Route path="/admin/*" element={
+          <ProtectedRoute allowedRoles={["MANAGER"]}>
+            <AdminPage />
+          </ProtectedRoute>
+        } />
         <Route path="/menu/:categorySlug?" element={<MenuPage />} />
-        <Route path="/chef" element={<ChefPage />} />
-        <Route path="*" element={<h2>404: Page Not Found</h2>} />
+        <Route path="/chef" element={
+          <ProtectedRoute allowedRoles={["MANAGER", "KITCHEN"]}>
+            <ChefPage />
+          </ProtectedRoute>
+        } />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );
