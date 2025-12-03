@@ -222,7 +222,6 @@ button:hover {
 .header-cart-button {
   background-color: var(--color-card-bg);
   color: var(--color-text);
-  border-color: var(--color-highlight);
   border-radius: var(--radius);
   padding: 0.2rem 1.2rem;
   display: inline-flex;
