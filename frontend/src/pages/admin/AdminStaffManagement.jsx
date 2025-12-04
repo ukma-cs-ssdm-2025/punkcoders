@@ -37,6 +37,7 @@ function AdminStaffManagement() {
         setStaffList(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
         toast.error("Не вдалося завантажити список персоналу.");
+        console.error("error fetching staff: ", error);
     }
   };
 
@@ -59,6 +60,7 @@ function AdminStaffManagement() {
           }
       } else {
           toast.error("Сталася помилка.");
+          console.error("error submitting form: ", error);
       }
     }
   }
@@ -83,6 +85,7 @@ function AdminStaffManagement() {
         fetchStaff();
       } catch (error) {
           toast.error("Не вдалося видалити акаунт.");
+          console.error("error deleting user: ", error);
       }
     }
   };
@@ -144,7 +147,7 @@ function AdminStaffManagement() {
                 type="password"
                 {...register('password', { 
                   required: 'Пароль є обов\'язковим',
-                  minLength: { value: 8, message: 'Мінімум 8 символів' }
+                  minLength: { value: 12, message: 'Мінімум 12 символів' }
                 })}
               />
               {errors.password && <span className="error-message">{errors.password.message}</span>}
@@ -199,7 +202,7 @@ function AdminStaffManagement() {
                     color: user.is_active ? '#008060' : '#c53030',
                     fontSize: '0.85rem'
                   }}>
-                  {user.is_active ? 'Активний' : 'Деактивовано'}
+                  {user.is_active ? 'Активний' : 'Вимкнений'}
                 </span>
               </td>
               <td className="actions">
