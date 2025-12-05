@@ -16,17 +16,20 @@ const ROLE_DISPLAY_NAMES = {
   MANAGER: 'Менеджер',
 };
 
+const defaultValues = {
+  first_name: '', last_name: '', email: '', password: '', role: 'KITCHEN_STAFF',
+}
+
+
 function AdminStaffManagement() {
   const [staffList, setStaffList] = useState([]);
   const [editingId, setEditingId] = useState(null);
   
   const { 
-    register, handleSubmit, reset, setError, 
+    register, handleSubmit, reset, setError, clearErrors,
     formState: { errors } 
   } = useForm({
-    defaultValues: {
-      first_name: '', last_name: '', email: '', password: '', role: 'KITCHEN_STAFF',
-    }
+    defaultValues: defaultValues
   });
 
   useEffect(() => { fetchStaff(); }, []);
@@ -41,6 +44,11 @@ function AdminStaffManagement() {
     }
   };
 
+  const handleSubmitWrapper = (e) => {
+    clearErrors();
+    handleSubmit(onSubmit, onError)(e);
+  }
+
   const onSubmit = async (data) => {
     try {
       if (editingId) {
@@ -53,20 +61,77 @@ function AdminStaffManagement() {
       clearForm();
       fetchStaff();
     } catch (error) {
+      console.error("API Error:", error);
+
       if (error.response?.data) {
-          const serverErrors = error.response.data;
-          for (const [field, message] of Object.entries(serverErrors)) {
-            setError(field, { type: 'server', message: Array.isArray(message) ? message[0] : message });
+        if (error.response?.data) {
+          const serverData = error.response.data;
+          let hasFieldErrors = false;
+          // const KNOWN_FIELDS = ['first_name', 'last_name', 'email', 'password', 'role'];
+          const KNOWN_FIELDS = Object.keys(defaultValues);
+          // console.log(KNOWN_FIELDS);
+
+          // CHECK 1: Handle your specific format (Array of objects in 'errors')
+          if (Array.isArray(serverData.errors)) {
+            // console.log(serverData.errors);
+            serverData.errors.forEach((err) => {
+              const fieldName = err.attr; // e.g. "email"
+              const message = err.detail; // e.g. "Enter a valid email address."
+
+              // If 'attr' matches one of our known inputs, highlight it
+              if (fieldName && KNOWN_FIELDS.includes(fieldName)) {
+                setError(fieldName, { type: 'server', message: message });
+                hasFieldErrors = true;
+              } else {
+                console.log(fieldName);
+                // If 'attr' is null (global error) or unknown, show a Toast
+                const displayMsg = fieldName ? `${fieldName}: ${message}` : message;
+                toast.error(displayMsg);
+                console.error(`Unmapped Error [${fieldName}]:`, message);
+              }
+            });
+          } 
+          // CHECK 2: Fallback for standard DRF keys (just in case other endpoints differ)
+          else if (typeof serverData === 'object') {
+              Object.keys(serverData).forEach((key) => {
+                  if (KNOWN_FIELDS.includes(key)) {
+                      const msg = Array.isArray(serverData[key]) ? serverData[key][0] : serverData[key];
+                      setError(key, { type: 'server', message: msg });
+                      hasFieldErrors = true;
+                  } else if (key === 'detail') {
+                      toast.error(serverData.detail);
+                  }
+              });
           }
+
+          if (hasFieldErrors) {
+            toast.error("Перевірте дані форми (помилки підсвічено).");
+          } else if (!hasFieldErrors && !serverData.errors) {
+            // If we have data but couldn't find any known errors
+            toast.error("Сталася невідома помилка валідації.");
+          }
+
+        } else {
+          // Network errors or 500s
+          const msg = "Сталася помилка сервера або проблема з мережею.";
+          toast.error(msg);
+          console.error(msg, error);
+        }
+        
       } else {
-          toast.error("Сталася помилка.");
-          console.error("error submitting form: ", error);
+        toast.error("Сталася помилка сервера.");
       }
     }
   }
 
+  const onError = (errors, e) => {
+    console.log("Submit blocked by validation:", errors);
+    toast.error("Форма містить помилки. Виправте їх перед відправкою.");
+  };
+
   const handleEdit = (user) => {
     setEditingId(user.id);
+    clearErrors();
     reset({
       first_name: user.first_name,
       last_name: user.last_name,
@@ -93,13 +158,14 @@ function AdminStaffManagement() {
   const clearForm = () => {
     reset({ first_name: '', last_name: '', email: '', password: '', role: 'KITCHEN_STAFF' });
     setEditingId(null);
+    clearErrors();
   };
 
   return (
     <div>
       <h2>Керування персоналом</h2>
       
-      <form className="admin-form" onSubmit={handleSubmit(onSubmit)}>
+      <form className="admin-form" onSubmit={handleSubmitWrapper}>
         <h3>{editingId ? 'Редагувати роль' : 'Створити новий акаунт'}</h3>
         <div className="form-grid">
           

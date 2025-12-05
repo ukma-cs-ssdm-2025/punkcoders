@@ -1,6 +1,7 @@
 from django.contrib.auth.password_validation import validate_password
 from django.db import IntegrityError
 from rest_framework import serializers
+from django.core.exceptions import ValidationError as DjangoValidationError
 
 from .models import User
 
@@ -44,7 +45,11 @@ class ManagerUserCreateSerializer(serializers.ModelSerializer):
         temp_user = User(first_name=attrs.get("first_name"), last_name=attrs.get("last_name"), email=attrs.get("email"))
 
         password = attrs.get("password")
-        validate_password(password, user=temp_user)
+        try:
+            validate_password(password, user=temp_user)
+        except DjangoValidationError as exc:
+            # so the client knows it's about the password field
+            raise serializers.ValidationError({"password": exc.messages})
 
         return attrs
 
