@@ -50,49 +50,6 @@
   margin-bottom: 1.5rem;
 }
 
-.admin-form {
-  background: #f9f9f9;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group label {
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-}
-
-.form-group input,
-.form-group textarea,
-.form-group select {
-  padding: 0.6rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
-}
-
-.form-group-full {
-  grid-column: 1 / -1;
-}
-
-.form-group-checkbox {
-  flex-direction: row;
-  align-items: center;
-  gap: 0.5rem;
-}
-
 .admin-button {
   background: var(--color-accent, #FF6F61);
   color: #4B2E05;
@@ -142,4 +99,17 @@
 .admin-table .status-unavailable {
   color: #999;
   text-decoration: line-through;
+}
+
+.error-message {
+  color: #d32f2f;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 0.4rem;
+  display: block;
+  white-space: pre-wrap; 
+}
+
+.Toastify__toast-body {
+  white-space: pre-line;
 }

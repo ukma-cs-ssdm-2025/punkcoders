@@ -10,7 +10,7 @@ from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, Ou
 from rest_framework_simplejwt.tokens import RefreshToken
 
 # A password that can be used in tests, clear to any reader
-TEST_PASSWORD = "password123"  # nosec
+TEST_PASSWORD = "password123q3wrhwnerdrebna"  # nosec
 
 
 class UserApiTests(APITestCase):
@@ -86,12 +86,12 @@ class UserApiTests(APITestCase):
     def test_update_self_user_password_succeeds(self):
         """Test PATCH /me/ succeeds for updating password."""
         self.client.force_authenticate(user=self.courier_user)
-        data = {"password": "newpass123"}
+        data = {"password": "newpass123WRVEDASBD"}
         response = self.client.patch(self.self_user_url, data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.courier_user.refresh_from_db()
-        self.assertTrue(self.courier_user.check_password("newpass123"))
+        self.assertTrue(self.courier_user.check_password("newpass123WRVEDASBD"))
         self.assertFalse("password" in response.data, "Password should not be returned in response.")
 
     def test_update_self_user_role_fails(self):
@@ -195,7 +195,7 @@ class UserApiTests(APITestCase):
             "email": "newuser@test.com",
             "first_name": "New",
             "last_name": "User",
-            "password": "newpassword123",
+            "password": "newpassword123asrghaewrhaewrh",
             "role": User.Role.KITCHEN_STAFF,
         }
         self.assertEqual(User.objects.count(), 3)
@@ -205,7 +205,7 @@ class UserApiTests(APITestCase):
         self.assertEqual(User.objects.count(), 4)
         new_user = User.objects.get(email="newuser@test.com")
         self.assertEqual(new_user.role, User.Role.KITCHEN_STAFF)
-        self.assertTrue(new_user.check_password("newpassword123"))
+        self.assertTrue(new_user.check_password("newpassword123asrghaewrhaewrh"))
 
     def test_manager_create_user_fails_missing_data(self):
         """Test POST /users/ fails with 400 for missing required data."""

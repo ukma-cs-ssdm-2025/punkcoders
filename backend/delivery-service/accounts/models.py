@@ -73,4 +73,6 @@ class User(AbstractUser):
     objects = CustomUserManager()
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name} ({self.role})"
+        return f"{self.first_name} {self.last_name} ({self.email}) ({self.role}) - " + (
+            "ACTIVE" if self.is_active else "INACTIVE"
+        )

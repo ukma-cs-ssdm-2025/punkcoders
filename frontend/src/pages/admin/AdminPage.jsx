@@ -5,6 +5,7 @@ import AdminStaffManagement from './AdminStaffManagement';
 import AdminReports from './AdminReports';
 import AdminSettings from './AdminSettings';
 import './Admin.css';
+import '../forms.css';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -22,13 +23,13 @@ function AdminPage() {
         <nav>
           <ul>
             <li>
-              <NavLink to="/admin/menu">Керування меню</NavLink>
+              <NavLink to="/admin/menu">Страви</NavLink>
             </li>
             <li>
               <NavLink to="/admin/categories">Категорії</NavLink>
             </li>
             <li>
-              <NavLink to="/admin/staff">Керування персоналом</NavLink>
+              <NavLink to="/admin/staff">Персонал</NavLink>
             </li>
             <li>
               <NavLink to="/admin/reports">Звіти</NavLink>
