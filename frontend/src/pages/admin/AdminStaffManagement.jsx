@@ -207,7 +207,6 @@ function AdminStaffManagement() {
               style={editingId ? { backgroundColor: '#e9ecef', cursor: 'not-allowed' } : {}}
               {...register('email', { 
                 required: 'Email є обов\'язковим',
-                pattern: { value: /^\S+@\S+$/i, message: "Некоректна email адреса" }
               })}
             />
             {errors.email && <span className="error-message">{formatTextWithLineBreaks(errors.email.message)}</span>}

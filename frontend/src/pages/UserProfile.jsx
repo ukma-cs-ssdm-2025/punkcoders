@@ -192,7 +192,6 @@ function UserProfile() {
             type="email"
             {...register('email', { 
               required: "Email обов'язковий",
-              pattern: { value: /^\S+@\S+$/i, message: "Невірний формат email" }
             })}
             />
             {errors.email && <span className="error-message">{formatTextWithLineBreaks(errors.email.message)}</span>}
