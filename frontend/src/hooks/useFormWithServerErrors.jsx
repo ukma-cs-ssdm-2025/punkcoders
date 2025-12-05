@@ -12,7 +12,7 @@ export const useFormWithServerErrors = (options) => {
   const formatError = (text) => {
     if (!text) return null;
     return text.split('\\' + 'n').map((line, index) => (
-      <span key={index}>
+      <span>
         {line}
         {index < text.split('\\' + 'n').length - 1 && <br />} 
       </span>

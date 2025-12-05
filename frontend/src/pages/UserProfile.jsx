@@ -79,8 +79,9 @@ function UserProfile() {
         <form onSubmit={wrapSubmit(onSubmit)} className="form-grid" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         
           <div className="form-group">
-            <label>Роль (незмінна)</label>
+            <label htmlFor="role">Роль (незмінна)</label>
             <input 
+              id="role"
               type="text" 
               disabled 
               {...register('role')} 

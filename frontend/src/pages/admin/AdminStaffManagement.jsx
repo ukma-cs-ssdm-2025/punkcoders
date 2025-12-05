@@ -109,8 +109,9 @@ function AdminStaffManagement() {
         <div className="form-grid">
           
           <div className="form-group">
-            <label>Ім'я</label>
+            <label htmlFor='first_name'>Ім'я</label>
             <input
+              id="first_name"
               type="text"
               disabled={!!editingId} // LOCK INPUT IF EDITING
               style={editingId ? { backgroundColor: '#e9ecef', cursor: 'not-allowed' } : {}}
@@ -120,8 +121,9 @@ function AdminStaffManagement() {
           </div>
 
           <div className="form-group">
-            <label>Прізвище</label>
+            <label htmlFor='last_name'>Прізвище</label>
             <input
+              id="last_name"
               type="text"
               disabled={!!editingId} // LOCK INPUT IF EDITING
               style={editingId ? { backgroundColor: '#e9ecef', cursor: 'not-allowed' } : {}}
@@ -131,8 +133,9 @@ function AdminStaffManagement() {
           </div>
 
           <div className="form-group">
-            <label>Email</label>
+            <label htmlFor="email">Email</label>
             <input
+              id='email'
               type="email"
               disabled={!!editingId} // LOCK INPUT IF EDITING
               style={editingId ? { backgroundColor: '#e9ecef', cursor: 'not-allowed' } : {}}
@@ -146,8 +149,9 @@ function AdminStaffManagement() {
           {/* HIDE PASSWORD FIELD COMPLETELY WHEN EDITING */}
           {!editingId && (
             <div className="form-group">
-              <label>Пароль</label>
+              <label htmlFor='password'>Пароль</label>
               <input
+                id="password"
                 type="password"
                 {...register('password', { 
                   required: 'Пароль є обов\'язковим',
@@ -159,8 +163,10 @@ function AdminStaffManagement() {
           )}
 
           <div className="form-group form-group-full">
-            <label>Роль</label>
-            <select {...register('role', { required: true })}>
+            <label htmlFor='role'>Роль</label>
+            <select 
+              id="role"
+              {...register('role', { required: true })}>
               {ROLE_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}

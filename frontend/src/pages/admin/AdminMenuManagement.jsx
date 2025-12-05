@@ -271,7 +271,8 @@ function AdminMenuManagement() {
               <th>Назва</th>
               <th>Ціна</th>
               <th>Категорія</th>
-              <th>Перемкнути доступність</th>
+              <th>Перемкнути</th>
+              <th>Доступність</th>
               <th>Дії</th>
           </tr>
         </thead>
