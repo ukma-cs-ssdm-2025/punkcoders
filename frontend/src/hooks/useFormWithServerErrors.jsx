@@ -11,12 +11,11 @@ export const useFormWithServerErrors = (options) => {
   // 2. The Text Formatter (extracted)
   const formatError = (text) => {
     if (!text) return null;
-    return text.split('\\' + 'n').map((line, index) => (
-      <span>
-        {line}
-        {index < text.split('\\' + 'n').length - 1 && <br />} 
-      </span>
-    ));
+    // 1. Replace literal sequence "\n" (backslash + n) with actual newline character
+    // The regex /\\n/g matches every occurrence of "\" followed by "n"
+    const content = text.replace(/\\n/g, '\n');
+    // 2. Use 'white-space: pre-wrap' to tell the browser to render \n as a line break
+    return <span style={{ whiteSpace: 'pre-wrap' }}>{content}</span>;
   };
 
   // 3. The Standard Error Handler (Client-side)

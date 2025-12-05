@@ -128,7 +128,7 @@ function UserProfile() {
               type="password"
               placeholder="Залиште пустим, щоб не змінювати"
               {...register('password', { 
-                minLength: { value: 8, message: "Мінімум 8 символів" }
+                minLength: { value: 12, message: "Мінімум 8 символів" }
               })}
             />
             {errors.password && <span className="error-message">{formatError(errors.password.message)}</span>}

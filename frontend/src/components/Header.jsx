@@ -52,14 +52,10 @@ export default function Header() {
             <li><Link to="/faq">FAQ</Link></li>
             
             {user?.role === 'MANAGER' && (
-              <>
-                <li><Link to="/admin">Керування сайтом</Link></li>
-              </>
+              <li><Link to="/admin">Керування сайтом</Link></li>
             )}
             {user?.role === 'KITCHEN_STAFF' && (
-              <>
-                <li><Link to="/chef">Замовлення для приготування</Link></li>
-              </>
+              <li><Link to="/chef">Замовлення для приготування</Link></li>
             )}
           </ul>
         </nav>
