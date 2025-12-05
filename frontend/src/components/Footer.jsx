@@ -31,7 +31,7 @@ export default function Footer() {
           <div className="footer-column brand-column">
             <a href="/" className="footer-logo">
               <img src="/content/logo-clock.png" alt="Pizzateria" /> 
-              <span>CleakEat</span>
+              <span>ClickEat</span>
             </a>
             <p className="brand-desc">
               Our mission is to satisfy your hunger with tasty food, delivered quickly and at no charge

@@ -51,10 +51,14 @@ export default function Header() {
             <li><Link to="/menu">Меню</Link></li>
             <li><Link to="/faq">FAQ</Link></li>
             
-            {/* Manager Only Links */}
             {user?.role === 'MANAGER' && (
               <>
                 <li><Link to="/admin">Керування сайтом</Link></li>
+              </>
+            )}
+            {user?.role === 'KITCHEN_STAFF' && (
+              <>
+                <li><Link to="/chef">Замовлення для приготування</Link></li>
               </>
             )}
           </ul>
@@ -76,7 +80,7 @@ export default function Header() {
           {user ? (
             <div className="user-controls" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
               <Link to="/profile" className="button button-secondary" style={{textDecoration: 'none'}}>
-                {user.first_name || 'Профіль'}
+                {user.first_name + " " + user.last_name || 'Профіль'}
               </Link>
               <button onClick={handleLogout} className="admin-button admin-button-secondary" style={{padding: '0.4rem 0.8rem', fontSize: '0.9rem'}}>
                 Вийти

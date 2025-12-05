@@ -153,7 +153,7 @@ function AdminCategoryManagement() {
     <div>
       <h2>Керування категоріями</h2>
       
-      <form className="admin-form" onSubmit={handleSubmitWrapper}>
+      <form className="base-form" onSubmit={handleSubmitWrapper}>
         <h3>{editingId ? 'Редагувати категорію' : 'Додати нову категорію'}</h3>
         <div className="form-grid">
           

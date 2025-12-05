@@ -7,6 +7,7 @@ import ChefPage from './pages/ChefPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import NotFound from './pages/errors/NotFound';
 import Unauthorized from './pages/errors/Unauthorized';
+import UserProfile from './pages/UserProfile';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -36,6 +37,12 @@ function App() {
             <ChefPage />
           </ProtectedRoute>
         } />
+        <Route path="/profile" element={
+            <ProtectedRoute>
+              <UserProfile />
+            </ProtectedRoute>
+          } 
+        />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

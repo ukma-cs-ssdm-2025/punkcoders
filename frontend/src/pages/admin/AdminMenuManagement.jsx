@@ -224,7 +224,7 @@ function AdminMenuManagement() {
     <div>
       <h2>Керування меню</h2>
       
-      <form className="admin-form" onSubmit={handleSubmitWrapper}>
+      <form className="base-form" onSubmit={handleSubmitWrapper}>
         <h3>{editingId ? 'Редагувати страву' : 'Додати нову страву'}</h3>
         <div className="form-grid">
           

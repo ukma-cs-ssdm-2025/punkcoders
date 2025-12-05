@@ -173,7 +173,7 @@ function AdminStaffManagement() {
     <div>
       <h2>Керування персоналом</h2>
       
-      <form className="admin-form" onSubmit={handleSubmitWrapper}>
+      <form className="base-form" onSubmit={handleSubmitWrapper}>
         <h3>{editingId ? 'Редагувати роль' : 'Створити новий акаунт'}</h3>
         <div className="form-grid">
           
