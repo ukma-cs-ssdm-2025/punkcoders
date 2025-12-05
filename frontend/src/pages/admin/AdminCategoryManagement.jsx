@@ -1,26 +1,26 @@
 import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form'; // 1. Import useForm
-import apiClient from '../../api'; // Your API client
+import { useForm } from 'react-hook-form'; 
+import apiClient from '../../api';
 import { toast } from 'react-toastify';
 
-// This is just for resetting the form, react-hook-form handles the state
 const defaultFormState = {
   name: '',
 };
 
+const KNOWN_FIELDS = Object.keys(defaultFormState);
+
 function AdminCategoryManagement() {
-  // --- State for the LIST of categories ---
   const [categories, setCategories] = useState([]);
   const [editingId, setEditingId] = useState(null);
 
-  // --- 2. Initialize react-hook-form ---
   const { 
-    register,         // Connects inputs to the form
-    handleSubmit,     // Wraps your submit function
-    reset,            // Clears the form
-    setValue,         // Sets a field's value (for editing)
-    setError,         // Sets server-side errors
-    formState: { errors } // Contains all validation errors
+    register,         
+    handleSubmit,     
+    reset,            
+    setValue,         
+    setError,         
+    clearErrors,
+    formState: { errors } 
   } = useForm({
     defaultValues: defaultFormState
   });
@@ -35,87 +35,125 @@ function AdminCategoryManagement() {
       const response = await apiClient.get('/menu/categories/');
       setCategories(response.data);
     } catch (error) {
-      toast.error("Не вдалося завантажити категорії."); 
-      console.error('Error fetching categories:', error);
+      const msg = "Не вдалося завантажити категорії.";
+      toast.error(msg); 
+      console.error(msg, error);
     }
   };
 
-  // --- 3. Create the real submit handler ---
-  // This function receives the 'data' object from react-hook-form
+  const handleSubmitWrapper = (e) => {
+    clearErrors();
+    handleSubmit(onSubmit, onError)(e);
+  }
+
   const onSubmit = async (data) => {
     try {
       if (editingId) {
-        // UPDATE (PATCH)
         await apiClient.patch(`/menu/categories/${editingId}/`, data);
       } else {
-        // CREATE (POST)
         await apiClient.post('/menu/categories/', data);
       }
       
-      // Success: Clear the form and reload the list
       clearForm();
       fetchCategories();
       toast.success(`Категорія успішно ${editingId ? 'оновлена' : 'додана'}.`);
-    } catch (error) {
-      // --- 4. Handle Django's "you filled it out wrong" errors ---
-      if (error.response?.status === 400) {
-        const serverErrors = error.response.data; // e.g., { name: ["This name is already taken."] }
-        
-        // Loop over the errors from Django and set them in the form
-        for (const [field, message] of Object.entries(serverErrors)) {
-          setError(field, {
-            type: 'server',
-            message: message[0] // Show the first error message
+    } 
+    catch (error) {
+      console.error("API Submission Error:", error);
+
+      if (error.response?.data) {
+        const serverData = error.response.data;
+        let hasFieldErrors = false;
+
+        // CHECK 1: Handle standardized errors (attr/detail)
+        if (Array.isArray(serverData.errors)) {
+          serverData.errors.forEach((err) => {
+            const fieldName = err.attr;
+            const message = err.detail;
+
+            if (fieldName && KNOWN_FIELDS.includes(fieldName)) {
+              setError(fieldName, { type: 'server', message: message });
+              hasFieldErrors = true;
+            } else {
+              const msg = fieldName ? `${fieldName}: ${message}` : message;
+              toast.error(msg);
+              console.error(`Unmapped Error [${fieldName}]:`, message);
+            }
           });
+        } 
+        // CHECK 2: Fallback for standard DRF keys
+        else if (typeof serverData === 'object') {
+            Object.keys(serverData).forEach((key) => {
+                const msg = Array.isArray(serverData[key]) ? serverData[key][0] : serverData[key];
+                
+                if (KNOWN_FIELDS.includes(key)) {
+                    setError(key, { type: 'server', message: msg });
+                    hasFieldErrors = true;
+                } 
+                else if (key === 'detail') {
+                	toast.error(serverData.detail);
+                }
+            });
+        }
+
+        if (hasFieldErrors) {
+          toast.error("Перевірте дані форми (помилки підсвічено).");
+        } 
+		    else if (!hasFieldErrors && !serverData.errors) {
+          const msg = "Сталася невідома помилка валідації.";
+          toast.error(msg);
+          console.error(msg, serverData);
         }
       } 
-      else if (error.response?.status === 404) {
-        toast.error(`Цю категорію не можна відредагувати, бо її не існує.`)
-      }
       else {
-        toast.error("Сталася непередбачена помилка.");
-        console.error('An unexpected error occurred:', error);
+       	const msg = "Сталася помилка сервера або проблема з мережею.";
+        toast.error(msg);
+        console.error(msg, error);
       }
     }
   };
+  
+  const onError = (errors, e) => {
+    console.log("Client-side validation blocked submission:", errors);
+    toast.error("Форма містить помилки. Виправте їх перед відправкою.");
+  };
 
-  // --- CRUD Helper Functions ---
   const handleEdit = (item) => {
-    // 5. Populate the form fields using setValue
     setValue('name', item.name);
     setEditingId(item.id);
+    clearErrors();
   };
 
   const handleDelete = async (id) => {
     if (globalThis.confirm('Ви впевнені, що хочете видалити цю категорію?')) {
       try {
         await apiClient.delete(`/menu/categories/${id}/`);
-        fetchCategories(); // Reload the list after deleting
+        fetchCategories(); 
         toast.success("Категорію успішно видалено.");
       } catch (error) {
         if (error.response?.status === 404) {
           toast.error(`Цієї категорії вже не існує.`)
         }
         else {
-          toast.error("Не вдалося видалити категорію.");
-          console.error('Error deleting category:', error);
+          const msg = "Не вдалося видалити категорію.";
+          toast.error(msg);
+          console.error(msg, error);
         }
       }
     }
   };
 
   const clearForm = () => {
-    // 6. Reset the form state and our editingId state
     reset(defaultFormState);
     setEditingId(null);
+    clearErrors();
   };
   
   return (
     <div>
       <h2>Керування категоріями</h2>
       
-      {/* 7. Use handleSubmit(onSubmit) to wrap the form */}
-      <form className="admin-form" onSubmit={handleSubmit(onSubmit)}>
+      <form className="admin-form" onSubmit={handleSubmitWrapper}>
         <h3>{editingId ? 'Редагувати категорію' : 'Додати нову категорію'}</h3>
         <div className="form-grid">
           
@@ -124,17 +162,12 @@ function AdminCategoryManagement() {
             <input
               type="text"
               id="name"
-              // 8. "Register" the input (replaces value, name, and onChange)
               {...register('name', { 
                 required: 'Назва не може бути порожньою' 
               })}
             />
-            {/* 9. Automatically show validation errors */}
             {errors.name && <span className="error-message">{errors.name.message}</span>}
           </div>
-          
-          {/* The emoji field is removed, as requested */ }
-
         </div>
         
         <div className="actions" style={{ marginTop: '1rem' }}>
@@ -157,7 +190,6 @@ function AdminCategoryManagement() {
       <table className="admin-table">
         <thead>
           <tr>
-            {/* Emoji column is removed */}
             <th>Назва</th>
             <th>Дії</th>
           </tr>

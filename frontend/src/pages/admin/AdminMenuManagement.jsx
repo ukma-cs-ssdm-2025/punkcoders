@@ -12,35 +12,35 @@ const defaultFormState = {
   photo: null,
 };
 
+// const KNOWN_FIELDS = ['name', 'description', 'price', 'category', 'is_available', 'photo'];
+const KNOWN_FIELDS = Object.keys(defaultFormState);
+
 function AdminMenuManagement() {
   const [menuItems, setMenuItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [editingId, setEditingId] = useState(null);
 
   const { 
-    register,         
-    handleSubmit,     
-    reset,            
-    setValue,         
-    setError,         
+    register, handleSubmit, reset, setValue, setError, clearErrors,
     formState: { errors } 
   } = useForm({
     defaultValues: defaultFormState
   });
 
-  // --- 3. Data Fetching (on component load) ---
   useEffect(() => {
     fetchDishes();
     fetchCategories();
-  }, []); // Empty array means "run once on load"
+  }, []); 
 
   const fetchDishes = async () => {
     try {
       const response = await apiClient.get('/menu/dishes/');
       setMenuItems(response.data);
-    } catch (error) {
-      toast.error("Не вдалося завантажити страви.");
-      console.error('Error fetching dishes:', error);
+    } 
+    catch (error) {
+      const msg = "Не вдалося завантажити страви.";
+      toast.error(msg);
+      console.error(msg, error);
     }
   };
 
@@ -48,83 +48,119 @@ function AdminMenuManagement() {
     try {
       const response = await apiClient.get('/menu/categories/');
       setCategories(response.data);
-      // Set default category in the form *after* they load
       if (response.data.length > 0) {
         setValue('category', response.data[0].id);
       }
-    } catch (error) {
-      toast.error("Не вдалося завантажити категорії.");
-      console.error('Error fetching categories:', error);
+    } 
+    catch (error) {
+      const msg = "Не вдалося завантажити категорії.";
+      toast.error(msg);
+      console.error(msg, error);
     }
   };
 
-  // --- 4. Form Submit Logic (Create/Update) ---
-  // This function is called by react-hook-form's handleSubmit
-  // It receives the form data *only* if client-side validation passes
+  const handleSubmitWrapper = (e) => {
+    clearErrors();
+    handleSubmit(onSubmit, onError)(e);
+  }
+
   const onSubmit = async (data) => {
-    // 1. Build the FormData object for file upload
     const dishData = new FormData();
     dishData.append('name', data.name);
     dishData.append('description', data.description);
     dishData.append('price', data.price);
     dishData.append('is_available', data.is_available);
-    dishData.append('category_id', data.category); // Your API wants category_id
+    dishData.append('category_id', data.category); 
 
-    // 2. Handle the optional file upload
     if (data.photo?.length > 0) {
-      dishData.append('photo', data.photo[0]); // data.photo is a FileList
+      dishData.append('photo', data.photo[0]);
     }
 
     try {
-      // 3. Call the correct API endpoint
       if (editingId) {
-        // UPDATE (PATCH)
         await apiClient.patch(`/menu/dishes/${editingId}/`, dishData);
         toast.success("Страву успішно оновлено!");
       } else {
-        // CREATE (POST)
         await apiClient.post('/menu/dishes/', dishData);
         toast.success("Страву успішно створено!");
       }
       
-      // 4. Success: Clear form and reload the table
       clearForm();
       fetchDishes();
 
-    } catch (error) {
-      // 5. Handle errors from the server
-      if (error.response?.status === 400) {
-        // This is a validation error (e.g., "name already exists")
-        const serverErrors = error.response.data;
-        for (const [field, message] of Object.entries(serverErrors)) {
-          // Show the error message under the correct form field
-          setError(field, { type: 'server', message: message[0] });
+    } 
+    catch (error) {
+      console.error("API Submission Error:", error);
+
+      if (error.response?.data) {
+        const serverData = error.response.data;
+        let hasFieldErrors = false;
+
+        // CHECK 1: Handle standardized errors (attr/detail)
+        if (Array.isArray(serverData.errors)) {
+          serverData.errors.forEach((err) => {
+            const fieldName = err.attr;
+            const message = err.detail;
+
+            if (fieldName && KNOWN_FIELDS.includes(fieldName)) {
+              setError(fieldName, { type: 'server', message: message });
+              hasFieldErrors = true;
+            } else {
+              const msg = fieldName ? `${fieldName}: ${message}` : message;
+              toast.error(msg);
+              console.error(`Unmapped Error [${fieldName}]:`, message);
+            }
+          });
+        } 
+        // CHECK 2: Fallback for standard DRF keys
+        else if (typeof serverData === 'object') {
+            Object.keys(serverData).forEach((key) => {
+                const msg = Array.isArray(serverData[key]) ? serverData[key][0] : serverData[key];
+                
+                if (KNOWN_FIELDS.includes(key)) {
+                  setError(key, { type: 'server', message: msg });
+                  hasFieldErrors = true;
+                } 
+                else if (key === 'detail') {
+                  toast.error(serverData.detail);
+                }
+            });
         }
-      } 
-      else if (error.response?.status === 404) {
-        toast.error(`Цю страву не можна відредагувати, бо її не існує.`)
-      }
-      else {
-        // This is a network error or 500 server error
-        toast.error("Сталася неочікувана помилка. Спробуйте ще раз.");
-        console.error('Submission error:', error);
+
+        if (hasFieldErrors) {
+          toast.error("Перевірте дані форми (помилки підсвічено).");
+        } 
+        else if (!hasFieldErrors && !serverData.errors) {
+          const msg = "Сталася невідома помилка валідації.";
+          toast.error(msg);
+          console.error(msg, serverData);
+        }
+
+      } else {
+        const msg = "Сталася неочікувана помилка. Спробуйте ще раз.";
+        toast.error(msg);
+        console.error(msg, error);
       }
     }
   };
 
-  // --- 5. Helper Functions (Edit, Delete, Clear) ---
+  const onError = (errors, e) => {
+    console.log("Client-side validation blocked submission:", errors);
+    toast.error("Форма містить помилки. Виправте їх перед відправкою.");
+  };
+
+  // --- Helper Functions (Edit, Delete, Clear) ---
   const handleEdit = (item) => {
     setEditingId(item.id);
+    clearErrors();
     
-    // Use reset() to populate the form with the item's data
-    // This is the correct way to fix your old bug
     reset({
       name: item.name,
       description: item.description,
       price: item.price,
       is_available: item.is_available,
-      category: item.category.id, // Set the category ID for the dropdown
-      photo: null, // Clear file input on edit
+      category: item.category.id, 
+      photo: null, 
     });
   };
 
@@ -133,14 +169,15 @@ function AdminMenuManagement() {
       try {
         await apiClient.delete(`/menu/dishes/${id}/`);
         toast.success("Страву видалено.");
-        fetchDishes(); // Reload the list
+        fetchDishes(); 
       } catch (error) {
         if (error.response?.status === 404) {
           toast.error(`Цієї страви вже не існує.`)
         }
         else {
-          toast.error("Не вдалося видалити страву.");
-          console.error('Error deleting dish:', error);
+          const msg = "Не вдалося видалити страву.";
+          toast.error(msg);
+          console.error(msg, error);
         }
       }
     }
@@ -148,9 +185,8 @@ function AdminMenuManagement() {
 
   const handleAvailabilityToggle = async (dishId, newAvailability) => {
     const originalMenuItems = [...menuItems];
-
     const dishData = new FormData();
-      dishData.append('is_available', newAvailability);
+    dishData.append('is_available', newAvailability);
 
     setMenuItems(prevItems =>
       prevItems.map(item =>
@@ -160,36 +196,34 @@ function AdminMenuManagement() {
 
     try {
       await apiClient.patch(`/menu/dishes/${dishId}/`, dishData);
-      // Optional: Show a very subtle success message
-      // toast.success("Availability updated!"); 
     } 
     catch (error) {
       if (error.response?.status === 404) {
         toast.error(`Цій страві не можна змінити доступність, бо її не існує.`)
       }
       else {
-        toast.error("Не вдалось змінити доступність. Спробуйте ще раз.");
-        console.error('Error updating availability:', error);
+        const msg = "Не вдалось змінити доступність. Спробуйте ще раз.";
+        toast.error(msg);
+        console.error(msg, error);
       }
       setMenuItems(originalMenuItems);
     }
   };
 
   const clearForm = () => {
-    reset(defaultFormState); // Resets all fields to their defaults
+    reset(defaultFormState); 
     setEditingId(null);
-    // Re-set default category after clear
     if (categories.length > 0) {
       setValue('category', categories[0].id);
     }
+    clearErrors();
   };
   
   return (
     <div>
       <h2>Керування меню</h2>
       
-      {/* 6. Connect the form to react-hook-form */}
-      <form className="admin-form" onSubmit={handleSubmit(onSubmit)}>
+      <form className="admin-form" onSubmit={handleSubmitWrapper}>
         <h3>{editingId ? 'Редагувати страву' : 'Додати нову страву'}</h3>
         <div className="form-grid">
           
@@ -198,10 +232,8 @@ function AdminMenuManagement() {
             <input
               type="text"
               id="name"
-              // 7. "Register" the input. This replaces 'value' and 'onChange'.
               {...register('name', { required: 'Назва страви є обов\'язковою' })}
             />
-            {/* Show error message if this field fails validation */}
             {errors.name && <span className="error-message">{errors.name.message}</span>}
           </div>
           
@@ -210,11 +242,8 @@ function AdminMenuManagement() {
             <textarea
               id="description"
               rows="3"
-              // 1. Add the validation rule here
               {...register('description', { required: 'Опис є обов\'язковим' })}
             ></textarea>
-            
-            {/* 2. Add this line to show the error */}
             {errors.description && <span className="error-message">{errors.description.message}</span>}
           </div>
           
@@ -259,6 +288,7 @@ function AdminMenuManagement() {
               accept="image/*"
               {...register('photo')}
             />
+            {errors.photo && <span className="error-message">{errors.photo.message}</span>}
           </div>
           
           <div className="form-group form-group-checkbox form-group-full">
@@ -268,7 +298,7 @@ function AdminMenuManagement() {
               {...register('is_available')}
             />
             <label htmlFor="is_available">Доступна</label> 
-            {/* Changed logic: unchecked = "Недоступна" */}
+            {errors.is_available && <span className="error-message">{errors.is_available.message}</span>}
           </div>
 
         </div>
@@ -292,7 +322,15 @@ function AdminMenuManagement() {
       {/* The table remains the same */}
       <h3>Наявні страви </h3>
       <table className="admin-table">
-        {/* ... (thead) ... */}
+        <thead>
+           <tr>
+              <th>Назва</th>
+              <th>Ціна</th>
+              <th>Категорія</th>
+              <th>Перемкнути доступність</th>
+              <th>Дії</th>
+          </tr>
+        </thead>
         <tbody>
           {menuItems.map(item => (
             <tr key={item.id} className={item.is_available ? '' : 'status-unavailable'}>
