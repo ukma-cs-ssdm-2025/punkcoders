@@ -213,9 +213,10 @@ function AdminMenuManagement() {
   const clearForm = () => {
     reset(defaultFormState); 
     setEditingId(null);
-    if (categories.length > 0) {
-      setValue('category', categories[0].id);
-    }
+    // can be returned if requested, but i found it annoying af
+    // if (categories.length > 0) {
+    //   setValue('category', categories[0].id);
+    // }
     clearErrors();
   };
   
