@@ -1,5 +1,5 @@
 import React from 'react';
-import { createRoot } from 'react-dom/client' 
+import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom';
 import {
   QueryClient,
@@ -8,6 +8,7 @@ import {
 import './style.css'
 import App from './App.jsx'
 import ErrorBoundary from './ErrorBoundary';
+import { CartProvider } from './context/CartContext';
 
 // --- React Query Client ---
 const queryClient = new QueryClient({
@@ -23,14 +24,16 @@ const queryClient = new QueryClient({
   },
 });
 
-const root = createRoot(document.getElementById('root')); 
+const root = createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+        <CartProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </CartProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   </React.StrictMode>

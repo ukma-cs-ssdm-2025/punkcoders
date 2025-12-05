@@ -4,8 +4,10 @@ import { useUser } from '../hooks/useUser'; // Assuming this hook exists based o
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import apiClient from '../api';
+import { useCart } from '../context/CartContext';
 
 export default function Header() {
+  const { cartCount } = useCart();
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('theme') || 'light';
   });
@@ -61,8 +63,8 @@ export default function Header() {
         </nav>
 
         <div className="header-actions">
-          <button 
-            className="theme-toggle" 
+          <button
+            className="theme-toggle"
             aria-label="Перемкнути тему"
             onClick={toggleTheme}
           >
@@ -88,10 +90,10 @@ export default function Header() {
             </Link>
           )}
 
-          <Link to="/cart" className="header-cart-button">
+          <a href="/cart" className="header-cart-button">
             <span><img src={cartIconSrc} alt="Cart" /></span>
-            <span className="cart-counter">0</span>
-          </Link>
+            <span className="cart-counter">{cartCount}</span>
+          </a>
         </div>
       </div>
     </header>

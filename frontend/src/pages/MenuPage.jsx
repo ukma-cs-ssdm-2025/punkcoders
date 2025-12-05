@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import apiClient from '../api';
 import Header from '../components/Header.jsx';
+import { useCart } from '../context/CartContext';
 import './MenuPage.css';
 
 // --- API Fetching Functions ---
@@ -94,7 +95,7 @@ function MainContent() {
     if (categorySlug) {
       return categories.find((c) => c.slug === categorySlug);
     }
-    
+
     return categories[0] || null;
   }, [categories, categorySlug]);
 
@@ -145,7 +146,7 @@ function CategoryTabs({
     let skeletons = [];
     for (let i = 0; i < 3; i++) {
       skeletons.push(
-        <button key={i} className="tab-pill" disabled style={{ opacity: 0.5 }}> 
+        <button key={i} className="tab-pill" disabled style={{ opacity: 0.5 }}>
           Loading...
         </button>
       );
@@ -174,9 +175,8 @@ function CategoryTabs({
           key={category.id}
           // --- KEY CHANGE: Call with the SLUG, not the ID ---
           onClick={() => onSelectCategory(category.slug)}
-          className={`tab-pill ${
-            selectedCategoryID === category.id ? 'active' : ''
-          }`}
+          className={`tab-pill ${selectedCategoryID === category.id ? 'active' : ''
+            }`}
         >
           {category.name}
         </button>
@@ -226,20 +226,20 @@ function DishList({ selectedCategoryID }) {
     const skeletons = [];
     for (let i = 0; i < 3; i++) {
       skeletons.push(
-      <div key={i} className="card" style={{ opacity: 0.5, pointerEvents: 'none' }}>
-        <div style={{ height: '200px', background: '#eee' }} />
-        <div className="card-content" style={{ filter: 'blur(4px)' }}>
-        <h3 className="product-title">Loading...</h3>
-        <p className="product-price">...₴</p>
-        <button className="tab-pill">read more</button>
+        <div key={i} className="card" style={{ opacity: 0.5, pointerEvents: 'none' }}>
+          <div style={{ height: '200px', background: '#eee' }} />
+          <div className="card-content" style={{ filter: 'blur(4px)' }}>
+            <h3 className="product-title">Loading...</h3>
+            <p className="product-price">...₴</p>
+            <button className="tab-pill">read more</button>
+          </div>
         </div>
-      </div>
       );
     }
 
     return (
       <div className="menu-cards">
-      {skeletons}
+        {skeletons}
       </div>
     );
   }
@@ -289,9 +289,12 @@ DishList.propTypes = {
  * Displays a single dish card using your .card structure
  */
 function DishCard({ dish, onShowDetails }) {
+  const { addToCart } = useCart();
+
   const handleAddToCart = (e) => {
     e.stopPropagation(); // Prevent modal from opening
-    toast.success(`${dish.name} added to cart! (Not really)`);
+    addToCart(dish);
+    toast.success(`${dish.name} added to cart!`);
   };
 
   const handleShowDetails = (e) => {
@@ -315,7 +318,7 @@ function DishCard({ dish, onShowDetails }) {
         className="card-img"
         onError={handleImageError}
       />
-      
+
       {!dish.is_available && (
         <div style={{
           position: 'absolute', top: 0, left: 0, width: '100%', height: '200px',
@@ -325,20 +328,20 @@ function DishCard({ dish, onShowDetails }) {
           Unavailable
         </div>
       )}
-        
+
       <div className="card-content">
         <h3 className="product-title">{dish.name}</h3>
         <p className="product-price">{dish.price}₴</p>
-        
+
         <div className="card-actions">
-          <button 
+          <button
             className="read-btn"
             onClick={handleAddToCart}
             disabled={!dish.is_available}
           >
             Add to Cart
           </button>
-          <button 
+          <button
             className="tab-pill"
             onClick={handleShowDetails}
           >
@@ -383,8 +386,11 @@ function DishDetailModal({ dishId, onClose }) {
 
   if (!dishId) return null;
 
+  const { addToCart } = useCart();
+
   const handleAddToCart = () => {
-    toast.success(`${dish.name} added to cart! (Not really)`);
+    addToCart(dish);
+    toast.success(`${dish.name} added to cart!`);
     onClose(); // Close modal after adding
   };
 
@@ -395,7 +401,7 @@ function DishDetailModal({ dishId, onClose }) {
           <h2>{dish ? dish.name : 'Loading...'}</h2>
           <button onClick={onClose} className="modal-close-btn">&times;</button>
         </div>
-        
+
         <div className="modal-body">
           {isLoading && <p>Loading details...</p>}
           {isError && <p style={{ color: 'red' }}>Could not load dish details.</p>}
@@ -408,7 +414,7 @@ function DishDetailModal({ dishId, onClose }) {
               />
               <p className="modal-price">{dish.price}₴</p>
               <p>{dish.description}</p>
-              
+
               {dish.ingredients && dish.ingredients.length > 0 && (
                 <div className="modal-ingredients">
                   <h4>Ingredients</h4>
@@ -427,7 +433,7 @@ function DishDetailModal({ dishId, onClose }) {
             </>
           )}
         </div>
-        
+
         <div className="modal-footer">
           <button onClick={onClose} className="read-btn">
             Close
