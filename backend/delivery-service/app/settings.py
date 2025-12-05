@@ -54,7 +54,6 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "drf_spectacular",
     "drf_standardized_errors",
-    "orders",
     "restaurant",
     "accounts",
     "corsheaders",

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
+import { useCart } from '../context/CartContext';
 
 export default function Header() {
+  const { cartCount } = useCart();
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('theme') || 'light';
   });
@@ -40,14 +42,14 @@ export default function Header() {
         </div> */}
 
         <div className="header-actions">
-          <button 
-            className="theme-toggle" 
+          <button
+            className="theme-toggle"
             aria-label="Перемкнути тему"
             onClick={toggleTheme}
           >
-            <img 
-              src={theme === 'light' ? "/content/Shopicons_Light_Sun.png" : "/content/Shopicons_Light_Sun.png"} 
-              alt="Theme Toggle" 
+            <img
+              src={theme === 'light' ? "/content/Shopicons_Light_Sun.png" : "/content/Shopicons_Light_Sun.png"}
+              alt="Theme Toggle"
               style={{ filter: theme === 'dark' ? 'invert(1)' : 'none' }} // Простий трюк: інверсія кольору для ночі, якщо немає окремої іконки місяця
             />
           </button>
@@ -56,9 +58,9 @@ export default function Header() {
             Log in <img src="/content/Shopicons_Light_Account.png" alt="" />
           </a> */}
 
-            <a href="/cart" className="header-cart-button">
+          <a href="/cart" className="header-cart-button">
             <span><img src={cartIconSrc} alt="Cart" /></span>
-            <span className="cart-counter">0</span>
+            <span className="cart-counter">{cartCount}</span>
           </a>
         </div>
       </div>
