@@ -1,7 +1,7 @@
 from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import IntegrityError
 from rest_framework import serializers
-from django.core.exceptions import ValidationError as DjangoValidationError
 
 from .models import User
 
@@ -79,4 +79,4 @@ class ManagerUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["id", "email", "first_name", "last_name", "role", "is_active"]
-        read_only_fields = ["email", "first_name", "last_name", "is_active"]
+        read_only_fields = ["email", "first_name", "last_name"]
