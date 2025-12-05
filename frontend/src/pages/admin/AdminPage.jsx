@@ -5,6 +5,7 @@ import AdminStaffManagement from './AdminStaffManagement';
 import AdminReports from './AdminReports';
 import AdminSettings from './AdminSettings';
 import './Admin.css';
+import '../forms.css';
 import { useNavigate } from 'react-router-dom';
 
 

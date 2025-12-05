@@ -6,6 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useUser } from '../hooks/useUser';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import './forms.css';
 
 const API_ENDPOINT = '/auth/me/'; 
 
