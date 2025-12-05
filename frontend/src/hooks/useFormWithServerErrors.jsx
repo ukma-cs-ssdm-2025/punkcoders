@@ -13,7 +13,7 @@ export const useFormWithServerErrors = (options) => {
     if (!text) return null;
     // 1. Replace literal sequence "\n" (backslash + n) with actual newline character
     // The regex /\\n/g matches every occurrence of "\" followed by "n"
-    const content = text.replace(/\\n/g, '\n');
+    const content = text.replaceAll("\\n", '\n');
     // 2. Use 'white-space: pre-wrap' to tell the browser to render \n as a line break
     return <span style={{ whiteSpace: 'pre-wrap' }}>{content}</span>;
   };
