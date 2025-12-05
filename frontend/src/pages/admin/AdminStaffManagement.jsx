@@ -61,19 +61,15 @@ function AdminStaffManagement() {
       clearForm();
       fetchStaff();
     } catch (error) {
-      console.error("API Error:", error);
-
       if (error.response?.data) {
         if (error.response?.data) {
           const serverData = error.response.data;
           let hasFieldErrors = false;
           // const KNOWN_FIELDS = ['first_name', 'last_name', 'email', 'password', 'role'];
           const KNOWN_FIELDS = Object.keys(defaultValues);
-          // console.log(KNOWN_FIELDS);
 
           // CHECK 1: Handle your specific format (Array of objects in 'errors')
           if (Array.isArray(serverData.errors)) {
-            // console.log(serverData.errors);
             serverData.errors.forEach((err) => {
               const fieldName = err.attr; // e.g. "email"
               const message = err.detail; // e.g. "Enter a valid email address."
@@ -112,14 +108,15 @@ function AdminStaffManagement() {
           }
 
         } else {
-          // Network errors or 500s
           const msg = "Сталася помилка сервера або проблема з мережею.";
           toast.error(msg);
           console.error(msg, error);
         }
         
       } else {
-        toast.error("Сталася помилка сервера.");
+        const msg = "Сталася помилка сервера або проблема з мережею.";
+        toast.error(msg);
+        console.error(msg, error);
       }
     }
   }
@@ -149,8 +146,8 @@ function AdminStaffManagement() {
         toast.success("Акаунт видалено або деактивовано.");
         fetchStaff();
       } catch (error) {
-          toast.error("Не вдалося видалити акаунт.");
-          console.error("error deleting user: ", error);
+        toast.error("Не вдалося видалити акаунт.");
+        console.error("error deleting user: ", error);
       }
     }
   };
@@ -159,6 +156,17 @@ function AdminStaffManagement() {
     reset({ first_name: '', last_name: '', email: '', password: '', role: 'KITCHEN_STAFF' });
     setEditingId(null);
     clearErrors();
+  };
+
+  const formatTextWithLineBreaks = (text) => {
+    if (!text) return null;
+    return text.split('\\' + 'n').map((line, index) => (
+      <span key={index}>
+        {line}
+        {/* Do not add <br> after the last line */}
+        {index < text.split('\\' + 'n').length - 1 && <br />} 
+      </span>
+    ));
   };
 
   return (
@@ -177,7 +185,7 @@ function AdminStaffManagement() {
               style={editingId ? { backgroundColor: '#e9ecef', cursor: 'not-allowed' } : {}}
               {...register('first_name', { required: 'Ім\'я є обов\'язковим' })}
             />
-             {errors.first_name && <span className="error-message">{errors.first_name.message}</span>}
+             {errors.first_name && <span className="error-message">{formatTextWithLineBreaks(errors.first_name.message)}</span>}
           </div>
 
           <div className="form-group">
@@ -188,7 +196,7 @@ function AdminStaffManagement() {
               style={editingId ? { backgroundColor: '#e9ecef', cursor: 'not-allowed' } : {}}
               {...register('last_name', { required: 'Прізвище є обов\'язковим' })}
             />
-             {errors.last_name && <span className="error-message">{errors.last_name.message}</span>}
+             {errors.last_name && <span className="error-message">{formatTextWithLineBreaks(errors.last_name.message)}</span>}
           </div>
 
           <div className="form-group">
@@ -202,7 +210,7 @@ function AdminStaffManagement() {
                 pattern: { value: /^\S+@\S+$/i, message: "Некоректна email адреса" }
               })}
             />
-            {errors.email && <span className="error-message">{errors.email.message}</span>}
+            {errors.email && <span className="error-message">{formatTextWithLineBreaks(errors.email.message)}</span>}
           </div>
           
           {/* HIDE PASSWORD FIELD COMPLETELY WHEN EDITING */}
@@ -216,7 +224,7 @@ function AdminStaffManagement() {
                   minLength: { value: 12, message: 'Мінімум 12 символів' }
                 })}
               />
-              {errors.password && <span className="error-message">{errors.password.message}</span>}
+              {errors.password && <span className="error-message">{formatTextWithLineBreaks(errors.password.message)}</span>}
             </div>
           )}
 
