@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
 import apiClient from '../../api';
 import { toast } from 'react-toastify';
+import { useFormWithServerErrors } from '../../hooks/useFormWithServerErrors';
 
-// ... constants ...
 const ROLE_OPTIONS = [
   { value: 'KITCHEN_STAFF', label: 'Кухар' },
   { value: 'COURIER', label: 'Кур\'єр' },
@@ -17,7 +16,11 @@ const ROLE_DISPLAY_NAMES = {
 };
 
 const defaultValues = {
-  first_name: '', last_name: '', email: '', password: '', role: 'KITCHEN_STAFF',
+  first_name: '',
+  last_name: '',
+  email: '',
+  password: '',
+  role: 'KITCHEN_STAFF',
 }
 
 
@@ -26,9 +29,14 @@ function AdminStaffManagement() {
   const [editingId, setEditingId] = useState(null);
   
   const { 
-    register, handleSubmit, reset, setError, clearErrors,
+    register,
+    reset,
+    clearErrors,
+    wrapSubmit,
+    handleServerErrors,
+    formatError,
     formState: { errors } 
-  } = useForm({
+  } = useFormWithServerErrors({
     defaultValues: defaultValues
   });
 
@@ -44,11 +52,6 @@ function AdminStaffManagement() {
     }
   };
 
-  const handleSubmitWrapper = (e) => {
-    clearErrors();
-    handleSubmit(onSubmit, onError)(e);
-  }
-
   const onSubmit = async (data) => {
     try {
       if (editingId) {
@@ -61,70 +64,9 @@ function AdminStaffManagement() {
       clearForm();
       fetchStaff();
     } catch (error) {
-      if (error.response?.data) {
-        if (error.response?.data) {
-          const serverData = error.response.data;
-          let hasFieldErrors = false;
-          // const KNOWN_FIELDS = ['first_name', 'last_name', 'email', 'password', 'role'];
-          const KNOWN_FIELDS = Object.keys(defaultValues);
-
-          // CHECK 1: Handle your specific format (Array of objects in 'errors')
-          if (Array.isArray(serverData.errors)) {
-            serverData.errors.forEach((err) => {
-              const fieldName = err.attr; // e.g. "email"
-              const message = err.detail; // e.g. "Enter a valid email address."
-
-              // If 'attr' matches one of our known inputs, highlight it
-              if (fieldName && KNOWN_FIELDS.includes(fieldName)) {
-                setError(fieldName, { type: 'server', message: message });
-                hasFieldErrors = true;
-              } else {
-                console.log(fieldName);
-                // If 'attr' is null (global error) or unknown, show a Toast
-                const displayMsg = fieldName ? `${fieldName}: ${message}` : message;
-                toast.error(displayMsg);
-                console.error(`Unmapped Error [${fieldName}]:`, message);
-              }
-            });
-          } 
-          // CHECK 2: Fallback for standard DRF keys (just in case other endpoints differ)
-          else if (typeof serverData === 'object') {
-              Object.keys(serverData).forEach((key) => {
-                  if (KNOWN_FIELDS.includes(key)) {
-                      const msg = Array.isArray(serverData[key]) ? serverData[key][0] : serverData[key];
-                      setError(key, { type: 'server', message: msg });
-                      hasFieldErrors = true;
-                  } else if (key === 'detail') {
-                      toast.error(serverData.detail);
-                  }
-              });
-          }
-
-          if (hasFieldErrors) {
-            toast.error("Перевірте дані форми (помилки підсвічено).");
-          } else if (!hasFieldErrors && !serverData.errors) {
-            // If we have data but couldn't find any known errors
-            toast.error("Сталася невідома помилка валідації.");
-          }
-
-        } else {
-          const msg = "Сталася помилка сервера або проблема з мережею.";
-          toast.error(msg);
-          console.error(msg, error);
-        }
-        
-      } else {
-        const msg = "Сталася помилка сервера або проблема з мережею.";
-        toast.error(msg);
-        console.error(msg, error);
-      }
+      handleServerErrors(error);
     }
   }
-
-  const onError = (errors, e) => {
-    console.log("Submit blocked by validation:", errors);
-    toast.error("Форма містить помилки. Виправте їх перед відправкою.");
-  };
 
   const handleEdit = (user) => {
     setEditingId(user.id);
@@ -158,22 +100,11 @@ function AdminStaffManagement() {
     clearErrors();
   };
 
-  const formatTextWithLineBreaks = (text) => {
-    if (!text) return null;
-    return text.split('\\' + 'n').map((line, index) => (
-      <span key={index}>
-        {line}
-        {/* Do not add <br> after the last line */}
-        {index < text.split('\\' + 'n').length - 1 && <br />} 
-      </span>
-    ));
-  };
-
   return (
     <div>
       <h2>Керування персоналом</h2>
       
-      <form className="base-form" onSubmit={handleSubmitWrapper}>
+      <form className="base-form" onSubmit={wrapSubmit(onSubmit)}>
         <h3>{editingId ? 'Редагувати роль' : 'Створити новий акаунт'}</h3>
         <div className="form-grid">
           
@@ -185,7 +116,7 @@ function AdminStaffManagement() {
               style={editingId ? { backgroundColor: '#e9ecef', cursor: 'not-allowed' } : {}}
               {...register('first_name', { required: 'Ім\'я є обов\'язковим' })}
             />
-             {errors.first_name && <span className="error-message">{formatTextWithLineBreaks(errors.first_name.message)}</span>}
+             {errors.first_name && <span className="error-message">{formatError(errors.first_name.message)}</span>}
           </div>
 
           <div className="form-group">
@@ -196,7 +127,7 @@ function AdminStaffManagement() {
               style={editingId ? { backgroundColor: '#e9ecef', cursor: 'not-allowed' } : {}}
               {...register('last_name', { required: 'Прізвище є обов\'язковим' })}
             />
-             {errors.last_name && <span className="error-message">{formatTextWithLineBreaks(errors.last_name.message)}</span>}
+             {errors.last_name && <span className="error-message">{formatError(errors.last_name.message)}</span>}
           </div>
 
           <div className="form-group">
@@ -209,7 +140,7 @@ function AdminStaffManagement() {
                 required: 'Email є обов\'язковим',
               })}
             />
-            {errors.email && <span className="error-message">{formatTextWithLineBreaks(errors.email.message)}</span>}
+            {errors.email && <span className="error-message">{formatError(errors.email.message)}</span>}
           </div>
           
           {/* HIDE PASSWORD FIELD COMPLETELY WHEN EDITING */}
@@ -223,7 +154,7 @@ function AdminStaffManagement() {
                   minLength: { value: 12, message: 'Мінімум 12 символів' }
                 })}
               />
-              {errors.password && <span className="error-message">{formatTextWithLineBreaks(errors.password.message)}</span>}
+              {errors.password && <span className="error-message">{formatError(errors.password.message)}</span>}
             </div>
           )}
 

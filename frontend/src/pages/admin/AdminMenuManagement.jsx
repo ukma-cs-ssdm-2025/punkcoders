@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form'; 
 import apiClient from '../../api';
 import { toast } from 'react-toastify'; 
+import { useFormWithServerErrors } from '../../hooks/useFormWithServerErrors';
 
 const defaultFormState = {
   name: '',
@@ -12,18 +12,21 @@ const defaultFormState = {
   photo: null,
 };
 
-// const KNOWN_FIELDS = ['name', 'description', 'price', 'category', 'is_available', 'photo'];
-const KNOWN_FIELDS = Object.keys(defaultFormState);
-
 function AdminMenuManagement() {
   const [menuItems, setMenuItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [editingId, setEditingId] = useState(null);
 
   const { 
-    register, handleSubmit, reset, setValue, setError, clearErrors,
+    register,
+    reset,
+    setValue,
+    clearErrors,
+    wrapSubmit,
+    handleServerErrors,
+    formatError,
     formState: { errors } 
-  } = useForm({
+  } = useFormWithServerErrors({
     defaultValues: defaultFormState
   });
 
@@ -59,11 +62,6 @@ function AdminMenuManagement() {
     }
   };
 
-  const handleSubmitWrapper = (e) => {
-    clearErrors();
-    handleSubmit(onSubmit, onError)(e);
-  }
-
   const onSubmit = async (data) => {
     const dishData = new FormData();
     dishData.append('name', data.name);
@@ -90,63 +88,8 @@ function AdminMenuManagement() {
 
     } 
     catch (error) {
-      console.error("API Submission Error:", error);
-
-      if (error.response?.data) {
-        const serverData = error.response.data;
-        let hasFieldErrors = false;
-
-        // CHECK 1: Handle standardized errors (attr/detail)
-        if (Array.isArray(serverData.errors)) {
-          serverData.errors.forEach((err) => {
-            const fieldName = err.attr;
-            const message = err.detail;
-
-            if (fieldName && KNOWN_FIELDS.includes(fieldName)) {
-              setError(fieldName, { type: 'server', message: message });
-              hasFieldErrors = true;
-            } else {
-              const msg = fieldName ? `${fieldName}: ${message}` : message;
-              toast.error(msg);
-              console.error(`Unmapped Error [${fieldName}]:`, message);
-            }
-          });
-        } 
-        // CHECK 2: Fallback for standard DRF keys
-        else if (typeof serverData === 'object') {
-            Object.keys(serverData).forEach((key) => {
-                const msg = Array.isArray(serverData[key]) ? serverData[key][0] : serverData[key];
-                
-                if (KNOWN_FIELDS.includes(key)) {
-                  setError(key, { type: 'server', message: msg });
-                  hasFieldErrors = true;
-                } 
-                else if (key === 'detail') {
-                  toast.error(serverData.detail);
-                }
-            });
-        }
-
-        if (hasFieldErrors) {
-          toast.error("Перевірте дані форми (помилки підсвічено).");
-        } 
-        else if (!hasFieldErrors && !serverData.errors) {
-          const msg = "Сталася невідома помилка валідації.";
-          toast.error(msg);
-          console.error(msg, serverData);
-        }
-
-      } else {
-        const msg = "Сталася неочікувана помилка. Спробуйте ще раз.";
-        toast.error(msg);
-        console.error(msg, error);
-      }
+      handleServerErrors(error);
     }
-  };
-
-  const onError = (errors, e) => {
-    console.log("Client-side validation blocked submission:", errors);
-    toast.error("Форма містить помилки. Виправте їх перед відправкою.");
   };
 
   // --- Helper Functions (Edit, Delete, Clear) ---
@@ -224,7 +167,7 @@ function AdminMenuManagement() {
     <div>
       <h2>Керування меню</h2>
       
-      <form className="base-form" onSubmit={handleSubmitWrapper}>
+      <form className="base-form" onSubmit={wrapSubmit(onSubmit)}>
         <h3>{editingId ? 'Редагувати страву' : 'Додати нову страву'}</h3>
         <div className="form-grid">
           
@@ -235,7 +178,7 @@ function AdminMenuManagement() {
               id="name"
               {...register('name', { required: 'Назва страви є обов\'язковою' })}
             />
-            {errors.name && <span className="error-message">{errors.name.message}</span>}
+            {errors.name && <span className="error-message">{formatError(errors.name.message)}</span>}
           </div>
           
           <div className="form-group form-group-full">
@@ -245,7 +188,7 @@ function AdminMenuManagement() {
               rows="3"
               {...register('description', { required: 'Опис є обов\'язковим' })}
             ></textarea>
-            {errors.description && <span className="error-message">{errors.description.message}</span>}
+            {errors.description && <span className="error-message">{formatError(errors.description.message)}</span>}
           </div>
           
           <div className="form-group">
@@ -263,7 +206,7 @@ function AdminMenuManagement() {
               }
               })}
             />
-            {errors.price && <span className="error-message">{errors.price.message}</span>}
+            {errors.price && <span className="error-message">{formatError(errors.price.message)}</span>}
           </div>
           
           <div className="form-group">
@@ -278,7 +221,7 @@ function AdminMenuManagement() {
                 </option>
               ))}
             </select>
-            {errors.category && <span className="error-message">{errors.category.message}</span>}
+            {errors.category && <span className="error-message">{formatError(errors.category.message)}</span>}
           </div>
 
           <div className="form-group form-group-full">
@@ -289,7 +232,7 @@ function AdminMenuManagement() {
               accept="image/*"
               {...register('photo')}
             />
-            {errors.photo && <span className="error-message">{errors.photo.message}</span>}
+            {errors.photo && <span className="error-message">{formatError(errors.photo.message)}</span>}
           </div>
           
           <div className="form-group form-group-checkbox form-group-full">
@@ -299,7 +242,7 @@ function AdminMenuManagement() {
               {...register('is_available')}
             />
             <label htmlFor="is_available">Доступна</label> 
-            {errors.is_available && <span className="error-message">{errors.is_available.message}</span>}
+            {errors.is_available && <span className="error-message">{formatError(errors.is_available.message)}</span>}
           </div>
 
         </div>
