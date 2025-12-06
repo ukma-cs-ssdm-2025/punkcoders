@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import { useCart } from '../context/CartContext';
@@ -45,11 +44,13 @@ export default function CartPage() {
                                         <button
                                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
                                             disabled={item.quantity <= 1}
+                                            className="btn-quantity"
                                         >
                                             -
                                         </button>
                                         <span>{item.quantity}</span>
-                                        <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>
+                                        <button onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                            className="btn-quantity">
                                             +
                                         </button>
                                     </div>

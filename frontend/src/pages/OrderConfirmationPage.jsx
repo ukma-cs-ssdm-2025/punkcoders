@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import { useCart } from '../context/CartContext';
@@ -7,10 +7,10 @@ import './CheckoutPage.css'; // Reuse styles
 export default function OrderConfirmationPage() {
     const location = useLocation();
     const orderId = location.state?.orderId;
-    const { clearCart } = useCart();
+    const { clearCart, cartItems } = useCart();
 
     useEffect(() => {
-        if (orderId) {
+        if (orderId && cartItems.length > 0) {
             clearCart();
         }
     }, [orderId, clearCart]);
