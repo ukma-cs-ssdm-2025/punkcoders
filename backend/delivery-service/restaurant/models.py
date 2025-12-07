@@ -4,6 +4,7 @@ from autoslug.fields import AutoSlugField
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
+from django.db.models import Sum
 
 
 class Category(models.Model):
@@ -211,5 +212,43 @@ class OrderItem(models.Model):
 
     def save(self, *args, **kwargs):
         # ensure line_total is consistent
+        self.line_total = (self.unit_price or Decimal("0.00")) * Decimal(self.quantity)
+        super().save(*args, **kwargs)
+
+
+class Cart(models.Model):
+    """Session-based cart to store dishes before checkout."""
+
+    session_key = models.CharField(max_length=40, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Cart"
+        verbose_name_plural = "Carts"
+
+    @property
+    def total_amount(self):
+        return self.items.aggregate(total=Sum("line_total"))["total"] or Decimal("0.00")
+
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="items")
+    dish = models.ForeignKey("Dish", on_delete=models.PROTECT, related_name="+")
+    name = models.CharField(max_length=200, verbose_name="Dish name snapshot")
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
+    quantity = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
+    line_total = models.DecimalField(max_digits=12, decimal_places=2, validators=[MinValueValidator(0)])
+
+    class Meta:
+        unique_together = ("cart", "dish")
+        verbose_name = "Cart item"
+        verbose_name_plural = "Cart items"
+
+    def save(self, *args, **kwargs):
+        if not self.name:
+            self.name = self.dish.name
+        if self.unit_price is None:
+            self.unit_price = self.dish.price
         self.line_total = (self.unit_price or Decimal("0.00")) * Decimal(self.quantity)
         super().save(*args, **kwargs)
