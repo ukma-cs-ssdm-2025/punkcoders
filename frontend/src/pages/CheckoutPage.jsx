@@ -1,19 +1,22 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Header from '../components/Header';
 import { useCart } from '../context/CartContext';
+import { useFormWithServerErrors } from '../hooks/useFormWithServerErrors';
 import apiClient from '../api';
 import './CheckoutPage.css';
+import './forms.css';
 
 export default function CheckoutPage() {
     const { cartItems, clearCart, cartTotal } = useCart();
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const { register, handleSubmit, watch, formState: { errors } } = useForm({
+    const { register, wrapSubmit, handleServerErrors, watch, formState: { errors } } = useFormWithServerErrors({
         defaultValues: {
+            phone: '',
+            delivery_address: '',
             self_pickup: false,
             payment_method: 'cash',
         }
@@ -41,15 +44,11 @@ export default function CheckoutPage() {
 
         try {
             const response = await apiClient.post('/menu/orders/', payload);
-            toast.success('Order placed successfully!');
+            toast.success('Замовлення успішно оформлено!');
+            clearCart();
             navigate('/order-confirmation', { state: { orderId: response.data.id } });
         } catch (error) {
-            console.error('Order submission error:', error);
-            const msg = error.response?.data?.detail
-                || (typeof error.response?.data === 'string' ? error.response?.data : null)
-                || JSON.stringify(error.response?.data)
-                || 'Failed to place order.';
-            toast.error(`Error: ${msg}`);
+            handleServerErrors(error);
         } finally {
             setIsSubmitting(false);
         }
@@ -78,7 +77,7 @@ export default function CheckoutPage() {
                         </div>
                     </div>
 
-                    <form onSubmit={handleSubmit(onSubmit)} className="checkout-form">
+                    <form onSubmit={wrapSubmit(onSubmit)} className="checkout-form base-form">
                         <div className="form-group">
                             <label>Phone Number</label>
                             <input
