@@ -51,13 +51,15 @@ export default function Header() {
         <nav className="header-navigation">
           <ul>
             <li><Link to="/menu">Меню</Link></li>
-            <li><Link to="/faq">FAQ</Link></li>
             
             {user?.role === 'MANAGER' && (
               <li><Link to="/admin">Керування сайтом</Link></li>
             )}
             {user?.role === 'KITCHEN_STAFF' && (
               <li><Link to="/chef">Замовлення для приготування</Link></li>
+            )}
+            {user?.role === 'COURIER' && (
+              <li><Link to="/courier">Замовлення для доставки</Link></li>
             )}
           </ul>
         </nav>

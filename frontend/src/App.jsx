@@ -7,6 +7,7 @@ import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderConfirmationPage from './pages/OrderConfirmationPage';
 import ChefPage from './pages/ChefPage';
+import CourierPage from './pages/CourierPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import NotFound from './pages/errors/NotFound';
 import Unauthorized from './pages/errors/Unauthorized';
@@ -40,6 +41,11 @@ function App() {
         <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
         <Route path="/chef" element={
           <ProtectedRoute allowedRoles={["MANAGER", "KITCHEN_STAFF"]}>
+            <ChefPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/courier" element={
+          <ProtectedRoute allowedRoles={["MANAGER", "COURIER"]}>
             <ChefPage />
           </ProtectedRoute>
         } />
