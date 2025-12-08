@@ -41,3 +41,10 @@ class IsKitchenOrManager(BasePermission):
         return bool(
             request.user and request.user.is_authenticated and request.user.role in {"KITCHEN_STAFF", "MANAGER"}
         )
+
+
+class IsCashier(BasePermission):
+    """Allow access for cashier role."""
+
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.is_authenticated and request.user.role == "CASHIER")

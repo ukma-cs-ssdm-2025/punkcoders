@@ -30,6 +30,8 @@ def create_order_with_items(order_data: dict, items_data: list, user=None) -> Or
             phone=order_data["phone"],
             delivery_address=order_data.get("delivery_address"),
             self_pickup=bool(order_data.get("self_pickup", False)),
+            delivery_type=(Order.DeliveryType.PICKUP if order_data.get("self_pickup") else Order.DeliveryType.DELIVERY),
+            kitchen_status=Order.KitchenStatus.NEW,
             payment_method=order_data.get("payment_method", Order.PaymentMethod.CASH),
         )
 

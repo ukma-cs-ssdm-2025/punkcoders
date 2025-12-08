@@ -29,7 +29,7 @@ class KitchenOrderViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, view
         include_completed = self.request.query_params.get("include_completed")
         if not include_completed:
             # Show only orders that need kitchen attention
-            qs = qs.filter(status__in=[Order.Status.NEW, Order.Status.IN_PROGRESS])
+            qs = qs.filter(kitchen_status__in=[Order.KitchenStatus.NEW, Order.KitchenStatus.PREPARING])
         return qs.order_by("created_at")
 
     @action(detail=True, methods=["post"], url_path="start")
@@ -39,12 +39,13 @@ class KitchenOrderViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, view
         Mark order as being prepared (status: IN_PROGRESS).
         """
         order = self.get_object()
-        if order.status != Order.Status.NEW:
+        if order.kitchen_status != Order.KitchenStatus.NEW:
             return Response(
                 {"detail": "Це замовлення вже в обробці або завершене."}, status=status.HTTP_400_BAD_REQUEST
             )
         order.status = Order.Status.IN_PROGRESS
-        order.save(update_fields=["status"])
+        order.kitchen_status = Order.KitchenStatus.PREPARING
+        order.save(update_fields=["status", "kitchen_status"])
         return Response(self.get_serializer(order).data)
 
     @action(detail=True, methods=["post"], url_path="complete")
@@ -55,7 +56,7 @@ class KitchenOrderViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, view
         For self-pickup orders, marks as paid immediately.
         """
         order = self.get_object()
-        if order.status != Order.Status.IN_PROGRESS:
+        if order.kitchen_status != Order.KitchenStatus.PREPARING:
             return Response(
                 {"detail": "Замовлення має бути 'в процесі' перед завершенням."}, status=status.HTTP_400_BAD_REQUEST
             )
@@ -70,5 +71,7 @@ class KitchenOrderViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, view
             # Delivery: ready for courier
             order.status = Order.Status.WAITING_FOR_COURIER
 
-        order.save(update_fields=["status"])
+        order.kitchen_status = Order.KitchenStatus.COMPLETED
+
+        order.save(update_fields=["status", "kitchen_status"])
         return Response(self.get_serializer(order).data)

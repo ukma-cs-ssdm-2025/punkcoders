@@ -35,6 +35,7 @@ class CourierOrderViewSet(viewsets.GenericViewSet):
             status=Order.Status.WAITING_FOR_COURIER,
             courier__isnull=True,
             self_pickup=False,  # Only delivery orders
+            delivery_type=Order.DeliveryType.DELIVERY,
         ).order_by("created_at")
 
         serializer = CourierOrderListSerializer(orders, many=True)

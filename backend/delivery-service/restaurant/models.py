@@ -83,12 +83,24 @@ class Order(models.Model):
         PAID_CREDIT = "paid_credit", "Paid (credit)"
         AWAITING_CASH = "awaiting_cash", "Awaiting cash payment"
         PAID_CASH = "paid_cash", "Paid (cash)"
+        PICKED_UP = "picked_up", "Picked up"
+
+    class DeliveryType(models.TextChoices):
+        DELIVERY = "delivery", "Delivery"
+        PICKUP = "pickup", "Pickup"
+
+    class KitchenStatus(models.TextChoices):
+        NEW = "new", "New"
+        PREPARING = "preparing", "Preparing"
+        COMPLETED = "completed", "Completed"
 
     class PaymentMethod(models.TextChoices):
         CREDIT = "credit", "Credit"
         CASH = "cash", "Cash"
 
     status = models.CharField(max_length=32, choices=Status.choices, default=Status.NEW)
+    delivery_type = models.CharField(max_length=16, choices=DeliveryType.choices, default=DeliveryType.DELIVERY)
+    kitchen_status = models.CharField(max_length=16, choices=KitchenStatus.choices, default=KitchenStatus.NEW)
     payment_method = models.CharField(
         max_length=16,
         choices=PaymentMethod.choices,
@@ -128,12 +140,27 @@ class Order(models.Model):
         verbose_name_plural = "Orders"
         ordering = ["-created_at"]
 
+    def save(self, *args, **kwargs):
+        expected_delivery_type = self.DeliveryType.PICKUP if self.self_pickup else self.DeliveryType.DELIVERY
+        if self.delivery_type != expected_delivery_type:
+            self.delivery_type = expected_delivery_type
+            if kwargs.get("update_fields") is not None:
+                update_fields = set(kwargs["update_fields"])
+                update_fields.add("delivery_type")
+                kwargs["update_fields"] = list(update_fields)
+        super().save(*args, **kwargs)
+
     def clean(self):
         # Ensure either delivery_address is set XOR self_pickup is True (one or the other)
         if self.self_pickup and self.delivery_address:
             raise ValidationError("If self_pickup is True, delivery_address must be empty.")
         if (not self.self_pickup) and (not self.delivery_address):
             raise ValidationError("Either delivery_address must be set or self_pickup must be True.")
+        # Keep delivery_type consistent with self_pickup flag
+        if self.delivery_type == self.DeliveryType.PICKUP and not self.self_pickup:
+            raise ValidationError("Pickup orders must have self_pickup=True.")
+        if self.delivery_type == self.DeliveryType.DELIVERY and self.self_pickup:
+            raise ValidationError("Delivery orders must have self_pickup=False.")
 
     def __str__(self):
         return f"Order #{self.id} — {self.get_status_display()} — {self.total_amount} грн"

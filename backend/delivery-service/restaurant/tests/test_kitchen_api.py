@@ -46,6 +46,7 @@ class KitchenOrderApiTests(APITestCase):
             delivery_address="Street 1",
             self_pickup=False,
             status=Order.Status.NEW,
+            kitchen_status=Order.KitchenStatus.NEW,
         )
         OrderItem.objects.create(
             order=cls.order_new,
@@ -65,6 +66,7 @@ class KitchenOrderApiTests(APITestCase):
             delivery_address="Street 2",
             self_pickup=True,
             status=Order.Status.IN_PROGRESS,
+            kitchen_status=Order.KitchenStatus.PREPARING,
         )
         OrderItem.objects.create(
             order=cls.order_preparing,
@@ -83,6 +85,7 @@ class KitchenOrderApiTests(APITestCase):
             delivery_address="Street 3",
             self_pickup=False,
             status=Order.Status.WAITING_FOR_COURIER,
+            kitchen_status=Order.KitchenStatus.COMPLETED,
         )
         OrderItem.objects.create(
             order=cls.order_completed,
@@ -124,6 +127,7 @@ class KitchenOrderApiTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.order_new.refresh_from_db()
         self.assertEqual(self.order_new.status, Order.Status.IN_PROGRESS)
+        self.assertEqual(self.order_new.kitchen_status, Order.KitchenStatus.PREPARING)
 
     def test_complete_flow_delivery(self):
         """Test completing a delivery order moves it to WAITING_FOR_COURIER."""
@@ -134,6 +138,7 @@ class KitchenOrderApiTests(APITestCase):
             delivery_address="Street 4",
             self_pickup=False,
             status=Order.Status.IN_PROGRESS,
+            kitchen_status=Order.KitchenStatus.PREPARING,
         )
         OrderItem.objects.create(
             order=order,
@@ -149,6 +154,7 @@ class KitchenOrderApiTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         order.refresh_from_db()
         self.assertEqual(order.status, Order.Status.WAITING_FOR_COURIER)
+        self.assertEqual(order.kitchen_status, Order.KitchenStatus.COMPLETED)
 
     def test_complete_flow_self_pickup(self):
         """Test completing a self-pickup order marks it as paid."""
@@ -159,6 +165,7 @@ class KitchenOrderApiTests(APITestCase):
         self.order_preparing.refresh_from_db()
         # Self-pickup should be paid immediately (PAID_CASH by default)
         self.assertIn(self.order_preparing.status, [Order.Status.PAID_CASH, Order.Status.PAID_CREDIT])
+        self.assertEqual(self.order_preparing.kitchen_status, Order.KitchenStatus.COMPLETED)
 
     def test_invalid_transition_rejected(self):
         self.client.force_authenticate(user=self.kitchen_staff)

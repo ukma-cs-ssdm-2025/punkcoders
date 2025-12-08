@@ -58,6 +58,7 @@ class User(AbstractUser):
         MANAGER = "MANAGER", "Manager"
         KITCHEN_STAFF = "KITCHEN_STAFF", "Kitchen Staff"
         COURIER = "COURIER", "Courier"
+        CASHIER = "CASHIER", "Cashier"
 
     username = None  # We are not using username
     USERNAME_FIELD = "email"

@@ -81,6 +81,8 @@ class KitchenOrderSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "status",
+            "kitchen_status",
+            "delivery_type",
             "created_at",
             "self_pickup",
             "delivery_address",
