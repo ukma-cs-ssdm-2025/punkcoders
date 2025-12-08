@@ -122,6 +122,12 @@ class DishIngredient(models.Model):
 
 
 class Order(models.Model):
+
+    class KitchenStatus(models.TextChoices):
+        NEW = "new", "New"
+        PREPARING = "preparing", "Preparing"
+        COMPLETED = "completed", "Completed"
+
     class Status(models.TextChoices):
         NEW = "new", "New"
         IN_PROGRESS = "in_progress", "In progress"
@@ -136,6 +142,9 @@ class Order(models.Model):
         CASH = "cash", "Cash"
 
     status = models.CharField(max_length=32, choices=Status.choices, default=Status.NEW)
+    kitchen_status = models.CharField(
+        max_length=16, choices=KitchenStatus.choices, default=KitchenStatus.NEW, db_index=True
+    )
     payment_method = models.CharField(
         max_length=16,
         choices=PaymentMethod.choices,
@@ -204,6 +213,7 @@ class OrderItem(models.Model):
     unit_price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
     quantity = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
     line_total = models.DecimalField(max_digits=12, decimal_places=2, validators=[MinValueValidator(0)])
+    notes = models.CharField(max_length=255, blank=True, default="")
 
     class Meta:
         verbose_name = "Order item"

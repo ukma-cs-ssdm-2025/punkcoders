@@ -32,3 +32,12 @@ class IsKitchenStaff(BasePermission):
         # We check that the user is authenticated (logged in)
         # AND that their role is 'KITCHEN_STAFF'.
         return bool(request.user and request.user.is_authenticated and request.user.role == "KITCHEN_STAFF")
+
+
+class IsKitchenOrManager(BasePermission):
+    """Allow Kitchen Staff or Managers."""
+
+    def has_permission(self, request, view):
+        return bool(
+            request.user and request.user.is_authenticated and request.user.role in {"KITCHEN_STAFF", "MANAGER"}
+        )

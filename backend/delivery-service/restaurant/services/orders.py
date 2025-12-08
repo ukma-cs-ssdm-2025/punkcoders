@@ -54,6 +54,7 @@ def create_order_with_items(order_data: dict, items_data: list, user=None) -> Or
                 unit_price=unit_price,
                 quantity=qty,
                 line_total=line_total,
+                notes=it.get("notes", ""),
             )
             total += line_total
 
