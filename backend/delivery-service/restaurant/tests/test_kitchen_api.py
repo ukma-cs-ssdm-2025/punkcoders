@@ -40,12 +40,12 @@ class KitchenOrderApiTests(APITestCase):
             price=Decimal("120.00"),
         )
 
+        # Order with status NEW (kitchen should see it)
         cls.order_new = Order.objects.create(
             phone="+380501234567",
             delivery_address="Street 1",
             self_pickup=False,
             status=Order.Status.NEW,
-            kitchen_status=Order.KitchenStatus.NEW,
         )
         OrderItem.objects.create(
             order=cls.order_new,
@@ -59,12 +59,12 @@ class KitchenOrderApiTests(APITestCase):
         cls.order_new.total_amount = cls.order_new.items.first().line_total
         cls.order_new.save(update_fields=["total_amount"])
 
+        # Order with status IN_PROGRESS (kitchen is preparing)
         cls.order_preparing = Order.objects.create(
             phone="+380501234568",
             delivery_address="Street 2",
             self_pickup=True,
             status=Order.Status.IN_PROGRESS,
-            kitchen_status=Order.KitchenStatus.PREPARING,
         )
         OrderItem.objects.create(
             order=cls.order_preparing,
@@ -77,12 +77,12 @@ class KitchenOrderApiTests(APITestCase):
         cls.order_preparing.total_amount = cls.order_preparing.items.first().line_total
         cls.order_preparing.save(update_fields=["total_amount"])
 
+        # Order with status WAITING_FOR_COURIER (kitchen completed)
         cls.order_completed = Order.objects.create(
             phone="+380501234569",
             delivery_address="Street 3",
             self_pickup=False,
-            status=Order.Status.IN_PROGRESS,
-            kitchen_status=Order.KitchenStatus.COMPLETED,
+            status=Order.Status.WAITING_FOR_COURIER,
         )
         OrderItem.objects.create(
             order=cls.order_completed,
@@ -96,19 +96,20 @@ class KitchenOrderApiTests(APITestCase):
         cls.order_completed.save(update_fields=["total_amount"])
 
     def test_anonymous_cannot_access(self):
-        response = self.client.get("/api/v0/kitchen/orders/")
+        response = self.client.get("/api/v0/menu/kitchen/orders/")
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_non_kitchen_role_forbidden(self):
         self.client.force_authenticate(user=self.courier)
-        response = self.client.get("/api/v0/kitchen/orders/")
+        response = self.client.get("/api/v0/menu/kitchen/orders/")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_list_active_orders(self):
         self.client.force_authenticate(user=self.kitchen_staff)
-        response = self.client.get("/api/v0/kitchen/orders/")
+        response = self.client.get("/api/v0/menu/kitchen/orders/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         ids = {order["id"] for order in response.data}
+        # Should show NEW and IN_PROGRESS, but not WAITING_FOR_COURIER
         self.assertIn(self.order_new.id, ids)
         self.assertIn(self.order_preparing.id, ids)
         self.assertNotIn(self.order_completed.id, ids)
@@ -118,22 +119,49 @@ class KitchenOrderApiTests(APITestCase):
 
     def test_start_preparing_flow(self):
         self.client.force_authenticate(user=self.manager)
-        url = f"/api/v0/kitchen/orders/{self.order_new.id}/start/"
+        url = f"/api/v0/menu/kitchen/orders/{self.order_new.id}/start/"
         response = self.client.post(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.order_new.refresh_from_db()
-        self.assertEqual(self.order_new.kitchen_status, Order.KitchenStatus.PREPARING)
+        self.assertEqual(self.order_new.status, Order.Status.IN_PROGRESS)
 
-    def test_complete_flow(self):
+    def test_complete_flow_delivery(self):
+        """Test completing a delivery order moves it to WAITING_FOR_COURIER."""
         self.client.force_authenticate(user=self.kitchen_staff)
-        url = f"/api/v0/kitchen/orders/{self.order_preparing.id}/complete/"
+        # Create a new order specifically for this test
+        order = Order.objects.create(
+            phone="+380501234570",
+            delivery_address="Street 4",
+            self_pickup=False,
+            status=Order.Status.IN_PROGRESS,
+        )
+        OrderItem.objects.create(
+            order=order,
+            dish=self.dish,
+            name=self.dish.name,
+            unit_price=self.dish.price,
+            quantity=1,
+            line_total=self.dish.price,
+        )
+
+        url = f"/api/v0/menu/kitchen/orders/{order.id}/complete/"
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        order.refresh_from_db()
+        self.assertEqual(order.status, Order.Status.WAITING_FOR_COURIER)
+
+    def test_complete_flow_self_pickup(self):
+        """Test completing a self-pickup order marks it as paid."""
+        self.client.force_authenticate(user=self.kitchen_staff)
+        url = f"/api/v0/menu/kitchen/orders/{self.order_preparing.id}/complete/"
         response = self.client.post(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.order_preparing.refresh_from_db()
-        self.assertEqual(self.order_preparing.kitchen_status, Order.KitchenStatus.COMPLETED)
+        # Self-pickup should be paid immediately (PAID_CASH by default)
+        self.assertIn(self.order_preparing.status, [Order.Status.PAID_CASH, Order.Status.PAID_CREDIT])
 
     def test_invalid_transition_rejected(self):
         self.client.force_authenticate(user=self.kitchen_staff)
-        url = f"/api/v0/kitchen/orders/{self.order_new.id}/complete/"
+        url = f"/api/v0/menu/kitchen/orders/{self.order_new.id}/complete/"
         response = self.client.post(url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
