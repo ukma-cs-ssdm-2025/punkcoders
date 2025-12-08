@@ -116,7 +116,7 @@ class CourierOrderViewSet(viewsets.GenericViewSet):
         """
         POST /courier/{id}/complete/
         Mark an order as delivered.
-        Sets status to PAID_CASH or AWAITING_CASH based on payment method.
+        Sets status to PAID_CASH or PAID_CREDIT based on payment method.
         """
         order = self.get_object()
 

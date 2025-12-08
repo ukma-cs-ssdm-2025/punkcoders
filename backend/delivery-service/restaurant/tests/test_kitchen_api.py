@@ -163,8 +163,7 @@ class KitchenOrderApiTests(APITestCase):
         response = self.client.post(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.order_preparing.refresh_from_db()
-        # Self-pickup should be paid immediately (PAID_CASH by default)
-        self.assertIn(self.order_preparing.status, [Order.Status.PAID_CASH, Order.Status.PAID_CREDIT])
+        self.assertEqual(self.order_preparing.status, Order.Status.AWAITING_CASH)
         self.assertEqual(self.order_preparing.kitchen_status, Order.KitchenStatus.COMPLETED)
 
     def test_invalid_transition_rejected(self):

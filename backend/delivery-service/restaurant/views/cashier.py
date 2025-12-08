@@ -19,9 +19,10 @@ class CashierOrderViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             return (
                 qs.filter(
                     delivery_type=Order.DeliveryType.PICKUP,
-                    kitchen_status=Order.KitchenStatus.COMPLETED,
+                    status=Order.Status.AWAITING_CASH,
                 )
-                .exclude(status=Order.Status.PICKED_UP)
+                .exclude(status=Order.Status.PAID_CASH)
+                .exclude(status=Order.Status.PAID_CREDIT)
                 .order_by("created_at")
             )
         return qs

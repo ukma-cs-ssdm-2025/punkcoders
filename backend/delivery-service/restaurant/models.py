@@ -75,6 +75,14 @@ class Dish(models.Model):
 
 class Order(models.Model):
 
+    # TODO: consolidate statuses
+    # payment should probably be in PaymentMethod, but can be
+    # stored in status as PAID_CASH / PAID_CREDIT for simplicity
+    # PICKED_UP should exist only if PAID_CASH / PAID_CREDIT aren't used
+    # KitchenStatus should be merged into Status
+    # AWAITING_CASH should be named AWAITING_PAYMENT for clarity,
+    # or we could just reuse WAITING_FOR_COURIER
+
     class Status(models.TextChoices):
         NEW = "new", "New"
         IN_PROGRESS = "in_progress", "In progress"
@@ -164,21 +172,6 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Order #{self.id} — {self.get_status_display()} — {self.total_amount} грн"
-
-    def mark_paid_if_self_pickup(self):
-        """
-        Business rule from issue:
-        - Самовивіз orders go from waiting_for_courier to paid for instantly.
-        We'll interpret: if self_pickup==True, then once items are created,
-        set status to PAID_CASH or PAID_CREDIT depending on payment_method.
-        """
-        if self.self_pickup:
-            if self.payment_method == self.PaymentMethod.CREDIT:
-                self.status = self.Status.PAID_CREDIT
-            else:
-                # default treat as cash
-                self.status = self.Status.PAID_CASH
-            self.save(update_fields=["status"])
 
 
 class OrderItem(models.Model):

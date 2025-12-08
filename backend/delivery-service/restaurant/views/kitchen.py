@@ -26,10 +26,8 @@ class KitchenOrderViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, view
         Excludes orders already waiting for courier or beyond.
         """
         qs = super().get_queryset()
-        include_completed = self.request.query_params.get("include_completed")
-        if not include_completed:
-            # Show only orders that need kitchen attention
-            qs = qs.filter(kitchen_status__in=[Order.KitchenStatus.NEW, Order.KitchenStatus.PREPARING])
+        # qs = qs.filter(kitchen_status__in=[Order.KitchenStatus.NEW, Order.KitchenStatus.PREPARING])
+        qs = qs.filter(status__in=[Order.Status.NEW, Order.Status.IN_PROGRESS])
         return qs.order_by("created_at")
 
     @action(detail=True, methods=["post"], url_path="start")
@@ -62,11 +60,7 @@ class KitchenOrderViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, view
             )
 
         if order.self_pickup:
-            # Self-pickup: mark as paid immediately
-            if order.payment_method == Order.PaymentMethod.CREDIT:
-                order.status = Order.Status.PAID_CREDIT
-            else:
-                order.status = Order.Status.PAID_CASH
+            order.status = Order.Status.AWAITING_CASH
         else:
             # Delivery: ready for courier
             order.status = Order.Status.WAITING_FOR_COURIER

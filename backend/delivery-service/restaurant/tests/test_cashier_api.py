@@ -34,24 +34,24 @@ class CashierApiTests(APITestCase):
         )
 
         # Ready pickup order (should appear)
-        cls.ready_pickup = Order.objects.create(
+        cls.ready_to_pick_up = Order.objects.create(
             phone="+380501234560",
             delivery_address="",
             self_pickup=True,
             delivery_type=Order.DeliveryType.PICKUP,
             kitchen_status=Order.KitchenStatus.COMPLETED,
-            status=Order.Status.PAID_CASH,
+            status=Order.Status.AWAITING_CASH,
         )
         OrderItem.objects.create(
-            order=cls.ready_pickup,
+            order=cls.ready_to_pick_up,
             dish=cls.dish,
             name=cls.dish.name,
             unit_price=cls.dish.price,
             quantity=1,
             line_total=cls.dish.price,
         )
-        cls.ready_pickup.total_amount = cls.dish.price
-        cls.ready_pickup.save(update_fields=["total_amount"])
+        cls.ready_to_pick_up.total_amount = cls.dish.price
+        cls.ready_to_pick_up.save(update_fields=["total_amount"])
 
         # Pickup but still preparing (should be filtered out)
         cls.pickup_preparing = Order.objects.create(
@@ -73,8 +73,7 @@ class CashierApiTests(APITestCase):
             status=Order.Status.WAITING_FOR_COURIER,
         )
 
-        # Already picked up (should not show)
-        cls.already_picked = Order.objects.create(
+        cls.pickup_complete = Order.objects.create(
             phone="+380501234563",
             delivery_address="",
             self_pickup=True,
@@ -83,12 +82,12 @@ class CashierApiTests(APITestCase):
             status=Order.Status.PICKED_UP,
         )
 
-    def test_list_only_ready_pickup_orders(self):
+    def test_list_only_ready_to_pick_up_orders(self):
         self.client.force_authenticate(user=self.cashier)
         response = self.client.get("/api/v0/cashier/orders/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         ids = {order["id"] for order in response.data}
-        self.assertSetEqual(ids, {self.ready_pickup.id})
+        self.assertSetEqual(ids, {self.ready_to_pick_up.id})
 
         order_data = response.data[0]
         self.assertEqual(order_data["items"][0]["name"], self.dish.name)
@@ -100,12 +99,12 @@ class CashierApiTests(APITestCase):
 
     def test_mark_picked_up_flow(self):
         self.client.force_authenticate(user=self.cashier)
-        url = f"/api/v0/cashier/orders/{self.ready_pickup.id}/mark_picked_up/"
+        url = f"/api/v0/cashier/orders/{self.ready_to_pick_up.id}/mark_picked_up/"
 
         first_response = self.client.post(url)
         self.assertEqual(first_response.status_code, status.HTTP_200_OK)
-        self.ready_pickup.refresh_from_db()
-        self.assertEqual(self.ready_pickup.status, Order.Status.PICKED_UP)
+        self.ready_to_pick_up.refresh_from_db()
+        self.assertEqual(self.ready_to_pick_up.status, Order.Status.PICKED_UP)
 
         # Idempotent second call
         second_response = self.client.post(url)
@@ -114,4 +113,4 @@ class CashierApiTests(APITestCase):
         list_response = self.client.get("/api/v0/cashier/orders/")
         self.assertEqual(list_response.status_code, status.HTTP_200_OK)
         ids = {order["id"] for order in list_response.data}
-        self.assertNotIn(self.ready_pickup.id, ids)
+        self.assertNotIn(self.ready_to_pick_up.id, ids)

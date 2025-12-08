@@ -63,7 +63,4 @@ def create_order_with_items(order_data: dict, items_data: list) -> Order:
         order.total_amount = total
         order.save(update_fields=["total_amount"])
 
-        # business rule: if self_pickup -> mark paid instantly
-        order.mark_paid_if_self_pickup()
-
         return order
