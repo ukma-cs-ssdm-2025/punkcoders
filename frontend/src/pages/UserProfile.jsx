@@ -14,6 +14,7 @@ const ROLE_DISPLAY_NAMES = {
   KITCHEN_STAFF: 'Кухар',
   COURIER: 'Кур\'єр',
   MANAGER: 'Менеджер',
+  CASHIER: 'Касир',
 };
 
 function UserProfile() {

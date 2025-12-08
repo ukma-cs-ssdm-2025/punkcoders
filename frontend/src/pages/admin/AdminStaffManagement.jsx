@@ -7,12 +7,14 @@ const ROLE_OPTIONS = [
   { value: 'KITCHEN_STAFF', label: 'Кухар' },
   { value: 'COURIER', label: 'Кур\'єр' },
   { value: 'MANAGER', label: 'Менеджер' },
+  { value: 'CASHIER', label: 'Касир' },
 ];
 
 const ROLE_DISPLAY_NAMES = {
   KITCHEN_STAFF: 'Кухар',
   COURIER: 'Кур\'єр',
   MANAGER: 'Менеджер',
+  CASHIER: 'Касир',
 };
 
 const defaultValues = {

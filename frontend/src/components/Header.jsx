@@ -61,6 +61,9 @@ export default function Header() {
             {user?.role === 'COURIER' && (
               <li><Link to="/courier">Замовлення для доставки</Link></li>
             )}
+            {user?.role === 'CASHIER' && (
+              <li><Link to="/cashier">Замовлення для видачі</Link></li>
+            )}
           </ul>
         </nav>
 
