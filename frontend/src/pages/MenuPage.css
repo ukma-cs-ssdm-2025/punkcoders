@@ -99,7 +99,7 @@
 }
 .modal-footer button.cart-btn-modal {
     background: var(--color-accent, #FF6F61);
-    color: #4B2E05;
+    /* color: #4B2E05; */
     border: none;
     border-radius: 50px;
     padding: 10px 24px;
@@ -113,4 +113,79 @@
 .modal-footer button.cart-btn-modal:disabled {
     background: #ccc;
     cursor: not-allowed;
+}
+
+/* --- Append to MenuPage.css --- */
+
+[data-theme="dark"] .modal-content {
+    background: var(--color-card-bg);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+[data-theme="dark"] .modal-header {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .modal-header h2 {
+    color: var(--color-text);
+}
+
+[data-theme="dark"] .modal-close-btn {
+    color: var(--color-text-secondary);
+}
+
+[data-theme="dark"] .modal-close-btn:hover {
+    color: var(--color-accent);
+}
+
+[data-theme="dark"] .modal-body p {
+    color: var(--color-text-secondary);
+}
+
+[data-theme="dark"] .modal-footer {
+    background: rgba(255, 255, 255, 0.05); /* Slightly lighter than card bg */
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Inactive tabs in dark mode */
+[data-theme="dark"] .tab-pill {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--color-text);
+}
+
+[data-theme="dark"] .tab-pill:hover,
+[data-theme="dark"] .tab-pill:focus {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: white;
+}
+
+/* Fix the Card Background */
+[data-theme="dark"] .card {
+    background: var(--color-card-bg); /* Use the dark theme variable */
+    color: var(--color-text);
+}
+
+/* Ensure the title and price inside adapt */
+[data-theme="dark"] .product-title {
+    color: var(--color-text);
+}
+
+[data-theme="dark"] .product-price {
+    color: var(--color-text); /* or var(--color-accent) if you prefer */
+}
+
+/* Fix the Tab Pills (Categories) */
+[data-theme="dark"] .tab-pill {
+    background: transparent; 
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--color-text);
+}
+
+/* Active tab state for dark mode */
+[data-theme="dark"] .tab-pill.active {
+    background: var(--color-accent);
+    color: #fff;
+    border-color: var(--color-accent);
 }

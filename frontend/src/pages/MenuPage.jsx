@@ -24,10 +24,8 @@ const fetchCategories = async () => {
 
 const fetchDishesByCategory = async (id) => {
   let url = `/menu/dishes/` + (id ? `?category_id=${id}` : '');
-  console.log('Fetching dishes from URL:', url);
   try {
     const response = await apiClient.get(url);
-    console.log(`Dishes fetched for category ${id}:`, response.data);
     return response.data;
   } catch (error) {
     if (error.response?.status === 404) {
@@ -309,7 +307,19 @@ function DishCard({ dish, onShowDetails }) {
   };
 
   return (
-    <div className="card" style={{ cursor: 'pointer' }} onClick={handleShowDetails}>
+    <div 
+      className="card" 
+      style={{ cursor: 'pointer' }} 
+      onClick={handleShowDetails}
+      tabIndex={0}
+      role="button"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault(); // Stop page from scrolling when pressing Space
+          handleShowDetails(e);
+        }
+      }}
+    >
       {/* Assuming /content/ paths are available */}
       <img src="/content/heart.png" className="fav-icon" alt="favorite" />
       <img
@@ -384,8 +394,6 @@ function DishDetailModal({ dishId, onClose }) {
     e.target.onerror = null;
   };
 
-  if (!dishId) return null;
-
   const { addToCart } = useCart();
 
   const handleAddToCart = () => {
@@ -394,9 +402,26 @@ function DishDetailModal({ dishId, onClose }) {
     onClose(); // Close modal after adding
   };
 
+  if (!dishId) return null;
+
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-overlay" 
+      onClick={onClose}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          onClose();
+        }
+      }}>
+      <div 
+        className="modal-content" 
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        // Determining interaction for the inner content doesn't require role="button"
+        // because it is a container, not a button itself.
+      >
         <div className="modal-header">
           <h2>{dish ? dish.name : 'Loading...'}</h2>
           <button onClick={onClose} className="modal-close-btn">&times;</button>

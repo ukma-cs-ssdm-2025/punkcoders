@@ -12,6 +12,7 @@ export default function CheckoutPage() {
     const { cartItems, clearCart, cartTotal } = useCart();
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [orderCompleted, setOrderCompleted] = useState(false);
 
     const { register, wrapSubmit, handleServerErrors, watch, formState: { errors } } = useFormWithServerErrors({
         defaultValues: {
@@ -24,7 +25,7 @@ export default function CheckoutPage() {
 
     const selfPickup = watch('self_pickup');
 
-    if (cartItems.length === 0) {
+    if (cartItems.length === 0 && !orderCompleted) {
         navigate('/cart');
         return null;
     }
@@ -44,6 +45,7 @@ export default function CheckoutPage() {
 
         try {
             const response = await apiClient.post('/menu/orders/', payload);
+            setOrderCompleted(true);
             toast.success('Замовлення успішно оформлено!');
             clearCart();
             navigate('/order-confirmation', { state: { orderId: response.data.id } });
@@ -79,9 +81,10 @@ export default function CheckoutPage() {
 
                     <form onSubmit={wrapSubmit(onSubmit)} className="checkout-form base-form">
                         <div className="form-group">
-                            <label>Phone Number</label>
+                            <label htmlFor='phone'>Phone Number</label>
                             <input
                                 type="tel"
+                                name="phone"
                                 placeholder="+380..."
                                 {...register('phone', {
                                     required: 'Phone is required',
@@ -96,8 +99,9 @@ export default function CheckoutPage() {
                         </div>
 
                         <div className="form-group checkbox-group">
-                            <label>
+                            <label htmlFor='self_pickup'>
                                 <input
+                                    name="self_pickup"
                                     type="checkbox"
                                     {...register('self_pickup')}
                                 />
@@ -107,8 +111,9 @@ export default function CheckoutPage() {
 
                         {!selfPickup && (
                             <div className="form-group">
-                                <label>Delivery Address</label>
+                                <label htmlFor='delivery_address'>Delivery Address</label>
                                 <textarea
+                                    name="delivery_address"
                                     {...register('delivery_address', {
                                         required: !selfPickup ? 'Address is required for delivery' : false
                                     })}

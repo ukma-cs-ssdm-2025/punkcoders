@@ -10,6 +10,12 @@ import './forms.css';
 
 const API_ENDPOINT = '/auth/me/'; 
 
+const ROLE_DISPLAY_NAMES = {
+  KITCHEN_STAFF: 'Кухар',
+  COURIER: 'Кур\'єр',
+  MANAGER: 'Менеджер',
+};
+
 function UserProfile() {
   const queryClient = useQueryClient();
   const { data: user, isLoading } = useUser();
@@ -26,7 +32,6 @@ function UserProfile() {
       first_name: '',
       last_name: '',
       email: '',
-      role: '',
       password: ''
     }
   });
@@ -37,7 +42,6 @@ function UserProfile() {
         first_name: user.first_name,
         last_name: user.last_name,
         email: user.email,
-        role: user.role,
         password: '' 
       });
     }
@@ -83,9 +87,8 @@ function UserProfile() {
             <input 
               id="role"
               type="text" 
-              disabled 
-              {...register('role')} 
-              style={{ background: '#f0f0f0', cursor: 'not-allowed' }}
+              disabled
+              value={ROLE_DISPLAY_NAMES[user?.role] || user?.role || ''}
             />
           </div>
 
