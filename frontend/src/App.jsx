@@ -8,6 +8,7 @@ import CheckoutPage from './pages/CheckoutPage';
 import OrderConfirmationPage from './pages/OrderConfirmationPage';
 import ChefPage from './pages/ChefPage';
 import CourierPage from './pages/CourierPage';
+import CashierPage from './pages/CashierPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import NotFound from './pages/errors/NotFound';
 import Unauthorized from './pages/errors/Unauthorized';
@@ -47,6 +48,11 @@ function App() {
         <Route path="/courier" element={
           <ProtectedRoute allowedRoles={["MANAGER", "COURIER"]}>
             <CourierPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/cashier" element={
+          <ProtectedRoute allowedRoles={["CASHIER"]}>
+            <CashierPage />
           </ProtectedRoute>
         } />
         <Route path="/profile" element={
