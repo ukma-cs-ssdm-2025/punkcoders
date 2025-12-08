@@ -154,7 +154,7 @@ export default function CourierPage() {
                                     </div>
                                 ) : (
                                     readyOrders.map(order => (
-                                        <div
+                                        <button
                                             key={order.id}
                                             className={`order-card ${selectedOrder?.id === order.id ? 'selected' : ''}`}
                                             onClick={() => fetchOrderDetails(order.id)}
@@ -176,7 +176,7 @@ export default function CourierPage() {
                                             >
                                                 Взяти замовлення
                                             </button>
-                                        </div>
+                                        </button>
                                     ))
                                 )
                             ) : (
@@ -187,7 +187,7 @@ export default function CourierPage() {
                                     </div>
                                 ) : (
                                     myOrders.map(order => (
-                                        <div
+                                        <button
                                             key={order.id}
                                             className={`order-card my-order ${selectedOrder?.id === order.id ? 'selected' : ''}`}
                                             onClick={() => fetchOrderDetails(order.id)}
@@ -203,7 +203,7 @@ export default function CourierPage() {
                                                     {order.payment_method === 'cash' ? '💵 Готівка' : '💳 Картка'}
                                                 </span>
                                             </div>
-                                        </div>
+                                        </button>
                                     ))
                                 )
                             )}

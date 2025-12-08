@@ -81,9 +81,10 @@ export default function CheckoutPage() {
 
                     <form onSubmit={wrapSubmit(onSubmit)} className="checkout-form base-form">
                         <div className="form-group">
-                            <label>Phone Number</label>
+                            <label htmlFor='phone'>Phone Number</label>
                             <input
                                 type="tel"
+                                name="phone"
                                 placeholder="+380..."
                                 {...register('phone', {
                                     required: 'Phone is required',
@@ -98,8 +99,9 @@ export default function CheckoutPage() {
                         </div>
 
                         <div className="form-group checkbox-group">
-                            <label>
+                            <label htmlFor='self_pickup'>
                                 <input
+                                    name="self_pickup"
                                     type="checkbox"
                                     {...register('self_pickup')}
                                 />
@@ -109,8 +111,9 @@ export default function CheckoutPage() {
 
                         {!selfPickup && (
                             <div className="form-group">
-                                <label>Delivery Address</label>
+                                <label htmlFor='delivery_address'>Delivery Address</label>
                                 <textarea
+                                    name="delivery_address"
                                     {...register('delivery_address', {
                                         required: !selfPickup ? 'Address is required for delivery' : false
                                     })}
