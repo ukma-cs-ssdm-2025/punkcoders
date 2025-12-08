@@ -12,6 +12,7 @@ export default function CheckoutPage() {
     const { cartItems, clearCart, cartTotal } = useCart();
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [orderCompleted, setOrderCompleted] = useState(false);
 
     const { register, wrapSubmit, handleServerErrors, watch, formState: { errors } } = useFormWithServerErrors({
         defaultValues: {
@@ -24,7 +25,7 @@ export default function CheckoutPage() {
 
     const selfPickup = watch('self_pickup');
 
-    if (cartItems.length === 0) {
+    if (cartItems.length === 0 && !orderCompleted) {
         navigate('/cart');
         return null;
     }
@@ -44,6 +45,7 @@ export default function CheckoutPage() {
 
         try {
             const response = await apiClient.post('/menu/orders/', payload);
+            setOrderCompleted(true);
             toast.success('Замовлення успішно оформлено!');
             clearCart();
             navigate('/order-confirmation', { state: { orderId: response.data.id } });
