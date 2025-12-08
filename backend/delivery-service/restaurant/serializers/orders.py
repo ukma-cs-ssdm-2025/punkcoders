@@ -25,7 +25,6 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "status",
-            "kitchen_status",
             "payment_method",
             "delivery_address",
             "self_pickup",
@@ -36,7 +35,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "items",
             "items_input",
         ]
-        read_only_fields = ["id", "status", "kitchen_status", "created_at", "updated_at", "total_amount", "items"]
+        read_only_fields = ["id", "status", "created_at", "updated_at", "total_amount", "items"]
 
     def validate(self, data):
         # items_input present validated by serializer; additional checks:
@@ -74,7 +73,6 @@ class KitchenOrderItemSerializer(serializers.ModelSerializer):
 
 
 class KitchenOrderSerializer(serializers.ModelSerializer):
-    status = serializers.CharField(source="kitchen_status")
     total_price = serializers.DecimalField(source="total_amount", max_digits=10, decimal_places=2)
     dishes = KitchenOrderItemSerializer(many=True, source="items", read_only=True)
 

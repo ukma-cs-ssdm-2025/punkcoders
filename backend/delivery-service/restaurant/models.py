@@ -123,11 +123,6 @@ class DishIngredient(models.Model):
 
 class Order(models.Model):
 
-    class KitchenStatus(models.TextChoices):
-        NEW = "new", "New"
-        PREPARING = "preparing", "Preparing"
-        COMPLETED = "completed", "Completed"
-
     class Status(models.TextChoices):
         NEW = "new", "New"
         IN_PROGRESS = "in_progress", "In progress"
@@ -142,9 +137,6 @@ class Order(models.Model):
         CASH = "cash", "Cash"
 
     status = models.CharField(max_length=32, choices=Status.choices, default=Status.NEW)
-    kitchen_status = models.CharField(
-        max_length=16, choices=KitchenStatus.choices, default=KitchenStatus.NEW, db_index=True
-    )
     payment_method = models.CharField(
         max_length=16,
         choices=PaymentMethod.choices,
@@ -162,6 +154,16 @@ class Order(models.Model):
         message="Phone number must be entered in the format: +380501234567 or 0501234567. Up to 15 digits allowed.",
     )
     phone = models.CharField(validators=[phone_regex], max_length=20, verbose_name="Phone number")
+
+    # Courier assigned to deliver this order
+    courier = models.ForeignKey(
+        "accounts.User",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="deliveries",
+        verbose_name="Assigned courier",
+    )
 
     # Timestamp
     created_at = models.DateTimeField(auto_now_add=True)
