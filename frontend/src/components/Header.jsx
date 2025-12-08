@@ -17,7 +17,7 @@ export default function Header() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    document.body.setAttribute('data-theme', theme);
+    document.body.dataset.theme = theme;
     localStorage.setItem('theme', theme);
   }, [theme]);
 
