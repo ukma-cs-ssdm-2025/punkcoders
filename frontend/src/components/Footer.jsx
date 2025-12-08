@@ -5,28 +5,26 @@ export default function Footer() {
         <div className="footer-top">
           
           <div className="footer-column">
-            <h4>Order</h4>
+            <h4>Замовлення</h4>
             <ul>
-              <li><a href="/menu">View menu</a></li>
+              <li><a href="/menu">Переглянути меню</a></li>
             </ul>
           </div>
-
-            <div className="footer-column">
-            <h4>Enterprise</h4>
-            <ul>
-              <li><a href="/faq">FAQ</a></li>
-            </ul>
-          </div>
-
 
           <div className="footer-column">
-            <h4>Assistance</h4>
+            <h4>Компанія</h4>
             <ul>
-              <li><a href="/account">Account</a></li>
-              <li><a href="/contact">Contact Us</a></li>
+              <li><a href="/faq">Питання та відповіді</a></li>
             </ul>
           </div>
 
+          <div className="footer-column">
+            <h4>Допомога</h4>
+            <ul>
+              <li><a href="/account">Мій кабінет</a></li>
+              <li><a href="/contact">Зв'язатися з нами</a></li>
+            </ul>
+          </div>
 
           <div className="footer-column brand-column">
             <a href="/" className="footer-logo">
@@ -34,7 +32,7 @@ export default function Footer() {
               <span>ClickEat</span>
             </a>
             <p className="brand-desc">
-              Our mission is to satisfy your hunger with tasty food, delivered quickly and at no charge
+              Наша місія — втамувати твій голод смачною їжею, доставленою швидко й без додаткових витрат.
             </p>
             <div className="social-icons">
               <a href="#"><img src="/content/instagram-icon.png" alt="Instagram" /></a>
@@ -44,7 +42,7 @@ export default function Footer() {
         </div>
 
         <div className="footer-bottom">
-          <p>2025. All rights reserved</p>
+          <p>2025. Усі права захищено</p>
         </div>
       </div>
     </footer>

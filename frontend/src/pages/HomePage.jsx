@@ -12,41 +12,40 @@ function HomePage() {
         <section className="hero" style={{ backgroundImage: "url(/content/pizza-bg.jpg)" }}>
           <div className="hero-overlay"></div>
           <div className="hero-content">
-            <span className="hero-badge">Beyond Speedy 🍕</span>
+            <span className="hero-badge">Більше, ніж швидкість 🍕</span>
             <h1>
-              Ensure Your <span className="highlight">Food</span> is <br />
-              Delivered with Speed
+              Забезпечуємо <span className="highlight"> їжу </span> швидкою <br /> доставкою 
             </h1>
             <p>
-              Our mission is to satisfy your appetite with delectable dishes,
-              delivered swiftly and at no extra cost.
+              Наша місія — задовольнити ваш апетит смачними стравами,
+              які доставляються швидко і без додаткових витрат.
             </p>
-            <Link to="/menu" className="view-menu-btn">View Full Menu</Link>
+            <Link to="/menu" className="view-menu-btn">Дивитися повне меню</Link>
           </div>
         </section>
         
         <section className="offerings">
           <div className="container">
-            <p className="section-subtitle">OUR OFFERINGS</p>
-            <h2 className="section-title">Your Preferred Food Delivery Companion</h2>
+            <p className="section-subtitle">НАШІ ПРОПОЗИЦІЇ</p>
+            <h2 className="section-title">Ваш улюблений сервіс доставки їжі</h2>
 
             <div className="offerings-grid">
               <div className="offering-card">
                 <img src="/content/delivery-guy1.png" alt="Convenient Ordering" />
-                <h3>Convenient Ordering</h3>
-                <p>Ordering food requires just a few simple steps</p>
+                <h3>Зручне замовлення</h3>
+                <p>Замовлення їжі вимагає лише кількох простих кроків</p>
               </div>
 
               <div className="offering-card active">
                 <img src="/content/delivery-scooter.png" alt="Quickest Delivery" />
-                <h3>Quickest Delivery</h3>
-                <p>Consistently Timely Delivery, Even Faster</p>
+                <h3>Найшвидша доставка</h3>
+                <p>Постійно вчасна доставка</p>
               </div>
 
               <div className="offering-card">
                 <img src="/content/delivery-quality.png" alt="Superior Quality" />
-                <h3>Superior Quality</h3>
-                <p>For us, quality is paramount, not just speed</p>
+                <h3>Висока якість</h3>
+                <p>Для нас найважливішою є якість, а не лише швидкість</p>
               </div>
             </div>
           </div>
