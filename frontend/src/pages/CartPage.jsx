@@ -11,9 +11,9 @@ export default function CartPage() {
             <div className="page-wrapper">
                 <Header />
                 <main className="container cart-empty">
-                    <h2>Your Cart is Empty</h2>
-                    <p>Looks like you haven't added any dishes yet.</p>
-                    <Link to="/menu" className="btn-primary">Go to Menu</Link>
+                    <h2>Твій кошик порожній</h2>
+                    <p>Схоже, ти ще не додала жодної страви.</p>
+                    <Link to="/menu" className="btn-primary">Перейти до меню</Link>
                 </main>
             </div>
         );
@@ -23,7 +23,7 @@ export default function CartPage() {
         <div className="page-wrapper">
             <Header />
             <main className="container cart-container">
-                <h1 className="page-title">Your Cart</h1>
+                <h1 className="page-title">Твій кошик</h1>
 
                 <div className="cart-content">
                     <div className="cart-items">
@@ -49,8 +49,10 @@ export default function CartPage() {
                                             -
                                         </button>
                                         <span>{item.quantity}</span>
-                                        <button onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                            className="btn-quantity">
+                                        <button
+                                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                            className="btn-quantity"
+                                        >
                                             +
                                         </button>
                                     </div>
@@ -58,7 +60,7 @@ export default function CartPage() {
                                         className="btn-remove"
                                         onClick={() => removeFromCart(item.id)}
                                     >
-                                        Remove
+                                        Видалити
                                     </button>
                                 </div>
                                 <div className="cart-item-total">
@@ -69,14 +71,14 @@ export default function CartPage() {
                     </div>
 
                     <div className="cart-summary">
-                        <h3>Summary</h3>
+                        <h3>Підсумок</h3>
                         <div className="summary-row">
-                            <span>Total:</span>
+                            <span>Разом:</span>
                             <span className="summary-total">{cartTotal.toFixed(2)} ₴</span>
                         </div>
                         <div className="summary-actions">
-                            <Link to="/checkout" className="btn-checkout">Proceed to Checkout</Link>
-                            <button onClick={clearCart} className="btn-clear">Clear Cart</button>
+                            <Link to="/checkout" className="btn-checkout">Перейти до оплати</Link>
+                            <button onClick={clearCart} className="btn-clear">Очистити кошик</button>
                         </div>
                     </div>
                 </div>

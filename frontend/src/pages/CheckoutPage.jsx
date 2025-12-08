@@ -60,11 +60,11 @@ export default function CheckoutPage() {
         <div className="page-wrapper">
             <Header />
             <main className="container checkout-container">
-                <h1 className="page-title">Checkout</h1>
+                <h1 className="page-title">Оформлення замовлення</h1>
 
                 <div className="checkout-content">
                     <div className="order-summary-side">
-                        <h3>Your Order</h3>
+                        <h3>Твоє замовлення</h3>
                         <ul>
                             {cartItems.map(item => (
                                 <li key={item.id} className="summary-item">
@@ -74,23 +74,23 @@ export default function CheckoutPage() {
                             ))}
                         </ul>
                         <div className="total-line">
-                            <strong>Total:</strong>
+                            <strong>Разом:</strong>
                             <strong>{cartTotal.toFixed(2)} ₴</strong>
                         </div>
                     </div>
 
                     <form onSubmit={wrapSubmit(onSubmit)} className="checkout-form base-form">
                         <div className="form-group">
-                            <label htmlFor='phone'>Phone Number</label>
+                            <label htmlFor='phone'>Номер телефону</label>
                             <input
                                 type="tel"
                                 name="phone"
                                 placeholder="+380..."
                                 {...register('phone', {
-                                    required: 'Phone is required',
+                                    required: 'Номер телефону є обовʼязковим',
                                     pattern: {
                                         value: /^\+?\d{9,15}$/,
-                                        message: "Invalid phone format"
+                                        message: "Некоректний формат номера"
                                     }
                                 })}
                                 className={errors.phone ? 'error' : ''}
@@ -105,19 +105,19 @@ export default function CheckoutPage() {
                                     type="checkbox"
                                     {...register('self_pickup')}
                                 />
-                                I will pick up the order myself
+                                Я заберу замовлення самостійно
                             </label>
                         </div>
 
                         {!selfPickup && (
                             <div className="form-group">
-                                <label htmlFor='delivery_address'>Delivery Address</label>
+                                <label htmlFor='delivery_address'>Адреса доставки</label>
                                 <textarea
                                     name="delivery_address"
                                     {...register('delivery_address', {
-                                        required: !selfPickup ? 'Address is required for delivery' : false
+                                        required: !selfPickup ? 'Адреса обовʼязкова для доставки' : false
                                     })}
-                                    placeholder="City, Street, House, Apt..."
+                                    placeholder="Місто, вулиця, будинок, квартира..."
                                     rows="3"
                                     className={errors.delivery_address ? 'error' : ''}
                                 />
@@ -126,7 +126,7 @@ export default function CheckoutPage() {
                         )}
 
                         <div className="form-group hidden">
-                            {/* Hidden for now as only cash is supported/default */}
+                            {/* Приховано, зараз підтримується тільки оплата готівкою */}
                             <input type="hidden" {...register('payment_method')} value="cash" />
                         </div>
 
@@ -135,7 +135,7 @@ export default function CheckoutPage() {
                             className="btn-submit"
                             disabled={isSubmitting}
                         >
-                            {isSubmitting ? 'Placing Order...' : 'Place Order'}
+                            {isSubmitting ? 'Оформлюємо замовлення…' : 'Підтвердити замовлення'}
                         </button>
                     </form>
                 </div>
