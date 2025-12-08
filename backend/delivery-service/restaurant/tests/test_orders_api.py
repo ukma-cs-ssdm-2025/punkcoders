@@ -67,6 +67,7 @@ class OrderCreationApiTests(APITestCase):
         data = {
             "phone": "+380501234567",
             "self_pickup": True,
+            "delivery_address": "",
             "payment_method": "credit",
             "items_input": [{"dish_id": self.dish1.id, "quantity": 1}],
         }
@@ -75,7 +76,7 @@ class OrderCreationApiTests(APITestCase):
 
         order = Order.objects.get(id=response.data["id"])
         self.assertTrue(order.self_pickup)
-        self.assertIsNone(order.delivery_address)
+        self.assertEqual(order.delivery_address, "")
         # Note: current behavior marks self-pickup as PAID immediately
         # This may need adjustment based on business requirements
 
@@ -84,6 +85,7 @@ class OrderCreationApiTests(APITestCase):
         data = {
             "phone": "+380501234567",
             "self_pickup": True,
+            "delivery_address": "",
             "items_input": [
                 {"dish_id": self.dish1.id, "quantity": 1, "notes": "Без цибулі"},
             ],
@@ -102,6 +104,7 @@ class OrderCreationApiTests(APITestCase):
         data = {
             "phone": "+380501234567",
             "self_pickup": True,
+            "delivery_address": "",
             "items_input": [],
         }
         response = self.client.post("/api/v0/menu/orders/", data, format="json")
@@ -111,6 +114,7 @@ class OrderCreationApiTests(APITestCase):
         """Phone number is required."""
         data = {
             "self_pickup": True,
+            "delivery_address": "",
             "items_input": [{"dish_id": self.dish1.id, "quantity": 1}],
         }
         response = self.client.post("/api/v0/menu/orders/", data, format="json")
@@ -121,6 +125,7 @@ class OrderCreationApiTests(APITestCase):
         data = {
             "phone": "invalid_phone",
             "self_pickup": True,
+            "delivery_address": "",
             "items_input": [{"dish_id": self.dish1.id, "quantity": 1}],
         }
         response = self.client.post("/api/v0/menu/orders/", data, format="json")
@@ -131,6 +136,7 @@ class OrderCreationApiTests(APITestCase):
         data = {
             "phone": "+380501234567",
             "self_pickup": False,
+            "delivery_address": "",
             "items_input": [{"dish_id": self.dish1.id, "quantity": 1}],
         }
         response = self.client.post("/api/v0/menu/orders/", data, format="json")
@@ -152,6 +158,7 @@ class OrderCreationApiTests(APITestCase):
         data = {
             "phone": "+380501234567",
             "self_pickup": True,
+            "delivery_address": "",
             "items_input": [{"dish_id": 99999, "quantity": 1}],
         }
         response = self.client.post("/api/v0/menu/orders/", data, format="json")
@@ -162,6 +169,7 @@ class OrderCreationApiTests(APITestCase):
         data = {
             "phone": "+380501234567",
             "self_pickup": True,
+            "delivery_address": "",
             "items_input": [{"dish_id": self.dish1.id, "quantity": 0}],
         }
         response = self.client.post("/api/v0/menu/orders/", data, format="json")
@@ -174,6 +182,7 @@ class OrderCreationApiTests(APITestCase):
         order = Order.objects.create(
             phone="+380501234567",
             self_pickup=True,
+            delivery_address="",
             status=Order.Status.NEW,
             total_amount=Decimal("150.00"),
         )
@@ -245,6 +254,7 @@ class KitchenSelfPickupVisibilityTests(APITestCase):
         cls.order_self_pickup = Order.objects.create(
             phone="+380501234567",
             self_pickup=True,
+            delivery_address="",
             status=Order.Status.NEW,
         )
         OrderItem.objects.create(
