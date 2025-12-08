@@ -1,14 +1,13 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from restaurant.views.courier import CourierOrderViewSet
-from restaurant.views.dishes import CategoryViewSet, DishViewSet, IngredientViewSet
+from restaurant.views.dishes import CategoryViewSet, DishViewSet
 from restaurant.views.kitchen import KitchenOrderViewSet
 from restaurant.views.orders import OrderViewSet
 
 router = DefaultRouter()
 router.register(r"dishes", DishViewSet, basename="dish")
 router.register(r"categories", CategoryViewSet, basename="category")
-router.register(r"ingredients", IngredientViewSet, basename="ingredient")
 router.register(r"orders", OrderViewSet, basename="order")
 router.register(r"kitchen/orders", KitchenOrderViewSet, basename="kitchen-order")
 router.register(r"courier", CourierOrderViewSet, basename="courier")

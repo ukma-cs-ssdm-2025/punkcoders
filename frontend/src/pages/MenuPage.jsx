@@ -414,22 +414,6 @@ function DishDetailModal({ dishId, onClose }) {
               />
               <p className="modal-price">{dish.price}₴</p>
               <p>{dish.description}</p>
-
-              {dish.ingredients && dish.ingredients.length > 0 && (
-                <div className="modal-ingredients">
-                  <h4>Ingredients</h4>
-                  <ul>
-                    {dish.ingredients.map((ing) => (
-                      <li key={ing.ingredient_id}>
-                        {ing.name}
-                        {ing.is_base_ingredient && (
-                          <span style={{ color: '#888', fontSize: '0.8em' }}> (Base)</span>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
             </>
           )}
         </div>
