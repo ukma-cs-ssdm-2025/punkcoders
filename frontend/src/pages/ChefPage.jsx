@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import apiClient from '../api';
+import './ChefPage.css';
 
 export default function ChefPage() {
   const [orders, setOrders] = useState([]);

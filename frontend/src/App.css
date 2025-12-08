@@ -39,3 +39,22 @@
 .read-the-docs {
   color: #888;
 }
+
+/* --- Append to App.css --- */
+
+[data-theme="dark"] .card {
+    background-color: var(--color-card-bg); /* Ensures generic cards match the theme */
+}
+
+[data-theme="dark"] .read-the-docs {
+    color: var(--color-text-secondary); /* Lighter gray than the default #888 */
+}
+
+/* Optional: Adjust logo drop shadows for dark mode if they are too subtle */
+[data-theme="dark"] .logo:hover {
+    filter: drop-shadow(0 0 2em #646cff); /* Removed alpha for stronger glow */
+}
+
+[data-theme="dark"] .logo.react:hover {
+    filter: drop-shadow(0 0 2em #61dafb);
+}

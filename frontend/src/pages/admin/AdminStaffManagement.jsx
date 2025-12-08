@@ -205,13 +205,7 @@ function AdminStaffManagement() {
               <td>{user.email}</td>
               <td>{ROLE_DISPLAY_NAMES[user.role] || user.role}</td>
               <td>
-                <span style={{ 
-                    padding: '4px 8px', 
-                    borderRadius: '4px', 
-                    background: user.is_active ? '#e6fffa' : '#fff5f5',
-                    color: user.is_active ? '#008060' : '#c53030',
-                    fontSize: '0.85rem'
-                  }}>
+                <span class={user.is_active ? "active-status" : "inactive-status"}>
                   {user.is_active ? 'Активний' : 'Вимкнений'}
                 </span>
               </td>

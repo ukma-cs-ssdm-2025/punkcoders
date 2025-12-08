@@ -40,3 +40,40 @@
   align-items: center;
   gap: 0.5rem;
 }
+
+.form-group input:disabled {
+  background: #f0f0f0;
+  cursor: not-allowed;
+}
+
+/* --- Append to forms.css --- */
+
+[data-theme="dark"] .form-group input:disabled {
+  background-color: rgba(0, 0, 0, 0.2) !important; 
+  color: rgba(255, 255, 255, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+[data-theme="dark"] .base-form {
+  background: var(--color-card-bg); /* Uses the dark card color defined in style.css */
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .form-group label {
+    color: var(--color-text);
+}
+
+[data-theme="dark"] .form-group input,
+[data-theme="dark"] .form-group textarea,
+[data-theme="dark"] .form-group select {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--color-text);
+}
+
+[data-theme="dark"] .form-group input:focus,
+[data-theme="dark"] .form-group textarea:focus,
+[data-theme="dark"] .form-group select:focus {
+    border-color: var(--color-accent);
+    outline: none;
+}

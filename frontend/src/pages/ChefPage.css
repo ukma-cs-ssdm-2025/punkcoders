@@ -1,0 +1,267 @@
+/* ChefPage.css */
+
+.chef-dashboard {
+  background-color: var(--color-bg);
+  min-height: 100vh;
+  transition: background-color 0.3s ease;
+}
+
+.chef-header {
+  background: var(--color-primary);
+  color: var(--color-text);
+  padding: 1rem 0;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 10px var(--shadow-color, rgba(0,0,0,0.1));
+}
+
+.header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo-area h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--color-text);
+}
+
+.chef-stats {
+  font-size: 1.2rem;
+  font-weight: 700;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  color: var(--color-text);
+}
+
+.exit-btn {
+  font-size: 0.9rem;
+  text-decoration: underline;
+  /* color: var(--color-text); */
+}
+
+.exit-btn:hover {
+  color: var(--color-accent);
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.empty-state h3 {
+  font-size: 2rem;
+  margin-top: 1rem;
+  color: var(--color-text);
+}
+
+.pulsing-circle {
+  width: 20px;
+  height: 20px;
+  background-color: var(--color-accent);
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(3); opacity: 0; }
+}
+
+/* Orders Grid */
+.orders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  padding-bottom: 2rem;
+}
+
+/* Order Ticket Card */
+.order-ticket {
+  background: var(--color-card-bg);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  overflow: hidden;
+  border-top: 5px solid #ccc; 
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.5s ease-out forwards;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Status Colors */
+.order-ticket.status-new {
+  border-top-color: var(--color-accent); 
+}
+
+/* Add a subtle highlight to the header for new orders */
+.order-ticket.status-new .ticket-header {
+  background-color: rgba(255, 111, 97, 0.08); /* Transparent accent */
+}
+
+.order-ticket.status-preparing {
+  border-top-color: var(--color-highlight); 
+}
+
+/* Ticket Sections */
+.ticket-header {
+  padding: 1rem;
+  border-bottom: 1px dashed rgba(0,0,0,0.1); 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ticket-type {
+  padding: 0.5rem 1rem;
+  background: rgba(0,0,0,0.03);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text);
+  border-bottom: 1px dashed rgba(0,0,0,0.05);
+}
+
+.order-id {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.order-time {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.ticket-body {
+  padding: 1rem;
+  flex-grow: 1;
+}
+
+.ticket-items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ticket-items li {
+  margin-bottom: 1rem;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  padding-bottom: 0.5rem;
+}
+
+.ticket-items li:last-child {
+  border-bottom: none;
+}
+
+.item-row {
+  display: flex;
+  gap: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.item-qty {
+  color: var(--color-accent);
+  min-width: 30px;
+}
+
+/* Notes handling */
+.item-notes {
+  margin-top: 5px;
+  font-size: 0.9rem;
+  color: #d9534f; 
+  background: #fff0f0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.ticket-footer {
+  padding: 1rem;
+  background: rgba(0,0,0,0.02);
+  text-align: center;
+  margin-top: auto;
+}
+
+/* Buttons */
+.chef-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+  color: white;
+}
+
+.btn-start {
+  background-color: var(--color-accent);
+}
+
+.btn-start:hover {
+  background-color: var(--color-highlight);
+  transform: translateY(-2px);
+}
+
+.btn-done {
+  background-color: #4CAF50; 
+}
+
+.btn-done:hover {
+  background-color: #45a049;
+  transform: translateY(-2px);
+}
+
+/* --- Dark Mode Overrides --- */
+
+[data-theme="dark"] .order-ticket {
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+[data-theme="dark"] .ticket-header {
+    border-bottom-color: rgba(255,255,255,0.1);
+}
+
+[data-theme="dark"] .ticket-type {
+    background: rgba(255,255,255,0.05);
+    border-bottom-color: rgba(255,255,255,0.1);
+}
+
+[data-theme="dark"] .order-ticket.status-new .ticket-header {
+    background-color: rgba(255, 111, 97, 0.15); /* Slightly stronger for dark mode */
+}
+
+[data-theme="dark"] .ticket-items li {
+    border-bottom-color: rgba(255,255,255,0.1);
+}
+
+[data-theme="dark"] .ticket-footer {
+    background: rgba(255,255,255,0.05);
+}
+
+[data-theme="dark"] .item-notes {
+    background: rgba(217, 83, 79, 0.25);
+    color: #ff8b8b;
+}

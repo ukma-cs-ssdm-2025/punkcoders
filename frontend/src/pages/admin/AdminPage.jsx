@@ -31,12 +31,12 @@ function AdminPage() {
             <li>
               <NavLink to="/admin/staff">Персонал</NavLink>
             </li>
-            <li>
+            {/* <li>
               <NavLink to="/admin/reports">Звіти</NavLink>
             </li>
             <li>
               <NavLink to="/admin/settings">Налаштування</NavLink>
-            </li>
+            </li> */}
             <li>
               <hr />
               <a href="/">Повернутись на сайт</a>

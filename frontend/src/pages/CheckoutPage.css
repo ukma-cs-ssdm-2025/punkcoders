@@ -107,3 +107,42 @@
 .btn-submit:hover:not(:disabled) {
     opacity: 0.9;
 }
+
+/* --- Append to CheckoutPage.css --- */
+
+[data-theme="dark"] .order-summary-side {
+    background: var(--color-card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .order-summary-side h3 {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+    color: var(--color-text);
+}
+
+[data-theme="dark"] .summary-item {
+    color: var(--color-text-secondary);
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .total-line {
+    border-top-color: rgba(255, 255, 255, 0.1);
+    color: var(--color-text);
+}
+
+[data-theme="dark"] .form-group label {
+    color: var(--color-text);
+}
+
+[data-theme="dark"] .form-group input[type="text"],
+[data-theme="dark"] .form-group input[type="tel"],
+[data-theme="dark"] .form-group textarea {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--color-text);
+}
+
+[data-theme="dark"] .form-group input:focus,
+[data-theme="dark"] .form-group textarea:focus {
+    border-color: var(--color-accent);
+}

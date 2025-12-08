@@ -52,7 +52,7 @@
 
 .admin-button {
   background: var(--color-accent, #FF6F61);
-  color: #4B2E05;
+  /* color: #4B2E05; */
   border: none;
   border-radius: var(--radius, 12px);
   padding: 0.7em 1.4em;
@@ -112,4 +112,76 @@
 
 .Toastify__toast-body {
   white-space: pre-line;
+}
+
+.active-status
+{ 
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: #e6fffa;
+  color: #008060;
+  font-size: 0.85rem
+}
+
+.inactive-status
+{ 
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: #fff5f5;
+  color: #c53030;
+  font-size: 0.85rem
+}
+
+/* --- Append to Admin.css --- */
+
+[data-theme="dark"] .active-status
+{ 
+  background: #008060;
+  color: #e6fffa;
+}
+
+[data-theme="dark"] .inactive-status
+{ 
+  background: #c53030;
+  color: #fff5f5;
+}
+
+
+[data-theme="dark"] .admin-sidebar {
+    background-color: #1a1a1a; /* Darker than card bg */
+    border-right-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .admin-sidebar nav a {
+    color: var(--color-text);
+}
+
+[data-theme="dark"] .admin-sidebar nav a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .admin-sidebar nav a.active {
+    background-color: var(--color-accent); 
+    color: white;
+}
+
+[data-theme="dark"] .admin-content {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+}
+
+[data-theme="dark"] .admin-table th {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--color-text);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .admin-table td {
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--color-text-secondary);
+}
+
+/* Fix for status unavailable text in dark mode */
+[data-theme="dark"] .admin-table .status-unavailable {
+    color: #666; 
 }

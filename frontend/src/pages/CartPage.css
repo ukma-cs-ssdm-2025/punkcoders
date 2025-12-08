@@ -175,3 +175,52 @@
   border-radius: 25px;
   text-decoration: none;
 }
+
+/* --- Append to CartPage.css --- */
+
+[data-theme="dark"] .cart-item {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .cart-item-details h3 {
+    color: var(--color-text);
+}
+
+[data-theme="dark"] .item-price {
+    color: var(--color-text-secondary);
+}
+
+[data-theme="dark"] .quantity-controls {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-text);
+}
+
+[data-theme="dark"] .quantity-controls button {
+    color: var(--color-text);
+}
+
+[data-theme="dark"] .btn-quantity {
+    color: var(--color-text);
+}
+
+[data-theme="dark"] .cart-summary {
+    background: var(--color-card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .cart-summary h3,
+[data-theme="dark"] .summary-row, 
+[data-theme="dark"] .cart-item-total {
+    color: var(--color-text);
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .btn-clear {
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--color-text);
+}
+
+[data-theme="dark"] .btn-clear:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}

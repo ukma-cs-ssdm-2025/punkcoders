@@ -449,3 +449,46 @@
     border-color: var(--color-accent);
     transform: translateY(-2px);
 }
+
+/* --- Append to CourierPage.css --- */
+
+/* Enhance contrast for badges on dark backgrounds */
+[data-theme="dark"] .stat-badge.ready {
+    background: rgba(46, 204, 113, 0.25);
+    color: #4cd17c; /* Brighter green */
+}
+
+[data-theme="dark"] .stat-badge.my {
+    background: rgba(52, 152, 219, 0.25);
+    color: #5dade2; /* Brighter blue */
+}
+
+[data-theme="dark"] .payment-badge.cash {
+    background: rgba(241, 196, 15, 0.25);
+    color: #f4d03f;
+}
+
+[data-theme="dark"] .order-details-panel {
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .items-list li,
+[data-theme="dark"] .panel-header {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .total-line {
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Secondary buttons need white text/borders in dark mode */
+[data-theme="dark"] .btn-secondary {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: var(--color-text);
+}
+[data-theme="dark"] .btn-secondary:hover {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: white;
+}

@@ -83,9 +83,9 @@ function UserProfile() {
             <input 
               id="role"
               type="text" 
+              // className="disabled-input"
               disabled 
               {...register('role')} 
-              style={{ background: '#f0f0f0', cursor: 'not-allowed' }}
             />
           </div>
 
