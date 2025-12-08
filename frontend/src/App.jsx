@@ -46,7 +46,7 @@ function App() {
         } />
         <Route path="/courier" element={
           <ProtectedRoute allowedRoles={["MANAGER", "COURIER"]}>
-            <ChefPage />
+            <CourierPage />
           </ProtectedRoute>
         } />
         <Route path="/profile" element={
