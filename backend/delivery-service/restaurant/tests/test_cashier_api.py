@@ -36,7 +36,7 @@ class CashierApiTests(APITestCase):
         # Ready pickup order (should appear)
         cls.ready_pickup = Order.objects.create(
             phone="+380501234560",
-            delivery_address=None,
+            delivery_address="",
             self_pickup=True,
             delivery_type=Order.DeliveryType.PICKUP,
             kitchen_status=Order.KitchenStatus.COMPLETED,
@@ -56,7 +56,7 @@ class CashierApiTests(APITestCase):
         # Pickup but still preparing (should be filtered out)
         cls.pickup_preparing = Order.objects.create(
             phone="+380501234561",
-            delivery_address=None,
+            delivery_address="",
             self_pickup=True,
             delivery_type=Order.DeliveryType.PICKUP,
             kitchen_status=Order.KitchenStatus.PREPARING,
@@ -76,7 +76,7 @@ class CashierApiTests(APITestCase):
         # Already picked up (should not show)
         cls.already_picked = Order.objects.create(
             phone="+380501234563",
-            delivery_address=None,
+            delivery_address="",
             self_pickup=True,
             delivery_type=Order.DeliveryType.PICKUP,
             kitchen_status=Order.KitchenStatus.COMPLETED,
