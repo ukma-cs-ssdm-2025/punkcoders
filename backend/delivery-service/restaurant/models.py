@@ -97,7 +97,7 @@ class Order(models.Model):
     )
 
     # Delivery address: optional if самовивіз True
-    delivery_address = models.TextField(null=True, blank=True, verbose_name="Delivery address")
+    delivery_address = models.TextField(blank=True, verbose_name="Delivery address")
     self_pickup = models.BooleanField(default=False, verbose_name="Самовивіз")
 
     # Phone: simple validation (ukraine-compatible). Adjust regex if you have other formats.

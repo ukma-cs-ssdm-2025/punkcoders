@@ -9,7 +9,7 @@ class OrderCreationError(Exception):
     pass
 
 
-def create_order_with_items(order_data: dict, items_data: list, user=None) -> Order:
+def create_order_with_items(order_data: dict, items_data: list) -> Order:
     """
     order_data: dict with keys: phone, delivery_address (optional), self_pickup (bool), payment_method (optional)
     items_data: list of dicts: {"dish_id": int, "quantity": int}
