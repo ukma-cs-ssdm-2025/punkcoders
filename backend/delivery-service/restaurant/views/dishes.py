@@ -2,8 +2,8 @@ from accounts.permissions import IsManager
 from rest_framework import parsers, viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
-from restaurant.models import Category, Dish, Ingredient
-from restaurant.serializers.dishes import CategorySerializer, DishSerializer, IngredientSerializer
+from restaurant.models import Category, Dish
+from restaurant.serializers.dishes import CategorySerializer, DishSerializer
 from restaurant.services.dishes import get_dishes_queryset
 
 
@@ -27,22 +27,6 @@ class CategoryViewSet(viewsets.ModelViewSet):
         return [IsManager()]
 
 
-class IngredientViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint for Ingredients.
-    - Managers can perform all CRUD operations.
-    - All users (including anonymous) can list and retrieve ingredients.
-    """
-
-    queryset = Ingredient.objects.all().order_by("name")  # явне сортування
-    serializer_class = IngredientSerializer
-
-    def get_permissions(self):
-        if self.action in ["list", "retrieve"]:
-            return [AllowAny()]
-        return [IsManager()]
-
-
 class DishViewSet(viewsets.ModelViewSet):
     """
     API endpoint for Dishes.
@@ -50,9 +34,7 @@ class DishViewSet(viewsets.ModelViewSet):
     - Uses the service layer for create and update logic.
     """
 
-    queryset = (  # оптимізація запиту до бази, щоб не було помилки N+1
-        Dish.objects.select_related("category").prefetch_related("ingredients").all()
-    )
+    queryset = Dish.objects.select_related("category").all()  # оптимізація запиту до бази, щоб не було помилки N+1
 
     serializer_class = DishSerializer
     # This is the key for file uploads. It tells DRF to expect multipart form data.

@@ -4,13 +4,16 @@ import './LoginPage.css';
 import { API_URL } from '../api';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { useQueryClient } from '@tanstack/react-query';
+import apiClient from '../api';
+
 
 function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const navigate = useNavigate();
-
+  const queryClient = useQueryClient();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,10 +30,27 @@ function LoginPage() {
       localStorage.setItem('accessToken', response.data.access);
       localStorage.setItem('refreshToken', response.data.refresh);
 
-      toast.success('Вхід успішний!');
-      navigate('/admin/menu'); 
+      queryClient.removeQueries(['user']); // delete old user data cache
 
-    } catch (error) {
+      // i can't useUser becasue i have to call it at top level and
+      // they're not logged in there yet
+      let userData;
+      try {
+        userData = await apiClient.get('/auth/me/');
+      } 
+      catch (userError) {
+        console.error('Помилка отримання даних користувача:', userError);
+        toast.error('Не вдалося отримати дані користувача. Спробуйте ще раз.');
+        return;
+      }      
+      const user = userData.data;
+      toast.success('Вхід успішний!');
+      if (user.role === 'MANAGER') navigate('/admin/menu'); 
+      else if (user.role === 'KITCHEN_STAFF') navigate('/chef');
+      else if (user.role === 'COURIER') navigate('/courier');
+      else navigate('/'); // fallback
+    } 
+    catch (error) {
       const status = error?.response?.status;
 
       if (status === 401) {

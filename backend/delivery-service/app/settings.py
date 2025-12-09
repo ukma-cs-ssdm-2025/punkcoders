@@ -60,6 +60,12 @@ INSTALLED_APPS = [
     "autoslug",
 ]
 
+if not DEBUG:
+    INSTALLED_APPS += [
+        "cloudinary_storage",
+        "cloudinary",
+    ]
+
 AUTOSLUG_SLUGIFY_FUNCTION = slugify.slugify
 
 # CORS Configuration
@@ -209,6 +215,35 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # Define MEDIA settings for user uploads (like dish photos)
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+if DEBUG:
+    # DEVELOPMENT: Everything local
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+else:
+    # PRODUCTION: Media -> Cloudinary, Static -> Local Disk
+    STORAGES = {
+        "default": {
+            # User uploads go to Cloudinary
+            "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+        },
+        "staticfiles": {
+            # Static files stay on disk so Nginx can find them
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
+
+    # Cloudinary Credential
+    CLOUDINARY_URL = os.environ.get("CLOUDINARY_URL")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

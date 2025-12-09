@@ -1,12 +1,12 @@
 import axios from 'axios';
-import { toast } from 'react-toastify'; 
+import { toast } from 'react-toastify';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/';
 const VERSION = 'v0';
 
 const apiClient = axios.create({
   baseURL: API_URL + VERSION,
-  timeout: 10000, 
+  timeout: 10000,
 });
 
 apiClient.interceptors.request.use(
@@ -28,7 +28,7 @@ apiClient.interceptors.response.use(
   },
   async (error) => {
     const originalRequest = error.config;
-    
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
@@ -43,7 +43,7 @@ apiClient.interceptors.response.use(
         const response = await axios.post(API_URL + 'token/refresh/', {
           refresh: refreshToken
         }, {
-          timeout: 5000 
+          timeout: 5000
         });
 
         const newAccessToken = response.data.access;
@@ -56,15 +56,15 @@ apiClient.interceptors.response.use(
 
       } catch (refreshError) {
         console.error("Token refresh failed:", refreshError);
-        
+
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        
+
         toast.error("Ваша сесія закінчилася. Будь ласка, увійдіть знову.");
 
         setTimeout(() => {
           globalThis.location.href = '/login';
-        }, 2000); 
+        }, 2000);
 
         throw refreshError;
       }
@@ -73,7 +73,7 @@ apiClient.interceptors.response.use(
     if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
       toast.error("Сервер не відповідає. Будь ласка, спробуйте пізніше.");
     }
-    
+
     throw error;
   }
 );

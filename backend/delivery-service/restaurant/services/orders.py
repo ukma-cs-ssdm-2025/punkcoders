@@ -9,7 +9,7 @@ class OrderCreationError(Exception):
     pass
 
 
-def create_order_with_items(order_data: dict, items_data: list, user=None) -> Order:
+def create_order_with_items(order_data: dict, items_data: list) -> Order:
     """
     order_data: dict with keys: phone, delivery_address (optional), self_pickup (bool), payment_method (optional)
     items_data: list of dicts: {"dish_id": int, "quantity": int}
@@ -30,6 +30,8 @@ def create_order_with_items(order_data: dict, items_data: list, user=None) -> Or
             phone=order_data["phone"],
             delivery_address=order_data.get("delivery_address"),
             self_pickup=bool(order_data.get("self_pickup", False)),
+            delivery_type=(Order.DeliveryType.PICKUP if order_data.get("self_pickup") else Order.DeliveryType.DELIVERY),
+            kitchen_status=Order.KitchenStatus.NEW,
             payment_method=order_data.get("payment_method", Order.PaymentMethod.CASH),
         )
 
@@ -54,13 +56,11 @@ def create_order_with_items(order_data: dict, items_data: list, user=None) -> Or
                 unit_price=unit_price,
                 quantity=qty,
                 line_total=line_total,
+                notes=it.get("notes", ""),
             )
             total += line_total
 
         order.total_amount = total
         order.save(update_fields=["total_amount"])
-
-        # business rule: if self_pickup -> mark paid instantly
-        order.mark_paid_if_self_pickup()
 
         return order

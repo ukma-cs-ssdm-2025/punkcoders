@@ -19,7 +19,7 @@ TEST_MEDIA_ROOT = Path(settings.BASE_DIR) / "test_media"
 @override_settings(MEDIA_ROOT=str(TEST_MEDIA_ROOT))
 class MenuApiTests(APITestCase):
     """
-    Integration tests for the entire Menu API (Categories, Ingredients, Dishes).
+    Integration tests for the entire Menu API (Categories, Dishes).
     """
 
     @classmethod

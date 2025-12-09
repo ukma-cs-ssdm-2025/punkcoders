@@ -1,30 +1,13 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useParams, useNavigate } from 'react-router-dom';
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-} from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import apiClient from '../api';
-import Header from '../Common.jsx';
+import Header from '../components/Header.jsx';
+import { useCart } from '../context/CartContext';
 import './MenuPage.css';
-
-// --- React Query Client ---
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      refetchOnWindowFocus: false,
-      retry: (failureCount, error) => {
-        if (error.response?.status === 404) return false;
-        return failureCount < 3;
-      },
-    },
-  },
-});
 
 // --- API Fetching Functions ---
 
@@ -41,10 +24,8 @@ const fetchCategories = async () => {
 
 const fetchDishesByCategory = async (id) => {
   let url = `/menu/dishes/` + (id ? `?category_id=${id}` : '');
-  console.log('Fetching dishes from URL:', url);
   try {
     const response = await apiClient.get(url);
-    console.log(`Dishes fetched for category ${id}:`, response.data);
     return response.data;
   } catch (error) {
     if (error.response?.status === 404) {
@@ -84,10 +65,10 @@ const fetchDishDetails = async (dishId) => {
 // --- Main App Component ---
 export default function MenuPage() {
   return (
-    <QueryClientProvider client={queryClient}>
+    <div>
       <Header />
       <MainContent />
-    </QueryClientProvider>
+    </div>
   );
 }
 
@@ -112,7 +93,7 @@ function MainContent() {
     if (categorySlug) {
       return categories.find((c) => c.slug === categorySlug);
     }
-    
+
     return categories[0] || null;
   }, [categories, categorySlug]);
 
@@ -163,7 +144,7 @@ function CategoryTabs({
     let skeletons = [];
     for (let i = 0; i < 3; i++) {
       skeletons.push(
-        <button key={i} className="tab-pill" disabled style={{ opacity: 0.5 }}> 
+        <button key={i} className="tab-pill" disabled style={{ opacity: 0.5 }}>
           Loading...
         </button>
       );
@@ -192,9 +173,8 @@ function CategoryTabs({
           key={category.id}
           // --- KEY CHANGE: Call with the SLUG, not the ID ---
           onClick={() => onSelectCategory(category.slug)}
-          className={`tab-pill ${
-            selectedCategoryID === category.id ? 'active' : ''
-          }`}
+          className={`tab-pill ${selectedCategoryID === category.id ? 'active' : ''
+            }`}
         >
           {category.name}
         </button>
@@ -244,20 +224,20 @@ function DishList({ selectedCategoryID }) {
     const skeletons = [];
     for (let i = 0; i < 3; i++) {
       skeletons.push(
-      <div key={i} className="card" style={{ opacity: 0.5, pointerEvents: 'none' }}>
-        <div style={{ height: '200px', background: '#eee' }} />
-        <div className="card-content" style={{ filter: 'blur(4px)' }}>
-        <h3 className="product-title">Loading...</h3>
-        <p className="product-price">...₴</p>
-        <button className="tab-pill">read more</button>
+        <div key={i} className="card" style={{ opacity: 0.5, pointerEvents: 'none' }}>
+          <div style={{ height: '200px', background: '#eee' }} />
+          <div className="card-content" style={{ filter: 'blur(4px)' }}>
+            <h3 className="product-title">Loading...</h3>
+            <p className="product-price">...₴</p>
+            <button className="tab-pill">read more</button>
+          </div>
         </div>
-      </div>
       );
     }
 
     return (
       <div className="menu-cards">
-      {skeletons}
+        {skeletons}
       </div>
     );
   }
@@ -307,9 +287,12 @@ DishList.propTypes = {
  * Displays a single dish card using your .card structure
  */
 function DishCard({ dish, onShowDetails }) {
+  const { addToCart } = useCart();
+
   const handleAddToCart = (e) => {
     e.stopPropagation(); // Prevent modal from opening
-    toast.success(`${dish.name} added to cart! (Not really)`);
+    addToCart(dish);
+    toast.success(`${dish.name} added to cart!`);
   };
 
   const handleShowDetails = (e) => {
@@ -324,7 +307,19 @@ function DishCard({ dish, onShowDetails }) {
   };
 
   return (
-    <div className="card" style={{ cursor: 'pointer' }} onClick={handleShowDetails}>
+    <div 
+      className="card" 
+      style={{ cursor: 'pointer' }} 
+      onClick={handleShowDetails}
+      tabIndex={0}
+      role="button"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault(); // Stop page from scrolling when pressing Space
+          handleShowDetails(e);
+        }
+      }}
+    >
       {/* Assuming /content/ paths are available */}
       <img src="/content/heart.png" className="fav-icon" alt="favorite" />
       <img
@@ -333,7 +328,7 @@ function DishCard({ dish, onShowDetails }) {
         className="card-img"
         onError={handleImageError}
       />
-      
+
       {!dish.is_available && (
         <div style={{
           position: 'absolute', top: 0, left: 0, width: '100%', height: '200px',
@@ -343,20 +338,20 @@ function DishCard({ dish, onShowDetails }) {
           Unavailable
         </div>
       )}
-        
+
       <div className="card-content">
         <h3 className="product-title">{dish.name}</h3>
         <p className="product-price">{dish.price}₴</p>
-        
+
         <div className="card-actions">
-          <button 
+          <button
             className="read-btn"
             onClick={handleAddToCart}
             disabled={!dish.is_available}
           >
             Add to Cart
           </button>
-          <button 
+          <button
             className="tab-pill"
             onClick={handleShowDetails}
           >
@@ -399,21 +394,39 @@ function DishDetailModal({ dishId, onClose }) {
     e.target.onerror = null;
   };
 
-  if (!dishId) return null;
+  const { addToCart } = useCart();
 
   const handleAddToCart = () => {
-    toast.success(`${dish.name} added to cart! (Not really)`);
+    addToCart(dish);
+    toast.success(`${dish.name} added to cart!`);
     onClose(); // Close modal after adding
   };
 
+  if (!dishId) return null;
+
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-overlay" 
+      onClick={onClose}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          onClose();
+        }
+      }}>
+      <div 
+        className="modal-content" 
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        // Determining interaction for the inner content doesn't require role="button"
+        // because it is a container, not a button itself.
+      >
         <div className="modal-header">
           <h2>{dish ? dish.name : 'Loading...'}</h2>
           <button onClick={onClose} className="modal-close-btn">&times;</button>
         </div>
-        
+
         <div className="modal-body">
           {isLoading && <p>Loading details...</p>}
           {isError && <p style={{ color: 'red' }}>Could not load dish details.</p>}
@@ -426,26 +439,10 @@ function DishDetailModal({ dishId, onClose }) {
               />
               <p className="modal-price">{dish.price}₴</p>
               <p>{dish.description}</p>
-              
-              {dish.ingredients && dish.ingredients.length > 0 && (
-                <div className="modal-ingredients">
-                  <h4>Ingredients</h4>
-                  <ul>
-                    {dish.ingredients.map((ing) => (
-                      <li key={ing.ingredient_id}>
-                        {ing.name}
-                        {ing.is_base_ingredient && (
-                          <span style={{ color: '#888', fontSize: '0.8em' }}> (Base)</span>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
             </>
           )}
         </div>
-        
+
         <div className="modal-footer">
           <button onClick={onClose} className="read-btn">
             Close

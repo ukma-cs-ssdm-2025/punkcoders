@@ -35,24 +35,6 @@ class Category(models.Model):
         return self.name
 
 
-class Ingredient(models.Model):
-    """
-    Доступні інгредієнти, які використовуються в стравах.
-    """
-
-    name = models.CharField(max_length=100, unique=True, verbose_name="Назва інгредієнта")
-    # is_available can be used later if some ingredients run out.
-    is_available = models.BooleanField(default=True, verbose_name="Доступний для використання")
-
-    class Meta:
-        verbose_name = "Інгредієнт"
-        verbose_name_plural = "Інгредієнти"
-        ordering = ["name"]
-
-    def __str__(self):
-        return self.name
-
-
 class Dish(models.Model):
     """
     Основна модель для страв у меню.
@@ -76,11 +58,6 @@ class Dish(models.Model):
         help_text="Якщо вимкнено, страва позначається 'тимчасово недоступна' (UC-001).",
     )
 
-    # M2M relationship through DishIngredient
-    ingredients = models.ManyToManyField(
-        Ingredient, through="DishIngredient", related_name="dishes", verbose_name="Склад страви"
-    )
-
     # FR-045, FR-047: Поля для відстеження змін, які можуть знадобитися для нотифікацій.
     # TODO: remove (downscoped?)
     updated_at = models.DateTimeField(auto_now=True)
@@ -96,32 +73,16 @@ class Dish(models.Model):
         return f"{availability} {self.name} ({self.price} грн)"
 
 
-class DishIngredient(models.Model):
-    """
-    Проміжна модель для зв'язку "Страва - Інгредієнт".
-    Використовується, щоб відрізнити базові інгредієнти від тих, які можна додавати/видаляти.
-    """
-
-    dish = models.ForeignKey(Dish, on_delete=models.CASCADE, verbose_name="Страва")
-    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE, verbose_name="Інгредієнт")
-    # Позначає, чи є цей інгредієнт частиною стандартного рецепта.
-    is_base_ingredient = models.BooleanField(
-        default=True,
-        verbose_name="Базовий інгредієнт",
-        help_text="Якщо це базовий інгредієнт, користувач може його прибрати (FR-015). Якщо ні, користувач може його додати.",
-    )
-
-    class Meta:
-        unique_together = ("dish", "ingredient")
-        verbose_name = "Склад страви"
-        verbose_name_plural = "Склад страв"
-
-    def __str__(self):
-        type_str = "База" if self.is_base_ingredient else "Опція"
-        return f"{self.dish.name} - {self.ingredient.name} ({type_str})"
-
-
 class Order(models.Model):
+
+    # TODO: consolidate statuses
+    # payment should probably be in PaymentMethod, but can be
+    # stored in status as PAID_CASH / PAID_CREDIT for simplicity
+    # PICKED_UP should exist only if PAID_CASH / PAID_CREDIT aren't used
+    # KitchenStatus should be merged into Status
+    # AWAITING_CASH should be named AWAITING_PAYMENT for clarity,
+    # or we could just reuse WAITING_FOR_COURIER
+
     class Status(models.TextChoices):
         NEW = "new", "New"
         IN_PROGRESS = "in_progress", "In progress"
@@ -130,12 +91,24 @@ class Order(models.Model):
         PAID_CREDIT = "paid_credit", "Paid (credit)"
         AWAITING_CASH = "awaiting_cash", "Awaiting cash payment"
         PAID_CASH = "paid_cash", "Paid (cash)"
+        PICKED_UP = "picked_up", "Picked up"
+
+    class DeliveryType(models.TextChoices):
+        DELIVERY = "delivery", "Delivery"
+        PICKUP = "pickup", "Pickup"
+
+    class KitchenStatus(models.TextChoices):
+        NEW = "new", "New"
+        PREPARING = "preparing", "Preparing"
+        COMPLETED = "completed", "Completed"
 
     class PaymentMethod(models.TextChoices):
         CREDIT = "credit", "Credit"
         CASH = "cash", "Cash"
 
     status = models.CharField(max_length=32, choices=Status.choices, default=Status.NEW)
+    delivery_type = models.CharField(max_length=16, choices=DeliveryType.choices, default=DeliveryType.DELIVERY)
+    kitchen_status = models.CharField(max_length=16, choices=KitchenStatus.choices, default=KitchenStatus.NEW)
     payment_method = models.CharField(
         max_length=16,
         choices=PaymentMethod.choices,
@@ -144,7 +117,7 @@ class Order(models.Model):
     )
 
     # Delivery address: optional if самовивіз True
-    delivery_address = models.TextField(null=True, blank=True, verbose_name="Delivery address")
+    delivery_address = models.TextField(blank=True, verbose_name="Delivery address")
     self_pickup = models.BooleanField(default=False, verbose_name="Самовивіз")
 
     # Phone: simple validation (ukraine-compatible). Adjust regex if you have other formats.
@@ -153,6 +126,16 @@ class Order(models.Model):
         message="Phone number must be entered in the format: +380501234567 or 0501234567. Up to 15 digits allowed.",
     )
     phone = models.CharField(validators=[phone_regex], max_length=20, verbose_name="Phone number")
+
+    # Courier assigned to deliver this order
+    courier = models.ForeignKey(
+        "accounts.User",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="deliveries",
+        verbose_name="Assigned courier",
+    )
 
     # Timestamp
     created_at = models.DateTimeField(auto_now_add=True)
@@ -165,30 +148,30 @@ class Order(models.Model):
         verbose_name_plural = "Orders"
         ordering = ["-created_at"]
 
+    def save(self, *args, **kwargs):
+        expected_delivery_type = self.DeliveryType.PICKUP if self.self_pickup else self.DeliveryType.DELIVERY
+        if self.delivery_type != expected_delivery_type:
+            self.delivery_type = expected_delivery_type
+            if kwargs.get("update_fields") is not None:
+                update_fields = set(kwargs["update_fields"])
+                update_fields.add("delivery_type")
+                kwargs["update_fields"] = list(update_fields)
+        super().save(*args, **kwargs)
+
     def clean(self):
         # Ensure either delivery_address is set XOR self_pickup is True (one or the other)
         if self.self_pickup and self.delivery_address:
             raise ValidationError("If self_pickup is True, delivery_address must be empty.")
         if (not self.self_pickup) and (not self.delivery_address):
             raise ValidationError("Either delivery_address must be set or self_pickup must be True.")
+        # Keep delivery_type consistent with self_pickup flag
+        if self.delivery_type == self.DeliveryType.PICKUP and not self.self_pickup:
+            raise ValidationError("Pickup orders must have self_pickup=True.")
+        if self.delivery_type == self.DeliveryType.DELIVERY and self.self_pickup:
+            raise ValidationError("Delivery orders must have self_pickup=False.")
 
     def __str__(self):
         return f"Order #{self.id} — {self.get_status_display()} — {self.total_amount} грн"
-
-    def mark_paid_if_self_pickup(self):
-        """
-        Business rule from issue:
-        - Самовивіз orders go from waiting_for_courier to paid for instantly.
-        We'll interpret: if self_pickup==True, then once items are created,
-        set status to PAID_CASH or PAID_CREDIT depending on payment_method.
-        """
-        if self.self_pickup:
-            if self.payment_method == self.PaymentMethod.CREDIT:
-                self.status = self.Status.PAID_CREDIT
-            else:
-                # default treat as cash
-                self.status = self.Status.PAID_CASH
-            self.save(update_fields=["status"])
 
 
 class OrderItem(models.Model):
@@ -204,6 +187,7 @@ class OrderItem(models.Model):
     unit_price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
     quantity = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
     line_total = models.DecimalField(max_digits=12, decimal_places=2, validators=[MinValueValidator(0)])
+    notes = models.CharField(max_length=255, blank=True, default="")
 
     class Meta:
         verbose_name = "Order item"
