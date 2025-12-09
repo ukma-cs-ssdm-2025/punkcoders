@@ -285,3 +285,74 @@
   50% { transform: scale(1.05); opacity: 1; }
   100% { transform: scale(0.9); opacity: 0.7; }
 }
+
+/* --- DARK MODE OVERRIDES (Append to bottom of CashierPage.css) --- */
+
+[data-theme="dark"] .cashier-dashboard {
+  background: var(--color-bg);
+}
+
+[data-theme="dark"] .cashier-header {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Fix Card & Panel Backgrounds */
+[data-theme="dark"] .order-card,
+[data-theme="dark"] .order-details-panel,
+[data-theme="dark"] .empty-state,
+[data-theme="dark"] .loading-state,
+[data-theme="dark"] .empty-details {
+  background: var(--color-card-bg);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .order-card:hover {
+  border-color: var(--color-highlight);
+}
+
+/* Fix Text Colors */
+[data-theme="dark"] .order-id { color: var(--color-accent); }
+[data-theme="dark"] .order-time { color: var(--color-text-secondary); }
+[data-theme="dark"] .order-address { color: var(--color-text); }
+[data-theme="dark"] .label { color: var(--color-text-secondary); }
+
+/* Fix Badges & Pills (Make backgrounds transparent, text brighter) */
+[data-theme="dark"] .stat-badge {
+  background: rgba(46, 204, 113, 0.2);
+  color: #4cd17c; /* Brighter Green */
+}
+
+[data-theme="dark"] .payment-badge {
+  background: rgba(255, 111, 97, 0.2);
+  color: #ff8b8b; /* Brighter Accent */
+}
+
+[data-theme="dark"] .status-pill {
+  background: rgba(52, 152, 219, 0.2);
+  color: #5dade2; /* Brighter Blue */
+}
+
+/* Fix List Items */
+[data-theme="dark"] .detail-row {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .item-row {
+  background: rgba(255, 255, 255, 0.05); /* Light grey overlay */
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .qty {
+  background: rgba(46, 204, 113, 0.2);
+  color: #4cd17c;
+}
+
+[data-theme="dark"] .notes {
+  background: rgba(255, 165, 0, 0.2);
+  color: #ffb74d; /* Brighter Orange */
+}
+
+[data-theme="dark"] .pulsing-circle {
+  background: rgba(52, 152, 219, 0.2);
+}
